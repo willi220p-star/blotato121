@@ -1,0 +1,15 @@
+{
+  "name": "blotato121",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clone and run GitHub repos in seconds",
+  "type": "module",
+  "scripts": {
+    "start": "python3 server.py",
+    "scrape": "python3 scripts/scrape.py",
+    "test": "node --test test/*.test.js && PYTHONPATH=. python3 -m unittest tests.test_scrape"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

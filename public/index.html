@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scrapling console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow">Deployed from github.com/D4Vinci/Scrapling</p>
+        <h1>Scrapling console</h1>
+        <p class="lede">
+          Paste a page URL, pick a fetcher, and optionally a CSS selector. Results stay on this machine so you can keep scraping from Cursor.
+        </p>
+        <p id="status" class="status">Checking install…</p>
+      </header>
+
+      <form id="form">
+        <label>
+          Page URL
+          <input id="url" name="url" type="url" required placeholder="https://quotes.toscrape.com/" value="https://quotes.toscrape.com/" />
+        </label>
+        <div class="row">
+          <label>
+            Fetcher
+            <select id="fetcher" name="fetcher">
+              <option value="http" selected>HTTP (curl_cffi)</option>
+              <option value="stealthy">Stealthy browser</option>
+              <option value="dynamic">Dynamic Chromium</option>
+            </select>
+          </label>
+          <label>
+            CSS selector
+            <input id="css" name="css" placeholder=".quote .text::text" value=".quote .text::text" />
+          </label>
+        </div>
+        <button type="submit" id="go">Scrape</button>
+      </form>
+
+      <section>
+        <h2>Result</h2>
+        <pre id="out">Waiting for a scrape…</pre>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

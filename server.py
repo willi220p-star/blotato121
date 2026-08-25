@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""Local Scrapling console: scrape any http(s) URL from this Cloud Agent."""
+
+from __future__ import annotations
+
+import json
+import os
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlparse
+
+from lib.scrape import ALLOWED_FETCHERS, scrape
+
+ROOT = Path(__file__).resolve().parent
+PUBLIC = ROOT / "public"
+HOST = os.environ.get("HOST", "0.0.0.0")
+PORT = int(os.environ.get("PORT", "4173"))
+
+MIME = {
+    ".html": "text/html; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".js": "text/javascript; charset=utf-8",
+    ".svg": "image/svg+xml",
+    ".json": "application/json; charset=utf-8",
+}
+
+
+class Handler(BaseHTTPRequestHandler):
+    def log_message(self, format: str, *args) -> None:  # noqa: A003
+        sys_stderr = __import__("sys").stderr
+        sys_stderr.write("%s - %s\n" % (self.address_string(), format % args))
+
+    def _json(self, status: int, payload: dict) -> None:
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self) -> None:  # noqa: N802
+        path = urlparse(self.path).path
+        if path == "/api/health":
+            import scrapling
+
+            return self._json(
+                200,
+                {
+                    "ok": True,
+                    "service": "scrapling-console",
+                    "scrapling": scrapling.__version__,
+                    "clone": str(ROOT / "cloned" / "scrapling"),
+                    "fetchers": list(ALLOWED_FETCHERS),
+                },
+            )
+        relative = "index.html" if path == "/" else path.lstrip("/")
+        file_path = (PUBLIC / relative).resolve()
+        if not str(file_path).startswith(str(PUBLIC.resolve())) or not file_path.is_file():
+            self.send_error(404)
+            return
+        data = file_path.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", MIME.get(file_path.suffix, "application/octet-stream"))
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_POST(self) -> None:  # noqa: N802
+        path = urlparse(self.path).path
+        length = int(self.headers.get("Content-Length", "0"))
+        raw = self.rfile.read(length) if length else b"{}"
+        try:
+            body = json.loads(raw.decode("utf-8") or "{}")
+        except json.JSONDecodeError:
+            return self._json(400, {"error": "Invalid JSON body"})
+        if path != "/api/scrape":
+            return self._json(404, {"error": "Not found"})
+        try:
+            result = scrape(
+                body.get("url", ""),
+                fetcher=body.get("fetcher") or "http",
+                css=body.get("css") or None,
+                xpath=body.get("xpath") or None,
+                timeout=int(body.get("timeout") or 30),
+            )
+            return self._json(200, result)
+        except ValueError as exc:
+            return self._json(400, {"error": str(exc)})
+        except Exception as exc:  # noqa: BLE001
+            return self._json(500, {"error": str(exc)})
+
+
+def main() -> None:
+    server = ThreadingHTTPServer((HOST, PORT), Handler)
+    print(f"Scrapling console on http://{HOST}:{PORT}", flush=True)
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()
