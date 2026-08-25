@@ -66,7 +66,7 @@ The crawler follows the sitemap, skips paths disallowed by `robots.txt` (`/direc
 
 ## Signal detection (`dgk-signal-source`)
 
-Scan a watchlist for hiring, expansion, leadership-hire, website-relaunch, and tech-stack-change signals. Output is the JSON feed at `feeds/dgk-signal-source.json`.
+Scan a watchlist for hiring, expansion, leadership-hire, website-relaunch, and tech-stack-change signals. Output is the JSON feed at `feeds/dgk-signal-source.json`. Default names: Rice Spice & Dice, Triple R Community Service, and DGK.
 
 ```bash
 python3 scripts/detect_signals.py \
