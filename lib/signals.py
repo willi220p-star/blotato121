@@ -51,6 +51,9 @@ ROLE_PATTERNS = [
     (r"support coordinat(?:or|ion)", "Support Coordinator"),
     (r"sales manager", "Sales Manager"),
     (r"head of (?:growth|marketing|sales)", "Head of Growth/Marketing/Sales"),
+    (r"picker[/\s-]?packer|pick(?:er)?\s*/\s*pack(?:er)?", "Picker/Packer"),
+    (r"delivery driver", "Delivery Driver"),
+    (r"shop assistant", "Shop Assistant"),
 ]
 
 EXPANSION_PATTERNS = [
@@ -62,8 +65,10 @@ EXPANSION_PATTERNS = [
     (r"\bgrowing (?:the |our )?team\b", 0.72),
     (r"\bheadcount\b", 0.7),
     (r"\bhiring across\b", 0.8),
-    (r"\bsecond (?:office|location|site)\b", 0.84),
+    (r"\bsecond (?:office|location|site|store)\b", 0.84),
     (r"\bnew location\b", 0.82),
+    (r"\b(?:two|2|\d+)\s+stores?\b", 0.8),
+    (r"\boperating with \d+\s+stores?\b", 0.82),
 ]
 
 AU_CITIES = (
@@ -82,6 +87,8 @@ AU_CITIES = (
     "Geelong",
     "Townsville",
     "Cairns",
+    "Kogarah",
+    "Auburn",
 )
 
 CITY_METRO = {
@@ -100,11 +107,14 @@ CITY_METRO = {
     "Geelong": "geelong",
     "Townsville": "townsville",
     "Cairns": "cairns",
+    "Kogarah": "kogarah",
+    "Auburn": "auburn",
 }
 
 OFFICE_NEAR_RE = re.compile(
     r"\b(?:office|offices|suite|level|street|st,|road|rd\b|avenue|ave\b|"
-    r"nsw|vic|qld|wa|sa\b|nt\b|act\b|address|headquarters|\bhq\b)\b",
+    r"nsw|vic|qld|wa|sa\b|nt\b|act\b|address|headquarters|\bhq\b|"
+    r"stores?)\b",
     re.I,
 )
 
@@ -336,9 +346,21 @@ def make_signal(
     return payload
 
 
+def evidence_source(kind: str, url: str, company: dict) -> str:
+    host = urlparse(url).netloc.lower().removeprefix("www.")
+    domain = (company.get("domain") or "").lower().removeprefix("www.")
+    if domain and host and host != domain and not host.endswith("." + domain):
+        return "directory_profile"
+    if kind == "careers":
+        return "careers_page"
+    if kind == "about":
+        return "about_page"
+    return "company_page"
+
+
 def detect_text_signals(company: dict, url: str, text: str, kind: str) -> list[dict]:
     signals: list[dict] = []
-    source = "careers_page" if kind == "careers" else "about_page" if kind == "about" else "company_page"
+    source = evidence_source(kind, url, company)
 
     hiring_hits = [(pat, conf) for pat, conf in HIRING_PATTERNS if re.search(pat, text, re.I)]
     if hiring_hits:
@@ -513,6 +535,30 @@ def _candidate_urls(company: dict, home_links: list[tuple[str, str]]) -> list[tu
     return ordered
 
 
+def _origin(url: str) -> str | None:
+    parsed = urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return None
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def fetch_robots_text(url: str, cache: dict, sources: list[dict]) -> str:
+    origin = _origin(url)
+    if not origin:
+        return ""
+    if origin in cache:
+        return cache[origin]
+    robots_url = urljoin(origin, "/robots.txt")
+    try:
+        page = fetch(robots_url)
+        cache[origin] = str(page.get_all_text(strip=True) or "")
+        sources.append(_source_row(robots_url, "ok", f"HTTP {getattr(page, 'status', '?')}", "robots"))
+    except Exception as exc:  # noqa: BLE001
+        cache[origin] = ""
+        sources.append(_source_row(robots_url, "error", str(exc), "robots"))
+    return cache[origin]
+
+
 def detect_company(company: dict, snapshots_dir: Path, seek_state: dict | None = None) -> dict:
     website = company.get("website") or ""
     parsed = urlparse(website)
@@ -522,19 +568,12 @@ def detect_company(company: dict, snapshots_dir: Path, seek_state: dict | None =
     linkedin_urls = extract_linkedin_urls(company.get("linkedin_company_url") or "")
     tech: list[str] = []
     home_links: list[tuple[str, str]] = []
-    robots_text = ""
+    robots_cache: dict[str, str] = {}
     seek_state = seek_state if seek_state is not None else {}
-
-    if origin:
-        try:
-            robots = fetch(urljoin(origin, "/robots.txt"))
-            robots_text = str(robots.get_all_text(strip=True) or "")
-            sources.append(_source_row(urljoin(origin, "/robots.txt"), "ok", f"HTTP {getattr(robots, 'status', '?')}", "robots"))
-        except Exception as exc:  # noqa: BLE001
-            sources.append(_source_row(urljoin(origin, "/robots.txt"), "error", str(exc), "robots"))
 
     homepage = company.get("website")
     if homepage:
+        robots_text = fetch_robots_text(homepage, robots_cache, sources)
         try:
             if not robots_allows(homepage, robots_text):
                 sources.append(_source_row(homepage, "skipped", "robots.txt disallow", "home"))
@@ -559,6 +598,7 @@ def detect_company(company: dict, snapshots_dir: Path, seek_state: dict | None =
             sources.append(_source_row(url, "skipped", "LinkedIn is not crawled (ToS / robots)", "linkedin"))
             linkedin_urls.extend(extract_linkedin_urls(url))
             continue
+        robots_text = fetch_robots_text(url, robots_cache, sources)
         if not robots_allows(url, robots_text):
             sources.append(_source_row(url, "skipped", "robots.txt disallow", kind))
             continue

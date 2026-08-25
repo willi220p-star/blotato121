@@ -10,6 +10,20 @@
   ],
   "companies": [
     {
+      "name": "Rice Spice & Dice",
+      "domain": "ricespicedice.com.au",
+      "website": "https://www.ricespicedice.com.au/",
+      "about_urls": [
+        "https://www.ricespicedice.com.au/policies/privacy-policy",
+        "https://au.zipleaf.com/Companies/Ricespicedice"
+      ],
+      "careers_urls": [
+        "https://www.ricespicedice.com.au/pages/careers"
+      ],
+      "linkedin_company_url": null,
+      "seek_keywords": ["Rice Spice Dice", "delivery driver", "picker packer"]
+    },
+    {
       "name": "Triple R Community Service",
       "domain": "triplerccs.com.au",
       "website": "https://www.triplerccs.com.au/",

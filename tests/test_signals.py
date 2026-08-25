@@ -68,6 +68,29 @@ class SignalHelpersTest(unittest.TestCase):
         )
         self.assertFalse([s for s in signals if s["type"] == "expansion"])
 
+    def test_rice_spice_dice_two_stores(self):
+        text = (
+            "Rice Spice Dice has commenced its business since 2012 and are currently "
+            "operating with 2 stores in Kogarah and Auburn with 10-15 employees. "
+            "21 Station Street, Kogarah, NSW 2217."
+        )
+        company = {"name": "Rice Spice & Dice", "domain": "ricespicedice.com.au"}
+        signals = detect_text_signals(
+            company,
+            "https://au.zipleaf.com/Companies/Ricespicedice",
+            text,
+            "about",
+        )
+        expansion = [s for s in signals if s["type"] == "expansion"]
+        self.assertTrue(expansion)
+        self.assertEqual(expansion[0]["evidence_source"], "directory_profile")
+        self.assertGreaterEqual(expansion[0]["confidence"], 0.8)
+        self.assertFalse([s for s in signals if s["type"] == "hiring"])
+
+    def test_grocery_roles(self):
+        self.assertIn("Delivery Driver", extract_roles("Hiring a delivery driver for Auburn"))
+        self.assertIn("Picker/Packer", extract_roles("Picker/Packer wanted"))
+
     def test_expansion_explicit_new_office(self):
         text = "We are expanding our footprint and opened a new office in Brisbane this quarter."
         signals = detect_text_signals(COMPANY, "https://example.com/about", text, "about")
