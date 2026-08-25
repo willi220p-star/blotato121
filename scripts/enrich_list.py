@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from lib.enrich import build_enrichment, clay_csv, enrichment_markdown, load_enrichment_config
+from lib.enrich import build_enrichment, clay_csv, enrichment_markdown, load_enrichment_config, write_physio_export
 
 
 def main() -> int:
@@ -31,6 +31,9 @@ def main() -> int:
         Path(args.md_out).write_text(enrichment_markdown(feed), encoding="utf-8")
     if args.csv_out:
         Path(args.csv_out).write_text(clay_csv(feed), encoding="utf-8")
+    physio_n = write_physio_export(feed, ROOT / "feeds")
+    if physio_n:
+        print(f"Wrote feeds/dgk-apa-physio-leads.json ({physio_n} physio leads)", flush=True)
     print(enrichment_markdown(feed))
     print(f"Wrote {out} ({feed['counts']['records']} records)", flush=True)
     return 0

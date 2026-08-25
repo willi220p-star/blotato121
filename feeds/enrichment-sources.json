@@ -39,6 +39,25 @@
       ],
       "city": "Darwin",
       "state": "NT"
+    },
+    {
+      "id": "apa-find-a-physio-nt",
+      "name": "APA Find a Physio NT",
+      "vertical": "physio",
+      "source_type": "association",
+      "parser": "apa_find_a_physio",
+      "list_url": "https://choose.physio/find-a-physio",
+      "follow_details": true,
+      "max_profiles": 200,
+      "city": "Darwin",
+      "state": "NT",
+      "hubs": [
+        {"name": "Darwin", "SuburbPost": "Darwin NT 0800", "lat": -12.4634, "lng": 130.8456, "distance": 80},
+        {"name": "Katherine", "SuburbPost": "Katherine NT 0850", "lat": -14.465, "lng": 132.263, "distance": 80},
+        {"name": "Alice Springs", "SuburbPost": "Alice Springs NT 0870", "lat": -23.698, "lng": 133.8807, "distance": 80},
+        {"name": "Tennant Creek", "SuburbPost": "Tennant Creek NT 0860", "lat": -19.649, "lng": 134.191, "distance": 80},
+        {"name": "Nhulunbuy", "SuburbPost": "Nhulunbuy NT 0880", "lat": -12.182, "lng": 136.782, "distance": 80}
+      ]
     }
   ]
 }

@@ -61,6 +61,8 @@ TRACKER_HOSTS = (
     "reddit.com",
     "youtube.com",
     "youtu.be",
+    "choose.physio",
+    "australian.physio",
 )
 SHARE_PATHS = ("/intent/", "/sharer", "/share-offsite", "/pin/create", "/share.php")
 VISIBLE_URL_RE = re.compile(r"https?://[^\s<>\"']+", re.I)
@@ -371,6 +373,7 @@ def _page_payload(page) -> tuple[str, str]:
 def enrich_source(source: dict, robots_cache: dict, sources_log: list[dict], max_profiles: int) -> list[dict]:
     parser = source.get("parser")
     records: list[dict] = []
+    cap = int(source.get("max_profiles") or max_profiles)
 
     def allowed(url: str) -> bool:
         if is_linkedin_url(url) or "/go/" in url:
@@ -386,7 +389,7 @@ def enrich_source(source: dict, robots_cache: dict, sources_log: list[dict], max
         page = fetch(list_url)
         html, _text = _page_payload(page)
         sources_log.append({"url": list_url, "status": "ok", "detail": f"HTTP {getattr(page, 'status', '?')}", "kind": "list"})
-        profile_urls = extract_carevo_profile_urls(html, list_url)[: max_profiles]
+        profile_urls = extract_carevo_profile_urls(html, list_url)[: cap]
         if not source.get("follow_profiles"):
             for url in profile_urls:
                 slug = urlparse(url).path.rstrip("/").split("/")[-1].replace("-", " ").title()
@@ -459,6 +462,94 @@ def enrich_source(source: dict, robots_cache: dict, sources_log: list[dict], max
                 sources_log.append({"url": pdf_url, "status": "error", "detail": str(exc), "kind": "pdf"})
         return records
 
+    if parser == "apa_find_a_physio":
+        from lib.apa_physio import (
+            APA_CONTENT_ORIGIN,
+            APA_DETAIL_PATH,
+            APA_FIND_URL,
+            APA_SEARCH_PATH,
+            DEFAULT_HUBS,
+            fetch_detail,
+            listing_to_record,
+            merge_listings,
+            search_hub,
+        )
+
+        list_url = source.get("list_url") or APA_FIND_URL
+        if not allowed(list_url):
+            sources_log.append({"url": list_url, "status": "skipped", "detail": "robots.txt disallow", "kind": "list"})
+            return []
+        search_url = APA_CONTENT_ORIGIN + APA_SEARCH_PATH
+        detail_url = APA_CONTENT_ORIGIN + APA_DETAIL_PATH
+        if not allowed(search_url):
+            sources_log.append({"url": search_url, "status": "skipped", "detail": "robots.txt disallow", "kind": "api"})
+            return []
+        hubs = source.get("hubs") or list(DEFAULT_HUBS)
+        collected: list[dict] = []
+        for hub in hubs:
+            try:
+                rows = search_hub(hub)
+                collected.extend(rows)
+                sources_log.append(
+                    {
+                        "url": search_url,
+                        "status": "ok",
+                        "detail": f"{hub.get('name')}: {len(rows)} listings",
+                        "kind": "api",
+                    }
+                )
+            except Exception as exc:  # noqa: BLE001
+                sources_log.append(
+                    {"url": search_url, "status": "error", "detail": f"{hub.get('name')}: {exc}", "kind": "api"}
+                )
+        merged = merge_listings(collected)[:cap]
+        follow = bool(source.get("follow_details", True))
+        if follow and not allowed(detail_url):
+            sources_log.append({"url": detail_url, "status": "skipped", "detail": "robots.txt disallow", "kind": "api"})
+            follow = False
+        details_ok = 0
+        for item in merged:
+            detail = None
+            if follow:
+                for pid in (item.get("_ids") or [item.get("PracticeID")])[:2]:
+                    if not pid:
+                        continue
+                    try:
+                        got = fetch_detail(pid)
+                        details_ok += 1
+                        if detail is None:
+                            detail = got
+                        else:
+                            if not (detail.get("Email") or "").strip() and (got.get("Email") or "").strip():
+                                detail["Email"] = got.get("Email")
+                            if not (detail.get("Website") or "").strip() and (got.get("Website") or "").strip():
+                                detail["Website"] = got.get("Website")
+                            users = list(detail.get("Users") or [])
+                            seen_names = {(u.get("UserName") or "").strip() for u in users}
+                            for user in got.get("Users") or []:
+                                name = (user.get("UserName") or "").strip()
+                                if name and name not in seen_names:
+                                    users.append(user)
+                                    seen_names.add(name)
+                            detail["Users"] = users
+                            services = dict(detail.get("Services") or {})
+                            for key, value in (got.get("Services") or {}).items():
+                                if not services.get(key) and value:
+                                    services[key] = value
+                            detail["Services"] = services
+                    except Exception as exc:  # noqa: BLE001
+                        sources_log.append({"url": detail_url, "status": "error", "detail": f"id {pid}: {exc}", "kind": "api"})
+            records.append(listing_to_record(item, source, detail))
+        sources_log.append(
+            {
+                "url": list_url,
+                "status": "ok",
+                "detail": f"{len(records)} unique NT practices; {details_ok} detail fetches",
+                "kind": "list",
+            }
+        )
+        return records
+
     raise ValueError(f"Unknown parser: {parser}")
 
 
@@ -476,6 +567,11 @@ def clay_rows(records: list[dict]) -> list[dict]:
                 "city": rec.get("city") or "",
                 "state": rec.get("state") or "",
                 "industry": rec.get("vertical") or "",
+                "contact_name": rec.get("contact_name") or "",
+                "people": rec.get("people") or "",
+                "address": rec.get("address") or "",
+                "ndis": rec.get("ndis") or "",
+                "telehealth": rec.get("telehealth") or "",
                 "linkedin_url": "",
                 "source": rec.get("source_name") or "",
                 "source_url": rec.get("source_url") or "",
@@ -508,13 +604,14 @@ def build_enrichment(config: dict) -> dict:
         "policy": {
             "linkedin": "Never crawled. Leave linkedin_url empty for Clay/Apollo/FullEnrich to fill.",
             "apis": "These sources have no public list API. Scrapling reads robots-allowed HTML/PDF pages.",
-            "skipped": "DGK /directory, Carevo /go/, ZipLeaf Search.html and listing contact forms.",
+            "skipped": "DGK /directory, Carevo /go/, ZipLeaf Search.html and listing contact forms. LinkedIn never crawled.",
         },
         "counts": {
             "records": len(unique),
             "ndis": sum(1 for r in unique if r.get("vertical") == "ndis"),
             "accounting": sum(1 for r in unique if r.get("vertical") == "accounting"),
             "legal": sum(1 for r in unique if r.get("vertical") == "legal"),
+            "physio": sum(1 for r in unique if r.get("vertical") == "physio"),
         },
         "sources": sources_log,
         "records": unique,
@@ -527,7 +624,7 @@ def enrichment_markdown(feed: dict) -> str:
         f"# {feed.get('feed')}",
         "",
         f"Generated {feed.get('generated_at')}. {feed['counts']['records']} records "
-        f"(NDIS {feed['counts']['ndis']} · accounting {feed['counts']['accounting']} · legal {feed['counts']['legal']}).",
+        f"(NDIS {feed['counts']['ndis']} · accounting {feed['counts']['accounting']} · legal {feed['counts']['legal']} · physio {feed['counts'].get('physio', 0)}).",
         "",
         "## Records",
     ]
@@ -535,7 +632,8 @@ def enrichment_markdown(feed: dict) -> str:
         lines.append("- none this run")
     for row in feed.get("records") or []:
         contact = row.get("phone") or row.get("email") or row.get("website") or "no contact"
-        lines.append(f"- **{row.get('vertical')}** {row.get('company_name')} — {contact} ({row.get('source_name')})")
+        who = f" · {row['contact_name']}" if row.get("contact_name") else ""
+        lines.append(f"- **{row.get('vertical')}** {row.get('company_name')}{who} — {contact} ({row.get('source_name')})")
     lines += ["", "## Sources"]
     for src in feed.get("sources") or []:
         lines.append(f"- `{src['status']}` {src['kind']}: {src['url']} — {src['detail']}")
@@ -544,7 +642,24 @@ def enrichment_markdown(feed: dict) -> str:
 
 def clay_csv(feed: dict) -> str:
     buf = io.StringIO()
-    fields = ["company_name", "website", "domain", "email", "phone", "city", "state", "industry", "linkedin_url", "source", "source_url"]
+    fields = [
+        "company_name",
+        "contact_name",
+        "people",
+        "website",
+        "domain",
+        "email",
+        "phone",
+        "address",
+        "city",
+        "state",
+        "industry",
+        "ndis",
+        "telehealth",
+        "linkedin_url",
+        "source",
+        "source_url",
+    ]
     writer = csv.DictWriter(buf, fieldnames=fields)
     writer.writeheader()
     for row in feed.get("clay") or []:
@@ -552,5 +667,18 @@ def clay_csv(feed: dict) -> str:
     return buf.getvalue()
 
 
-def load_enrichment_config(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
+def write_physio_export(feed: dict, feeds_dir: Path) -> int:
+    physio_records = [r for r in feed.get("records") or [] if r.get("vertical") == "physio"]
+    if not physio_records:
+        return 0
+    physio = {
+        **feed,
+        "feed": "dgk-apa-physio-leads",
+        "records": physio_records,
+        "clay": [r for r in feed.get("clay") or [] if r.get("industry") == "physio"],
+        "counts": {**feed.get("counts", {}), "records": len(physio_records)},
+    }
+    (feeds_dir / "dgk-apa-physio-leads.json").write_text(json.dumps(physio, indent=2, ensure_ascii=False), encoding="utf-8")
+    (feeds_dir / "dgk-apa-physio-leads.md").write_text(enrichment_markdown(physio), encoding="utf-8")
+    (feeds_dir / "dgk-apa-physio-leads.clay.csv").write_text(clay_csv(physio), encoding="utf-8")
+    return len(physio_records)

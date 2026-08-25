@@ -130,6 +130,30 @@ class EnrichHelpersTest(unittest.TestCase):
         )
         self.assertEqual(rows[0]["industry"], "legal")
         self.assertEqual(rows[0]["linkedin_url"], "")
+        self.assertEqual(rows[0]["contact_name"], "")
+
+    def test_apa_phone_website_and_merge(self):
+        from lib.apa_physio import clean_apa_phone, listing_to_record, merge_listings, normalize_apa_website, people_from_detail
+
+        self.assertEqual(clean_apa_phone("08100889410614"), "08 8941 0614")
+        self.assertEqual(clean_apa_phone("0889410614"), "08 8941 0614")
+        self.assertEqual(normalize_apa_website("www.physioevolutiondarwin.com"), "https://www.physioevolutiondarwin.com")
+        self.assertIsNone(normalize_apa_website("https://choose.physio/find-a-physio"))
+        merged = merge_listings(
+            [
+                {"PracticeID": 1, "PracticeName": "Physio Evolution Darwin", "Postcode": "0800", "Phone": "08100889410614", "Email": "", "Website": ""},
+                {"PracticeID": 2, "PracticeName": "Physio Evolution Darwin", "Postcode": "0800", "Phone": "0889410614", "Email": "dori@physioevolutiondarwin.com", "Website": "www.physioevolutiondarwin.com", "Address2": "55 Knuckey Street"},
+            ]
+        )
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0]["Email"], "dori@physioevolutiondarwin.com")
+        people = people_from_detail({"Users": [{"UserName": "Dorianne Sherry"}, {"UserName": "Dorianne Sherry"}]})
+        self.assertEqual(people, ["Dorianne Sherry"])
+        source = {"id": "apa", "vertical": "physio", "name": "APA Find a Physio NT", "source_type": "association", "city": "Darwin", "state": "NT"}
+        row = listing_to_record(merged[0], source, {"Users": [{"UserName": "Dorianne Sherry"}], "Email": "dori@physioevolutiondarwin.com", "Website": "www.physioevolutiondarwin.com", "Services": {"NDIS": "NDIS"}})
+        self.assertEqual(row["contact_name"], "Dorianne Sherry")
+        self.assertEqual(row["email"], "dori@physioevolutiondarwin.com")
+        self.assertEqual(row["ndis"], "yes")
 
     def test_carevo_go_disallow(self):
         robots = "User-agent: *\nAllow: /\nDisallow: /go/\n"

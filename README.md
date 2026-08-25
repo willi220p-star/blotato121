@@ -99,5 +99,6 @@ Default Darwin/NT sources:
 - **NDIS** — Carevo suburb listings (`/providers/ndis/nt/darwin-city`), profile pages followed, `/go/` redirects skipped
 - **Legal** — Law Society NT public firm-referral PDFs
 - **Accounting** — ZipLeaf company pages (search is robots-disallowed)
+- **Physio** — Australian Physiotherapy Association [Find a Physio](https://choose.physio/find-a-physio) (NT hubs: Darwin, Katherine, Alice Springs, Tennant Creek, Nhulunbuy). DGK `/directory` is not crawled (robots).
 
 Output includes `records` plus a `clay` array and `feeds/dgk-list-enrichment.clay.csv` ready to import. LinkedIn URLs are left blank for those tools to enrich. `GET /api/enrich` / `POST /api/enrich` expose the same feed on the console.

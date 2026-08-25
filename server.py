@@ -103,13 +103,14 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(400, {"error": "Invalid JSON body"})
         if path == "/api/enrich":
             try:
-                from lib.enrich import build_enrichment, clay_csv, enrichment_markdown, load_enrichment_config
+                from lib.enrich import build_enrichment, clay_csv, enrichment_markdown, load_enrichment_config, write_physio_export
 
                 config = load_enrichment_config(ENRICH_SOURCES)
                 feed = build_enrichment(config)
                 ENRICH_FEED.write_text(json.dumps(feed, indent=2, ensure_ascii=False), encoding="utf-8")
                 (FEEDS / "dgk-list-enrichment.md").write_text(enrichment_markdown(feed), encoding="utf-8")
                 (FEEDS / "dgk-list-enrichment.clay.csv").write_text(clay_csv(feed), encoding="utf-8")
+                write_physio_export(feed, FEEDS)
                 return self._json(200, feed)
             except Exception as exc:  # noqa: BLE001
                 return self._json(500, {"error": str(exc)})
