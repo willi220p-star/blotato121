@@ -1,6 +1,6 @@
 # dgk-list-enrichment
 
-Generated 2026-08-25T01:53:31.549858+00:00. 20 records (NDIS 8 · accounting 2 · legal 10).
+Generated 2026-08-25T02:05:54.184608+00:00. 20 records (NDIS 8 · accounting 2 · legal 10).
 
 ## Records
 - **accounting** HHAccountant — 0422315568 (ZipLeaf Darwin accountants)

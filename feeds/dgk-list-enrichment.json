@@ -1,7 +1,7 @@
 {
   "feed": "dgk-list-enrichment",
   "version": 1,
-  "generated_at": "2026-08-25T01:53:31.549858+00:00",
+  "generated_at": "2026-08-25T02:05:54.184608+00:00",
   "policy": {
     "linkedin": "Never crawled. Leave linkedin_url empty for Clay/Apollo/FullEnrich to fill.",
     "apis": "These sources have no public list API. Scrapling reads robots-allowed HTML/PDF pages.",
@@ -113,10 +113,10 @@
   ],
   "records": [
     {
-      "id": "02a61ed196722866",
+      "id": "12b21e2914923d3c",
       "company_name": "HHAccountant",
-      "domain": "cdn.jsdelivr.net",
-      "website": "https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css",
+      "domain": "hhaccountant.com.au",
+      "website": "https://hhaccountant.com.au/",
       "email": null,
       "phone": "0422315568",
       "address": "16, Charles Darwin Centre 19 Smith Street Mall, Darwin City NT 0800, Darwin, 0800 https://hhaccountant",
@@ -128,13 +128,13 @@
       "source_type": "local_listing",
       "source_url": "https://au.zipleaf.com/Companies/HHAccountant",
       "notes": null,
-      "enriched_at": "2026-08-25T01:53:31.466237+00:00"
+      "enriched_at": "2026-08-25T02:05:54.090804+00:00"
     },
     {
-      "id": "0d661facc758e3bd",
+      "id": "2cb09c784934af76",
       "company_name": "Oracle Insolvency",
-      "domain": "cdn.jsdelivr.net",
-      "website": "https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css",
+      "domain": "oracleis.com.au",
+      "website": "http://oracleis.com.au/darwin/",
       "email": null,
       "phone": "1300 391 330",
       "address": "1/48-50 Smith St, Darwin, 0800 http://oracleis",
@@ -146,7 +146,7 @@
       "source_type": "local_listing",
       "source_url": "https://au.zipleaf.com/Companies/Oracle-Insolvency_28639",
       "notes": null,
-      "enriched_at": "2026-08-25T01:53:31.549723+00:00"
+      "enriched_at": "2026-08-25T02:05:54.184471+00:00"
     },
     {
       "id": "1be08a66dff953d2",
@@ -164,7 +164,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305804+00:00"
+      "enriched_at": "2026-08-25T02:05:53.934908+00:00"
     },
     {
       "id": "fd6bc4db878c48fd",
@@ -182,7 +182,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305850+00:00"
+      "enriched_at": "2026-08-25T02:05:53.934954+00:00"
     },
     {
       "id": "5cef592f9f9d6dec",
@@ -200,7 +200,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305907+00:00"
+      "enriched_at": "2026-08-25T02:05:53.935014+00:00"
     },
     {
       "id": "0baf41c0d0294c81",
@@ -218,7 +218,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.306049+00:00"
+      "enriched_at": "2026-08-25T02:05:53.935159+00:00"
     },
     {
       "id": "d2a7469e8bddde91",
@@ -236,7 +236,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.306006+00:00"
+      "enriched_at": "2026-08-25T02:05:53.935115+00:00"
     },
     {
       "id": "0d8f345bc908da44",
@@ -254,7 +254,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305875+00:00"
+      "enriched_at": "2026-08-25T02:05:53.934979+00:00"
     },
     {
       "id": "06ac8f3bee633083",
@@ -272,7 +272,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305928+00:00"
+      "enriched_at": "2026-08-25T02:05:53.935036+00:00"
     },
     {
       "id": "46b7055495d3735c",
@@ -290,7 +290,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305946+00:00"
+      "enriched_at": "2026-08-25T02:05:53.935054+00:00"
     },
     {
       "id": "8f595d8046a42be9",
@@ -308,7 +308,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305978+00:00"
+      "enriched_at": "2026-08-25T02:05:53.935086+00:00"
     },
     {
       "id": "24a63dcdc719d629",
@@ -326,7 +326,7 @@
       "source_type": "association",
       "source_url": "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf",
       "notes": "Law Society NT public firm referral list (PDF).",
-      "enriched_at": "2026-08-25T01:53:31.305960+00:00"
+      "enriched_at": "2026-08-25T02:05:53.935068+00:00"
     },
     {
       "id": "0bcdde3a2bff3553",
@@ -344,7 +344,7 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/better-care-provider",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:25.491673+00:00"
+      "enriched_at": "2026-08-25T02:05:46.621998+00:00"
     },
     {
       "id": "f5c0067e6c56ffb7",
@@ -362,7 +362,7 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/brave-connections",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:25.806974+00:00"
+      "enriched_at": "2026-08-25T02:05:46.946863+00:00"
     },
     {
       "id": "5451cb1509e23806",
@@ -380,7 +380,7 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/bright-care-disabilities-pty-ltd",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:26.127936+00:00"
+      "enriched_at": "2026-08-25T02:05:47.263761+00:00"
     },
     {
       "id": "0a7b9d5853e68860",
@@ -398,7 +398,7 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/darwin-head-office",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:26.425181+00:00"
+      "enriched_at": "2026-08-25T02:05:47.576872+00:00"
     },
     {
       "id": "ac3360dd76d85468",
@@ -416,7 +416,7 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/heart-to-hold-foundation-nt",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:26.733069+00:00"
+      "enriched_at": "2026-08-25T02:05:47.900550+00:00"
     },
     {
       "id": "22bb337e7936a798",
@@ -434,7 +434,7 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/help-for-all-pty-ltd",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:27.047505+00:00"
+      "enriched_at": "2026-08-25T02:05:48.217207+00:00"
     },
     {
       "id": "ada8011c06cbeb7b",
@@ -452,7 +452,7 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/hercules-complete-lifting-solutions",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:27.360222+00:00"
+      "enriched_at": "2026-08-25T02:05:48.559125+00:00"
     },
     {
       "id": "bb3fb50fd80f2823",
@@ -470,14 +470,14 @@
       "source_type": "directory",
       "source_url": "https://carevo.com.au/providers/ndis/nt/darwin-city/horizon-community-services-2",
       "notes": "NDIS provider listing (Carevo). Outbound /go/ website redirects not followed.",
-      "enriched_at": "2026-08-25T01:53:27.684908+00:00"
+      "enriched_at": "2026-08-25T02:05:48.869596+00:00"
     }
   ],
   "clay": [
     {
       "company_name": "HHAccountant",
-      "website": "https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css",
-      "domain": "cdn.jsdelivr.net",
+      "website": "https://hhaccountant.com.au/",
+      "domain": "hhaccountant.com.au",
       "email": "",
       "phone": "0422315568",
       "city": "Darwin",
@@ -489,8 +489,8 @@
     },
     {
       "company_name": "Oracle Insolvency",
-      "website": "https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css",
-      "domain": "cdn.jsdelivr.net",
+      "website": "http://oracleis.com.au/darwin/",
+      "domain": "oracleis.com.au",
       "email": "",
       "phone": "1300 391 330",
       "city": "Darwin",
