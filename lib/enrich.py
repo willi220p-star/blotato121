@@ -22,14 +22,34 @@ PHONE_RE = re.compile(
     r"(?:\+?61[\s-]?)?(?:0?4\d{2}[\s-]?\d{3}[\s-]?\d{3})"
     r"|(?:\+?61[\s-]?)?(?:0?[2-8][\s-]?\d{4}[\s-]?\d{4})"
     r"|(?:\(\d{2}\)[\s-]?\d{4}[\s-]?\d{4})"
-    r"|(?:\b8\d{3}[\s-]?\d{4}\b)"
-    r"|(?:\b13\d{2}[\s-]?\d{3}\b)"
+    r"|(?:[7-8]\d{3}[\s-]?\d{4})"
+    r"|(?:13\d{2}[\s-]?\d{3}[\s-]?\d{3})"
     r")(?!\d)"
 )
 ABN_RE = re.compile(r"\bABN[:\s]*([0-9]{2}\s?[0-9]{3}\s?[0-9]{3}\s?[0-9]{3})\b", re.I)
 CAREVO_PROFILE_RE = re.compile(
     r"(https://carevo\.com\.au)?/providers/ndis/(?P<state>[a-z]{2,3})/(?P<suburb>[a-z0-9-]+)/(?P<slug>[a-z0-9-]+)",
     re.I,
+)
+TRACKER_HOSTS = (
+    "carevo.com.au",
+    "ndiscommission.gov.au",
+    "myagedcare.gov.au",
+    "facebook.com",
+    "instagram.com",
+    "tiktok.com",
+    "googletagmanager.com",
+    "google-analytics.com",
+    "gstatic.com",
+    "googleapis.com",
+    "w3.org",
+    "schema.org",
+    "clarity.ms",
+    "hotjar.com",
+    "doubleclick.net",
+    "segment.com",
+    "cloudflare.com",
+    "cloudflareinsights.com",
 )
 SKIP_SLUGS = {
     "cairns",
@@ -51,6 +71,9 @@ SKIP_NAME_FRAGMENTS = (
     "login",
     "add your business",
     "update this listing",
+    "news search",
+    "australia business",
+    "contact us",
 )
 LSNT_HEADER_RE = re.compile(
     r"^(firm name|address|contact|tel|fax|firm referral list|firm count|region)\b",
@@ -58,7 +81,7 @@ LSNT_HEADER_RE = re.compile(
 )
 ADDRESS_LINE_RE = re.compile(
     r"\b(street|st\b|road|rd\b|avenue|terrace|place|mall|level|suite|plaza|centre|center|"
-    r"gpo box|po box|darwin|parap|casuarina|nakara|cullen bay)\b",
+    r"gpo box|po box|darwin|parap|casuarina|nakara|cullen bay|adelaide)\b",
     re.I,
 )
 
@@ -185,15 +208,8 @@ def parse_carevo_profile(html: str, text: str, url: str, source: dict) -> dict |
         title = slug
     phone = first_phone(text)
     email = first_email(text)
+    # Carevo hides provider websites behind /go/ redirects (robots Disallow).
     website = None
-    for href in re.findall(r'href="(https?://[^"]+)"', html or "", flags=re.I):
-        host = urlparse(href).netloc.lower()
-        if any(skip in host for skip in ("carevo.com.au", "ndiscommission.gov.au", "myagedcare.gov.au", "facebook.com", "instagram.com", "tiktok.com")):
-            continue
-        if is_linkedin_url(href) or "/go/" in href:
-            continue
-        website = href
-        break
     return make_record(
         company_name=title or "Unknown provider",
         source=source,
@@ -207,20 +223,30 @@ def parse_carevo_profile(html: str, text: str, url: str, source: dict) -> dict |
 
 def parse_zipleaf_profile(html: str, text: str, url: str, source: dict) -> dict | None:
     title = None
-    h1 = re.search(r"<h1[^>]*>(.*?)</h1>", html or "", flags=re.I | re.S)
-    if h1:
-        title = re.sub(r"<[^>]+>", " ", h1.group(1))
-        title = re.sub(r"\s+", " ", title).replace("Update This Listing", "").strip()
+    for tag in ("h1", "h2", "h3"):
+        for raw in re.findall(rf"<{tag}[^>]*>(.*?)</{tag}>", html or "", flags=re.I | re.S):
+            candidate = re.sub(r"<[^>]+>", " ", raw)
+            candidate = re.sub(r"Update This Listing", "", candidate, flags=re.I)
+            candidate = re.sub(r"\s+", " ", candidate).strip()
+            if looks_like_name(candidate):
+                title = candidate
+                break
+        if title:
+            break
     compact = re.sub(r"\s+", " ", text or "")
     if not looks_like_name(title or ""):
-        m = re.search(r"About ([A-Z][^.]{2,80})", compact)
-        title = m.group(1).strip() if m else urlparse(url).path.rstrip("/").split("/")[-1]
+        about = re.search(r"About ([A-Z][A-Za-z0-9 &'-]{2,60})", compact)
+        title = about.group(1).strip() if about else None
+    if not looks_like_name(title or ""):
+        slug = urlparse(url).path.rstrip("/").split("/")[-1]
+        slug = re.sub(r"_\d+$", "", slug).replace("-", " ")
+        title = slug
     phone = first_phone(compact)
     email = first_email(compact)
     website = None
     for href in re.findall(r'href="(https?://[^"]+)"', html or "", flags=re.I):
         host = urlparse(href).netloc.lower()
-        if "zipleaf." in host or "facebook.com" in host or "instagram.com" in host:
+        if "zipleaf." in host or any(skip in host for skip in TRACKER_HOSTS):
             continue
         if is_linkedin_url(href):
             continue
@@ -228,7 +254,7 @@ def parse_zipleaf_profile(html: str, text: str, url: str, source: dict) -> dict 
         break
     if not website:
         web = re.search(r"https?://(?:www\.)?(?!zipleaf)[a-z0-9.-]+\.[a-z]{2,}(?:/[^\s]*)?", compact, re.I)
-        if web and "zipleaf" not in web.group(0).lower():
+        if web and "zipleaf" not in web.group(0).lower() and "google" not in web.group(0).lower():
             website = web.group(0).rstrip(".,)")
     address = None
     addr = re.search(r"(\d+[^.]{8,80}(?:Darwin|Kogarah|Sydney|NT|NSW|VIC|QLD|WA|SA)[^.]{0,40})", compact)

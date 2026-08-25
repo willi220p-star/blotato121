@@ -87,6 +87,12 @@ class EnrichHelpersTest(unittest.TestCase):
         self.assertTrue(row["phone"])
         self.assertEqual(row["email"], "hello@hhaccountant.com.au")
 
+    def test_1300_and_glued_landline(self):
+        from lib.enrich import first_phone
+
+        self.assertEqual(first_phone("Call 1300 391 330 today"), "1300 391 330")
+        self.assertEqual(first_phone("McCormack Legal 7913 7114GPO Box 2874"), "7913 7114")
+
     def test_clay_shape(self):
         rows = clay_rows(
             [
