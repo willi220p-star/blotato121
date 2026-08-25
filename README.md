@@ -83,3 +83,21 @@ Sources:
 Tech-stack changes compare the current homepage stack against `research/signal-snapshots/<domain>.json`. The first run creates the baseline; later runs emit `tech_stack_change` when tools appear or disappear.
 
 `GET /api/signals` serves the latest feed. `POST /api/signals` runs a scan.
+
+## List-building enrichment (`dgk-list-enrichment`)
+
+Fill gaps Clay, Apollo, and FullEnrich leave on sites without a list API: niche directories, association member PDFs, and local listings.
+
+```bash
+python3 scripts/enrich_list.py \
+  --sources feeds/enrichment-sources.json \
+  --out feeds/dgk-list-enrichment.json
+```
+
+Default Darwin/NT sources:
+
+- **NDIS** — Carevo suburb listings (`/providers/ndis/nt/darwin-city`), profile pages followed, `/go/` redirects skipped
+- **Legal** — Law Society NT public firm-referral PDFs
+- **Accounting** — ZipLeaf company pages (search is robots-disallowed)
+
+Output includes `records` plus a `clay` array and `feeds/dgk-list-enrichment.clay.csv` ready to import. LinkedIn URLs are left blank for those tools to enrich. `GET /api/enrich` / `POST /api/enrich` expose the same feed on the console.

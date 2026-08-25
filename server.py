@@ -17,6 +17,8 @@ FEEDS = ROOT / "feeds"
 HOST = os.environ.get("HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT", "4173"))
 SIGNAL_FEED = FEEDS / "dgk-signal-source.json"
+ENRICH_FEED = FEEDS / "dgk-list-enrichment.json"
+ENRICH_SOURCES = FEEDS / "enrichment-sources.json"
 WATCHLIST = FEEDS / "watchlist.json"
 SNAPSHOTS = ROOT / "research" / "signal-snapshots"
 
@@ -27,6 +29,7 @@ MIME = {
     ".svg": "image/svg+xml",
     ".json": "application/json; charset=utf-8",
     ".md": "text/markdown; charset=utf-8",
+    ".csv": "text/csv; charset=utf-8",
 }
 
 
@@ -66,12 +69,17 @@ class Handler(BaseHTTPRequestHandler):
                     "clone": str(ROOT / "cloned" / "scrapling"),
                     "fetchers": list(ALLOWED_FETCHERS),
                     "signal_feed": str(SIGNAL_FEED),
+                    "enrich_feed": str(ENRICH_FEED),
                 },
             )
         if path == "/api/signals":
             if not SIGNAL_FEED.is_file():
                 return self._json(404, {"error": "Feed not generated yet. POST /api/signals or run scripts/detect_signals.py"})
             return self._json(200, json.loads(SIGNAL_FEED.read_text(encoding="utf-8")))
+        if path == "/api/enrich":
+            if not ENRICH_FEED.is_file():
+                return self._json(404, {"error": "Enrichment feed not generated yet. POST /api/enrich or run scripts/enrich_list.py"})
+            return self._json(200, json.loads(ENRICH_FEED.read_text(encoding="utf-8")))
         if path.startswith("/feeds/"):
             file_path = (FEEDS / path[len("/feeds/") :]).resolve()
             if not str(file_path).startswith(str(FEEDS.resolve())) or not file_path.is_file():
@@ -93,6 +101,18 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(raw.decode("utf-8") or "{}")
         except json.JSONDecodeError:
             return self._json(400, {"error": "Invalid JSON body"})
+        if path == "/api/enrich":
+            try:
+                from lib.enrich import build_enrichment, clay_csv, enrichment_markdown, load_enrichment_config
+
+                config = load_enrichment_config(ENRICH_SOURCES)
+                feed = build_enrichment(config)
+                ENRICH_FEED.write_text(json.dumps(feed, indent=2, ensure_ascii=False), encoding="utf-8")
+                (FEEDS / "dgk-list-enrichment.md").write_text(enrichment_markdown(feed), encoding="utf-8")
+                (FEEDS / "dgk-list-enrichment.clay.csv").write_text(clay_csv(feed), encoding="utf-8")
+                return self._json(200, feed)
+            except Exception as exc:  # noqa: BLE001
+                return self._json(500, {"error": str(exc)})
         if path == "/api/signals":
             try:
                 from lib.signals import build_feed, feed_markdown, load_watchlist

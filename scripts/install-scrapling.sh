@@ -12,6 +12,7 @@ if [[ ! -d "${DEST}/.git" ]]; then
 fi
 
 python3 -m pip install --user -e "${DEST}[fetchers]"
+python3 -m pip install --user pypdf
 scrapling install
 python3 - <<'PY'
 import scrapling

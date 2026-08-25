@@ -89,3 +89,57 @@ if (loadSignals && runSignals) {
     }
   });
 }
+
+const enrichOut = document.getElementById("enrich-out");
+const loadEnrich = document.getElementById("load-enrich");
+const runEnrich = document.getElementById("run-enrich");
+
+async function readEnrich(res) {
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || res.statusText);
+  }
+  enrichOut.textContent = JSON.stringify(
+    {
+      feed: data.feed,
+      generated_at: data.generated_at,
+      counts: data.counts,
+      clay: data.clay,
+      sources: data.sources,
+    },
+    null,
+    2
+  );
+}
+
+if (loadEnrich && runEnrich) {
+  loadEnrich.addEventListener("click", async () => {
+    loadEnrich.disabled = true;
+    enrichOut.textContent = "Loading list…";
+    try {
+      await readEnrich(await fetch("/api/enrich"));
+    } catch (error) {
+      enrichOut.textContent = error.message;
+    } finally {
+      loadEnrich.disabled = false;
+    }
+  });
+
+  runEnrich.addEventListener("click", async () => {
+    runEnrich.disabled = true;
+    enrichOut.textContent = "Scraping directories and association lists…";
+    try {
+      await readEnrich(
+        await fetch("/api/enrich", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: "{}",
+        })
+      );
+    } catch (error) {
+      enrichOut.textContent = error.message;
+    } finally {
+      runEnrich.disabled = false;
+    }
+  });
+}

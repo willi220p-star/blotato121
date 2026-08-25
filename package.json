@@ -7,7 +7,7 @@
   "scripts": {
     "start": "python3 server.py",
     "scrape": "python3 scripts/scrape.py",
-    "test": "node --test test/*.test.js && PYTHONPATH=. python3 -m unittest tests.test_scrape tests.test_company_research tests.test_signals"
+    "test": "node --test test/*.test.js && PYTHONPATH=. python3 -m unittest tests.test_scrape tests.test_company_research tests.test_signals tests.test_enrich"
   },
   "engines": {
     "node": ">=20"

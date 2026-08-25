@@ -1,0 +1,44 @@
+{
+  "feed": "dgk-list-enrichment",
+  "notes": "Supplement Clay/Apollo/FullEnrich with public pages that have no clean API. LinkedIn is never crawled. DGK /directory is skipped (robots). Carevo /go/ outbound redirects are skipped. ZipLeaf Search.html and /Companies/*/contact are skipped.",
+  "max_profiles_per_source": 8,
+  "sources": [
+    {
+      "id": "carevo-darwin-ndis",
+      "name": "Carevo NDIS Darwin City",
+      "vertical": "ndis",
+      "source_type": "directory",
+      "list_url": "https://carevo.com.au/providers/ndis/nt/darwin-city",
+      "parser": "carevo_list",
+      "follow_profiles": true,
+      "city": "Darwin",
+      "state": "NT"
+    },
+    {
+      "id": "lsnt-darwin-commercial",
+      "name": "Law Society NT Darwin business/commercial firms",
+      "vertical": "legal",
+      "source_type": "association",
+      "list_url": "https://lawsocietynt.asn.au/index.php/nt-law-firms-by-area-of-law/",
+      "parser": "lsnt_pdf",
+      "pdf_urls": [
+        "https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf"
+      ],
+      "city": "Darwin",
+      "state": "NT"
+    },
+    {
+      "id": "zipleaf-darwin-accountants",
+      "name": "ZipLeaf Darwin accountants",
+      "vertical": "accounting",
+      "source_type": "local_listing",
+      "parser": "zipleaf_profile",
+      "profile_urls": [
+        "https://au.zipleaf.com/Companies/HHAccountant",
+        "https://au.zipleaf.com/Companies/Oracle-Insolvency_28639"
+      ],
+      "city": "Darwin",
+      "state": "NT"
+    }
+  ]
+}
