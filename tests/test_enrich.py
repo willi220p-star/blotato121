@@ -154,6 +154,10 @@ class EnrichHelpersTest(unittest.TestCase):
         self.assertEqual(row["contact_name"], "Dorianne Sherry")
         self.assertEqual(row["email"], "dori@physioevolutiondarwin.com")
         self.assertEqual(row["ndis"], "yes")
+        skipped = merge_listings(
+            [{"PracticeID": 9, "PracticeName": "Currently seeking employer. Listed information is home address only.", "Postcode": "0820"}]
+        )
+        self.assertEqual(skipped, [])
 
     def test_carevo_go_disallow(self):
         robots = "User-agent: *\nAllow: /\nDisallow: /go/\n"

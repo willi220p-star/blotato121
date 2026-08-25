@@ -27,6 +27,7 @@ DEFAULT_HUBS = (
     {"name": "Nhulunbuy", "SuburbPost": "Nhulunbuy NT 0880", "lat": -12.1820, "lng": 136.7820, "distance": 80},
 )
 
+SKIP_PRACTICE_FRAGMENTS = ("seeking employer", "home address only")
 PHONE_WINDOW_RE = re.compile(r"(04\d{8}|0[2378]\d{8})")
 
 
@@ -84,6 +85,9 @@ def merge_listings(items: list[dict]) -> list[dict]:
     groups: dict[tuple[str, str], list[dict]] = {}
     for item in items:
         if not item.get("PracticeName"):
+            continue
+        name_low = item["PracticeName"].lower()
+        if any(frag in name_low for frag in SKIP_PRACTICE_FRAGMENTS):
             continue
         groups.setdefault(practice_key(item), []).append(item)
     merged = []

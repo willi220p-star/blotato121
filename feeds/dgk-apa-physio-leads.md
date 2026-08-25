@@ -1,28 +1,8 @@
-# dgk-list-enrichment
+# dgk-apa-physio-leads
 
-Generated 2026-08-25T02:19:41.719724+00:00. 77 records (NDIS 8 · accounting 2 · legal 10 · physio 57).
+Generated 2026-08-25T02:19:41.719724+00:00. 57 records (NDIS 8 · accounting 2 · legal 10 · physio 57).
 
 ## Records
-- **accounting** HHAccountant — 0422315568 (ZipLeaf Darwin accountants)
-- **accounting** Oracle Insolvency — 1300 391 330 (ZipLeaf Darwin accountants)
-- **legal** Bowden McCormack Lawyers — 8941 6355 (Law Society NT Darwin business/commercial firms)
-- **legal** Bradley Solicitors Pty Ltd — 8941 1677 (Law Society NT Darwin business/commercial firms)
-- **legal** Cozens Johansen Lawyers Pty Ltd — 8911 1280 (Law Society NT Darwin business/commercial firms)
-- **legal** De Silva Hebron Barristers & Solicitors — 8924 4944 (Law Society NT Darwin business/commercial firms)
-- **legal** Halfpennys Lawyers — 8942 8888 (Law Society NT Darwin business/commercial firms)
-- **legal** HWL Ebsworth | Darwin — 8943 0400 (Law Society NT Darwin business/commercial firms)
-- **legal** KJ Lawyers — 8963 5645 (Law Society NT Darwin business/commercial firms)
-- **legal** McCormack Legal — 7913 7114 (Law Society NT Darwin business/commercial firms)
-- **legal** Top End Law — 0497 894 967 (Law Society NT Darwin business/commercial firms)
-- **legal** WBH Legal — 8410 4420 (Law Society NT Darwin business/commercial firms)
-- **ndis** Better Care Provider — 0499 092 309 (Carevo NDIS Darwin City)
-- **ndis** Brave Connections — no contact (Carevo NDIS Darwin City)
-- **ndis** Bright Care Disabilities — no contact (Carevo NDIS Darwin City)
-- **ndis** Ermha Ltd — no contact (Carevo NDIS Darwin City)
-- **ndis** Heart to Hold Foundation - NT — 0879181120 (Carevo NDIS Darwin City)
-- **ndis** Help For All — no contact (Carevo NDIS Darwin City)
-- **ndis** Hercules Lifting Solutions — no contact (Carevo NDIS Darwin City)
-- **ndis** Horizon Community Services — 0432 070 448 (Carevo NDIS Darwin City)
 - **physio** Advance Physio Health · Philip William Eyog — 0455 094 316 (APA Find a Physio NT)
 - **physio** Alice Springs Hospital · Anna Lennie — 0457 198 011 (APA Find a Physio NT)
 - **physio** ALICE SPRINGS HOSPITSL · Muhammad Rizwan — 0459 678 975 (APA Find a Physio NT)
