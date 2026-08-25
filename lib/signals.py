@@ -56,7 +56,8 @@ ROLE_PATTERNS = [
 EXPANSION_PATTERNS = [
     (r"\bnew office\b", 0.88),
     (r"\bnow open(?:ing)? in\b", 0.86),
-    (r"\bexpanding (?:to|into|our)\b", 0.9),
+    (r"\bexpanding (?:to|into)\b", 0.9),
+    (r"\bexpanding our (?:office|team|footprint|presence|locations?|headcount)\b", 0.86),
     (r"\bopened (?:a )?(?:new )?(?:office|location|branch)\b", 0.88),
     (r"\bgrowing (?:the |our )?team\b", 0.72),
     (r"\bheadcount\b", 0.7),
@@ -81,6 +82,30 @@ AU_CITIES = (
     "Geelong",
     "Townsville",
     "Cairns",
+)
+
+CITY_METRO = {
+    "Sydney": "sydney",
+    "Melbourne": "melbourne",
+    "Brisbane": "brisbane",
+    "Perth": "perth",
+    "Adelaide": "adelaide",
+    "Hobart": "hobart",
+    "Canberra": "canberra",
+    "Darwin": "darwin",
+    "Palmerston": "darwin",
+    "Gold Coast": "gold-coast",
+    "Newcastle": "newcastle",
+    "Wollongong": "wollongong",
+    "Geelong": "geelong",
+    "Townsville": "townsville",
+    "Cairns": "cairns",
+}
+
+OFFICE_NEAR_RE = re.compile(
+    r"\b(?:office|offices|suite|level|street|st,|road|rd\b|avenue|ave\b|"
+    r"nsw|vic|qld|wa|sa\b|nt\b|act\b|address|headquarters|\bhq\b)\b",
+    re.I,
 )
 
 LEADERSHIP_PATTERNS = [
@@ -136,6 +161,29 @@ def page_kind(url: str, link_text: str = "") -> str:
     if any(h in hay for h in ABOUT_HINTS):
         return "about"
     return "other"
+
+
+def office_cities(text: str) -> list[str]:
+    """Cities that appear next to an office/address cue, not casual mentions."""
+    compact = re.sub(r"\s+", " ", text or "")
+    found: list[str] = []
+    for city in AU_CITIES:
+        for window in re.finditer(rf".{{0,90}}\b{re.escape(city)}\b.{{0,90}}", compact, re.I):
+            if OFFICE_NEAR_RE.search(window.group(0)):
+                found.append(city)
+                break
+    return found
+
+
+def distinct_metros(cities: list[str]) -> list[str]:
+    metros: list[str] = []
+    seen: set[str] = set()
+    for city in cities:
+        metro = CITY_METRO.get(city, city.lower())
+        if metro not in seen:
+            seen.add(metro)
+            metros.append(city)
+    return metros
 
 
 def extract_roles(text: str) -> list[str]:
@@ -340,9 +388,8 @@ def detect_text_signals(company: dict, url: str, text: str, kind: str) -> list[d
             )
             break
 
-    cities = [city for city in AU_CITIES if re.search(rf"\b{re.escape(city)}\b", text, re.I)]
-    officey = bool(re.search(r"\b(office|offices|nsw|vic|qld|wa|sa|nt|act|address)\b", text, re.I))
-    if len(cities) >= 2 and officey and not any(s["type"] == "expansion" and s["evidence_url"] == url for s in signals):
+    cities = distinct_metros(office_cities(text))
+    if len(cities) >= 2 and not any(s["type"] == "expansion" and s["evidence_url"] == url for s in signals):
         signals.append(
             make_signal(
                 "expansion",
@@ -350,7 +397,7 @@ def detect_text_signals(company: dict, url: str, text: str, kind: str) -> list[d
                 evidence_url=url,
                 evidence_source=source,
                 snippet=f"Offices or locations listed in {', '.join(cities)}.",
-                confidence=0.52,
+                confidence=0.58,
                 extra={"locations": cities},
             )
         )
@@ -608,7 +655,7 @@ def detect_company(company: dict, snapshots_dir: Path, seek_state: dict | None =
             seen_li.add(key)
             unique_li.append(url.rstrip("/"))
 
-    # Dedupe signals by type+url+role
+    # Dedupe signals by type+url+role, and collapse repeated expansion footprints.
     unique_signals: list[dict] = []
     seen_sig: set[tuple] = set()
     for row in signals:
@@ -617,6 +664,20 @@ def detect_company(company: dict, snapshots_dir: Path, seek_state: dict | None =
             continue
         seen_sig.add(key)
         unique_signals.append(row)
+
+    expansions = [s for s in unique_signals if s["type"] == "expansion"]
+    rest = [s for s in unique_signals if s["type"] != "expansion"]
+    source_rank = {"careers_page": 0, "about_page": 1, "company_page": 2}
+    expansions.sort(key=lambda s: (source_rank.get(s.get("evidence_source"), 9), -s.get("confidence", 0)))
+    seen_footprint: set[tuple] = set()
+    collapsed: list[dict] = []
+    for row in expansions:
+        footprint = (row.get("company_domain"), tuple(row.get("locations") or [row.get("snippet")]))
+        if footprint in seen_footprint:
+            continue
+        seen_footprint.add(footprint)
+        collapsed.append(row)
+    unique_signals = rest + collapsed
 
     return {
         "company": company.get("name"),

@@ -40,8 +40,13 @@ class SignalHelpersTest(unittest.TestCase):
         self.assertEqual(hiring[0]["role"], "Support Worker")
         self.assertGreaterEqual(hiring[0]["confidence"], 0.7)
 
+    def test_expansion_ignores_expanding_our_work(self):
+        text = "We are committed to continuous self-improvement, constantly refining and expanding our work to ensure quality."
+        signals = detect_text_signals(COMPANY, "https://www.triplerccs.com.au/about-us/", text, "about")
+        self.assertFalse([s for s in signals if s["type"] == "expansion"])
+
     def test_expansion_from_multi_office_copy(self):
-        text = "Sydney: World Tower, NSW 2000. Melbourne: Glenroy VIC 3046. Visit our office in either city."
+        text = "Sydney: World Tower, Level 16, NSW 2000. Melbourne: 67 Plumpton Avenue, Glenroy VIC 3046."
         signals = detect_text_signals(
             COMPANY,
             "https://www.triplerccs.com.au/career/",
@@ -52,6 +57,16 @@ class SignalHelpersTest(unittest.TestCase):
         self.assertTrue(expansion)
         self.assertIn("Sydney", expansion[0]["locations"])
         self.assertIn("Melbourne", expansion[0]["locations"])
+
+    def test_city_mentions_without_addresses_are_not_expansion(self):
+        text = "Trusted by more than 20+ businesses. National reach from Darwin. Clients in Sydney and Melbourne."
+        signals = detect_text_signals(
+            {"name": "DGK Business Consultancy", "domain": "dgkbusinessconsultancy.com"},
+            "https://dgkbusinessconsultancy.com/",
+            text,
+            "home",
+        )
+        self.assertFalse([s for s in signals if s["type"] == "expansion"])
 
     def test_expansion_explicit_new_office(self):
         text = "We are expanding our footprint and opened a new office in Brisbane this quarter."
