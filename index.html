@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pre-sales call page</title>
+    <meta name="description" content="A one-page brief for our upcoming call." />
+    <link rel="icon" href="assets/your-logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero" aria-labelledby="hero-line">
+        <p class="eyebrow" id="eyebrow"></p>
+        <div class="logos" aria-hidden="false">
+          <img id="your-logo" alt="" />
+          <span class="times" aria-hidden="true">×</span>
+          <img id="their-logo" alt="" />
+        </div>
+        <h1 id="hero-line"></h1>
+      </section>
+
+      <section aria-labelledby="noticed-title">
+        <p class="kicker">01</p>
+        <h2 id="noticed-title">What we noticed</h2>
+        <ol class="noticed" id="noticed"></ol>
+      </section>
+
+      <section aria-labelledby="gap-title">
+        <p class="kicker">02</p>
+        <h2 id="gap-title">Where we think the gap is</h2>
+        <p class="gap" id="gap"></p>
+      </section>
+
+      <section aria-labelledby="agenda-title">
+        <p class="kicker">03</p>
+        <h2 id="agenda-title">Call agenda</h2>
+        <ol class="agenda" id="agenda"></ol>
+      </section>
+
+      <section aria-labelledby="proof-title">
+        <p class="kicker">04</p>
+        <h2 id="proof-title">Proof</h2>
+        <ul class="proof" id="proof"></ul>
+      </section>
+
+      <section aria-labelledby="who-title">
+        <p class="kicker">05</p>
+        <h2 id="who-title">Who you are working with</h2>
+        <div class="who">
+          <img id="headshot" alt="" />
+          <div>
+            <p class="who-name" id="who-name"></p>
+            <p class="who-line" id="who-line"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-block" aria-labelledby="cta-title">
+        <h2 id="cta-title" class="visually-hidden">Confirm the call</h2>
+        <a class="cta" id="cta" href="#">See you Thursday</a>
+      </section>
+    </main>
+
+    <noscript>
+      <p class="noscript">Turn on JavaScript, or paste your copy directly into index.html.</p>
+    </noscript>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
