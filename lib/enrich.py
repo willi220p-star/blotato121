@@ -682,3 +682,8 @@ def write_physio_export(feed: dict, feeds_dir: Path) -> int:
     (feeds_dir / "dgk-apa-physio-leads.md").write_text(enrichment_markdown(physio), encoding="utf-8")
     (feeds_dir / "dgk-apa-physio-leads.clay.csv").write_text(clay_csv(physio), encoding="utf-8")
     return len(physio_records)
+
+
+def load_enrichment_config(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
