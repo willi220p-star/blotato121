@@ -3,6 +3,7 @@ import unittest
 from lib.enrich import (
     clay_rows,
     extract_carevo_profile_urls,
+    is_usable_website,
     parse_carevo_profile,
     parse_lsnt_referral_text,
     parse_zipleaf_profile,
@@ -86,6 +87,20 @@ class EnrichHelpersTest(unittest.TestCase):
         self.assertEqual(row["domain"], "hhaccountant.com.au")
         self.assertTrue(row["phone"])
         self.assertEqual(row["email"], "hello@hhaccountant.com.au")
+
+    def test_zipleaf_skips_jsdelivr_css_as_website(self):
+        html = """
+        <h1>HHAccountant</h1>
+        <link href="https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css">
+        <a href="https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css">css</a>
+        <a href="https://hhaccountant.com.au/">Website</a>
+        """
+        source = {"id": "z", "vertical": "accounting", "name": "ZipLeaf", "source_type": "local_listing", "city": "Darwin", "state": "NT"}
+        row = parse_zipleaf_profile(html, "HHAccountant https://hhaccountant.com.au/", "https://au.zipleaf.com/Companies/HHAccountant", source)
+        self.assertEqual(row["website"], "https://hhaccountant.com.au/")
+        self.assertEqual(row["domain"], "hhaccountant.com.au")
+        self.assertFalse(is_usable_website("https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css"))
+        self.assertFalse(is_usable_website("https://unpkg.com/foo.js"))
 
     def test_1300_and_glued_landline(self):
         from lib.enrich import first_phone

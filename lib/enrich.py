@@ -50,7 +50,26 @@ TRACKER_HOSTS = (
     "segment.com",
     "cloudflare.com",
     "cloudflareinsights.com",
+    "jsdelivr.net",
+    "cdnjs.cloudflare.com",
+    "unpkg.com",
+    "fontawesome.com",
 )
+
+
+def is_usable_website(url: str | None) -> bool:
+    if not url:
+        return False
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+    path = parsed.path.lower()
+    if path.endswith((".css", ".js", ".png", ".jpg", ".jpeg", ".svg", ".woff", ".woff2", ".gif")):
+        return False
+    if "zipleaf." in host or is_linkedin_url(url) or "/go/" in url:
+        return False
+    return not any(skip in host for skip in TRACKER_HOSTS)
+
+
 SKIP_SLUGS = {
     "cairns",
     "darwin",
@@ -245,17 +264,16 @@ def parse_zipleaf_profile(html: str, text: str, url: str, source: dict) -> dict 
     email = first_email(compact)
     website = None
     for href in re.findall(r'href="(https?://[^"]+)"', html or "", flags=re.I):
-        host = urlparse(href).netloc.lower()
-        if "zipleaf." in host or any(skip in host for skip in TRACKER_HOSTS):
-            continue
-        if is_linkedin_url(href):
+        if not is_usable_website(href):
             continue
         website = href
         break
-    if not website:
+    if not is_usable_website(website):
         web = re.search(r"https?://(?:www\.)?(?!zipleaf)[a-z0-9.-]+\.[a-z]{2,}(?:/[^\s]*)?", compact, re.I)
-        if web and "zipleaf" not in web.group(0).lower() and "google" not in web.group(0).lower():
+        if web and is_usable_website(web.group(0).rstrip(".,)")):
             website = web.group(0).rstrip(".,)")
+        else:
+            website = None
     address = None
     addr = re.search(r"(\d+[^.]{8,80}(?:Darwin|Kogarah|Sydney|NT|NSW|VIC|QLD|WA|SA)[^.]{0,40})", compact)
     if addr:
