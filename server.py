@@ -30,6 +30,7 @@ MIME = {
     ".json": "application/json; charset=utf-8",
     ".md": "text/markdown; charset=utf-8",
     ".csv": "text/csv; charset=utf-8",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 }
 
 
@@ -47,11 +48,13 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _send_file(self, file_path: Path) -> None:
+    def _send_file(self, file_path: Path, download: bool = False) -> None:
         data = file_path.read_bytes()
         self.send_response(200)
         self.send_header("Content-Type", MIME.get(file_path.suffix, "application/octet-stream"))
         self.send_header("Content-Length", str(len(data)))
+        if download or file_path.suffix in {".xlsx", ".csv"}:
+            self.send_header("Content-Disposition", f'attachment; filename="{file_path.name}"')
         self.end_headers()
         self.wfile.write(data)
 
@@ -80,6 +83,13 @@ class Handler(BaseHTTPRequestHandler):
             if not ENRICH_FEED.is_file():
                 return self._json(404, {"error": "Enrichment feed not generated yet. POST /api/enrich or run scripts/enrich_list.py"})
             return self._json(200, json.loads(ENRICH_FEED.read_text(encoding="utf-8")))
+        if path in {"/download/apa-physio-leads.xlsx", "/download/apa-physio-leads.csv"}:
+            name = "dgk-apa-physio-leads.xlsx" if path.endswith(".xlsx") else "dgk-apa-physio-leads.clay.csv"
+            file_path = (FEEDS / name).resolve()
+            if not file_path.is_file():
+                self.send_error(404)
+                return
+            return self._send_file(file_path, download=True)
         if path.startswith("/feeds/"):
             file_path = (FEEDS / path[len("/feeds/") :]).resolve()
             if not str(file_path).startswith(str(FEEDS.resolve())) or not file_path.is_file():
