@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Alex Rivera">
+  <rect width="160" height="160" fill="#E7DFD2"/>
+  <circle cx="80" cy="62" r="28" fill="#1A1714"/>
+  <path d="M28 160 C28 112 52 96 80 96 C108 96 132 112 132 160 Z" fill="#1A1714"/>
+  <text x="80" y="150" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#F3EFE6">AR</text>
+</svg>

@@ -1,0 +1,41 @@
+Build a single-page pre-sales landing page for one prospect. One scroll. Mobile responsive. No stock photos. No extra sections.
+
+My company: [your company]
+What we do: [one line]
+Prospect company: [company name]
+Their industry: [industry]
+Their size: [headcount / revenue / stage]
+
+Hero:
+"[Your company] x [Prospect]. A 30-minute call on [specific outcome]."
+Put their logo next to mine.
+
+What we noticed:
+- [observation 1 — specific, from their site / jobs / LinkedIn / ads]
+- [observation 2]
+- [observation 3]
+- [observation 4 optional]
+
+Where we think the gap is:
+[1–2 sentences. Make them think "how do they know that".]
+
+Call agenda:
+- [5 min] [block]
+- [15 min] [block]
+- [10 min] [block]
+
+Proof (numbers only, no adjectives). Max 3:
+1. [client] — [result with number]
+2. [client] — [result with number]
+
+Who they are working with:
+- Photo: use the headshot I uploaded
+- Name: [your name]
+- One line: [role + why they should trust you]
+
+CTA:
+One button only. Label: [e.g. "See you Thursday" or "Book the call"]
+Link: [calendar URL or leave as text if the call is already booked]
+
+Style:
+Clean, editorial, lots of whitespace. Use my brand colours and fonts from the design system / brand files I uploaded. Their logo in the hero next to mine. Dark or light — match my brand. No illustrations, no stock photos, no extra nav, no footer links, no second CTA.
