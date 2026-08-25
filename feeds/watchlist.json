@@ -1,0 +1,31 @@
+{
+  "feed": "dgk-signal-source",
+  "queue": "tier1",
+  "notes": "DGK outbound watches hiring, expansion, leadership hires, website relaunches, and tech-stack changes. LinkedIn company pages are recorded only — never crawled. SEEK is probed via robots-allowed ?keywords= search URLs; individual /job/ listings are never fetched.",
+  "seek_keywords_default": [
+    "Marketing Manager",
+    "Business Development Manager",
+    "lead generation",
+    "social media"
+  ],
+  "companies": [
+    {
+      "name": "Triple R Community Service",
+      "domain": "triplerccs.com.au",
+      "website": "https://www.triplerccs.com.au/",
+      "about_urls": ["https://www.triplerccs.com.au/about-us/"],
+      "careers_urls": ["https://www.triplerccs.com.au/career/"],
+      "linkedin_company_url": null,
+      "seek_keywords": ["support worker", "registered nurse", "NDIS support"]
+    },
+    {
+      "name": "DGK Business Consultancy",
+      "domain": "dgkbusinessconsultancy.com",
+      "website": "https://dgkbusinessconsultancy.com/",
+      "about_urls": ["https://dgkbusinessconsultancy.com/about"],
+      "careers_urls": ["https://dgkbusinessconsultancy.com/joinourteam"],
+      "linkedin_company_url": "https://www.linkedin.com/company/dgk-business-consultancy",
+      "seek_keywords": ["Marketing Manager", "Business Development Manager"]
+    }
+  ]
+}
