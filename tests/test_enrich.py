@@ -93,13 +93,16 @@ class EnrichHelpersTest(unittest.TestCase):
         <h1>HHAccountant</h1>
         <link href="https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css">
         <a href="https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css">css</a>
-        <a href="https://hhaccountant.com.au/">Website</a>
+        <a href="https://twitter.com/intent/tweet?url=https:&#x2F;&#x2F;au.zipleaf.com/Companies/HHAccountant">tweet</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://au.zipleaf.com/Companies/HHAccountant">share</a>
         """
+        text = "HHAccountant Level 16 Darwin NT https://hhaccountant.com.au/ 0422315568"
         source = {"id": "z", "vertical": "accounting", "name": "ZipLeaf", "source_type": "local_listing", "city": "Darwin", "state": "NT"}
-        row = parse_zipleaf_profile(html, "HHAccountant https://hhaccountant.com.au/", "https://au.zipleaf.com/Companies/HHAccountant", source)
+        row = parse_zipleaf_profile(html, text, "https://au.zipleaf.com/Companies/HHAccountant", source)
         self.assertEqual(row["website"], "https://hhaccountant.com.au/")
         self.assertEqual(row["domain"], "hhaccountant.com.au")
         self.assertFalse(is_usable_website("https://cdn.jsdelivr.net/npm/paymentfont@1.2.5/css/paymentfont.min.css"))
+        self.assertFalse(is_usable_website("https://twitter.com/intent/tweet?url=https://au.zipleaf.com/Companies/HHAccountant"))
         self.assertFalse(is_usable_website("https://unpkg.com/foo.js"))
 
     def test_1300_and_glued_landline(self):

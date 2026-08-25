@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import html
 import io
 import json
 import re
@@ -54,20 +55,46 @@ TRACKER_HOSTS = (
     "cdnjs.cloudflare.com",
     "unpkg.com",
     "fontawesome.com",
+    "twitter.com",
+    "x.com",
+    "pinterest.com",
+    "reddit.com",
+    "youtube.com",
+    "youtu.be",
 )
+SHARE_PATHS = ("/intent/", "/sharer", "/share-offsite", "/pin/create", "/share.php")
+VISIBLE_URL_RE = re.compile(r"https?://[^\s<>\"']+", re.I)
 
 
 def is_usable_website(url: str | None) -> bool:
     if not url:
         return False
+    url = html.unescape(url).strip().rstrip(".,);")
     parsed = urlparse(url)
     host = parsed.netloc.lower()
     path = parsed.path.lower()
-    if path.endswith((".css", ".js", ".png", ".jpg", ".jpeg", ".svg", ".woff", ".woff2", ".gif")):
+    if path.endswith((".css", ".js", ".png", ".jpg", ".jpeg", ".svg", ".woff", ".woff2", ".gif", ".ico")):
+        return False
+    if any(hint in path for hint in SHARE_PATHS):
         return False
     if "zipleaf." in host or is_linkedin_url(url) or "/go/" in url:
         return False
     return not any(skip in host for skip in TRACKER_HOSTS)
+
+
+def first_usable_website(html_src: str | None, text: str | None) -> str | None:
+    """Prefer the listing's visible URL (ZipLeaf shows it as text, not an <a>)."""
+    decoded_html = html.unescape(html_src or "")
+    compact = re.sub(r"\s+", " ", html.unescape(text or ""))
+    candidates: list[str] = []
+    for match in VISIBLE_URL_RE.finditer(compact):
+        candidates.append(match.group(0).rstrip(".,);"))
+    for href in re.findall(r'href="(https?://[^"]+)"', decoded_html, flags=re.I):
+        candidates.append(html.unescape(href))
+    for candidate in candidates:
+        if is_usable_website(candidate):
+            return html.unescape(candidate).strip().rstrip(".,);")
+    return None
 
 
 SKIP_SLUGS = {
@@ -262,18 +289,7 @@ def parse_zipleaf_profile(html: str, text: str, url: str, source: dict) -> dict 
         title = slug
     phone = first_phone(compact)
     email = first_email(compact)
-    website = None
-    for href in re.findall(r'href="(https?://[^"]+)"', html or "", flags=re.I):
-        if not is_usable_website(href):
-            continue
-        website = href
-        break
-    if not is_usable_website(website):
-        web = re.search(r"https?://(?:www\.)?(?!zipleaf)[a-z0-9.-]+\.[a-z]{2,}(?:/[^\s]*)?", compact, re.I)
-        if web and is_usable_website(web.group(0).rstrip(".,)")):
-            website = web.group(0).rstrip(".,)")
-        else:
-            website = None
+    website = first_usable_website(html, compact)
     address = None
     addr = re.search(r"(\d+[^.]{8,80}(?:Darwin|Kogarah|Sydney|NT|NSW|VIC|QLD|WA|SA)[^.]{0,40})", compact)
     if addr:
