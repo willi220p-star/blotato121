@@ -83,9 +83,14 @@ class Handler(BaseHTTPRequestHandler):
             if not ENRICH_FEED.is_file():
                 return self._json(404, {"error": "Enrichment feed not generated yet. POST /api/enrich or run scripts/enrich_list.py"})
             return self._json(200, json.loads(ENRICH_FEED.read_text(encoding="utf-8")))
-        if path in {"/download/apa-physio-leads.xlsx", "/download/apa-physio-leads.csv"}:
-            name = "dgk-apa-physio-leads.xlsx" if path.endswith(".xlsx") else "dgk-apa-physio-leads.clay.csv"
-            file_path = (FEEDS / name).resolve()
+        downloads = {
+            "/download/apa-physio-leads.xlsx": "dgk-apa-physio-leads.xlsx",
+            "/download/apa-physio-leads.csv": "dgk-apa-physio-leads.clay.csv",
+            "/download/arrcs-darwin-teams.xlsx": "ARRCS_Darwin_teams_roles.xlsx",
+            "/download/arrcs-darwin-teams.csv": "arrcs-darwin-teams.csv",
+        }
+        if path in downloads:
+            file_path = (FEEDS / downloads[path]).resolve()
             if not file_path.is_file():
                 self.send_error(404)
                 return

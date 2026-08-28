@@ -102,3 +102,15 @@ Default Darwin/NT sources:
 - **Physio** — Australian Physiotherapy Association [Find a Physio](https://choose.physio/find-a-physio) (NT hubs: Darwin, Katherine, Alice Springs, Tennant Creek, Nhulunbuy). DGK `/directory` is not crawled (robots).
 
 Output includes `records` plus a `clay` array and `feeds/dgk-list-enrichment.clay.csv` ready to import. LinkedIn URLs are left blank for those tools to enrich. `GET /api/enrich` / `POST /api/enrich` expose the same feed on the console.
+
+## ARRCS Darwin teams and positions
+
+Roles-only workbook of past, present and future ARRCS teams in Darwin / Palmerston (no named people). Live job ads are Future.
+
+```bash
+python3 scripts/arrcs_darwin_teams.py
+```
+
+Writes `feeds/ARRCS_Darwin_teams_roles.xlsx`, plus JSON and CSV. Console download: `GET /download/arrcs-darwin-teams.xlsx`.
+
+Scope: Darwin, Palmerston, Tiwi, Coconut Grove, Farrar, Casuarina, Maluka. Family Support (Mutitjulu / Alice Springs) and Flynn Lodge are excluded. SEEK `?keywords=ARRCS Darwin` is attempted as a search URL only; this environment currently gets Cloudflare 403 and individual SEEK `/job/` pages are never fetched. LinkedIn is not crawled. ARRCS `robots.txt` allows the crawl (`Disallow` empty).

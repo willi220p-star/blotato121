@@ -1,0 +1,703 @@
+{
+  "feed": "arrcs-darwin-teams",
+  "generated_at": "2026-08-28T01:54:00.637716+00:00",
+  "scoped_at": "2026-08-28",
+  "policy": {
+    "people": "Roles and teams only. No named people.",
+    "geography": "Darwin / Palmerston / Tiwi / Coconut Grove / Farrar / Casuarina / Maluka only.",
+    "jobs": "Live job ads are Future. SEEK ?keywords= only; /job/ never fetched.",
+    "linkedin": "Not crawled."
+  },
+  "counts": {
+    "present": 46,
+    "past": 20,
+    "future": 10,
+    "all": 76
+  },
+  "records": [
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Service manager",
+      "location": "Coconut Grove, Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Current facility page names this role. 26 residential beds plus 10 independent-living cabins supported by Community Care Darwin. 24-hour staff and nurse-call."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Nursing staff (24-hour)",
+      "location": "Coconut Grove, Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Nurse-call, clinical care, respite and palliative care on site."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Care / personal care workers",
+      "location": "Coconut Grove, Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Day-to-day support for residents; cultural and social programs."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Leisure and lifestyle / activities staff",
+      "location": "Coconut Grove, Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Planned activities five days a week (music, movies, campfires, fishing, outings)."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Kitchen / hospitality staff",
+      "location": "Coconut Grove, Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "On-site menus including cultural meals cooked on an open fire."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Residential respite staff",
+      "location": "Coconut Grove, Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Residential respite listed on the current facility page."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Palliative care staff",
+      "location": "Coconut Grove, Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Special care: palliative care."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Visiting general practitioner",
+      "location": "Coconut Grove, Darwin",
+      "status": "current (visiting)",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Regular GP visits. Visiting clinician, not necessarily an ARRCS employee."
+    },
+    {
+      "timeframe": "present",
+      "team": "Juninga Centre Aged Care",
+      "position": "Visiting allied health (physio, podiatry, OT, speech)",
+      "location": "Coconut Grove, Darwin",
+      "status": "current (visiting)",
+      "source_url": "https://arrcs.org.au/facility/juninga-centre-aged-care-facility/",
+      "notes": "Listed on the current facility page."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Nursing staff (24-hour)",
+      "location": "Farrar / Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "88-bed home, three wings, nurse-call, 24-hour staff access."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Care / personal care workers",
+      "location": "Farrar / Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "Permanent residential care across three wings."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Memory Support Unit care staff",
+      "location": "Farrar / Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "Dementia / Memory Support Unit with garden. Careers page confirms this unit is staffed."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Leisure and lifestyle / activities staff",
+      "location": "Farrar / Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "Arts and crafts, pet therapy, music, barbecues and outings."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Residential respite staff",
+      "location": "Farrar / Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "Residential respite listed on the current facility page."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Palliative care staff",
+      "location": "Farrar / Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "Special care: palliative care."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Visiting general practitioner",
+      "location": "Farrar / Palmerston",
+      "status": "current (visiting)",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "Regular GP visits. Visiting clinician, not necessarily an ARRCS employee."
+    },
+    {
+      "timeframe": "present",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Visiting allied health (physio, podiatry, OT, speech)",
+      "location": "Farrar / Palmerston",
+      "status": "current (visiting)",
+      "source_url": "https://arrcs.org.au/facility/terrace-gardens-aged-care-facility/",
+      "notes": "Listed on the current facility page."
+    },
+    {
+      "timeframe": "present",
+      "team": "Darwin ROST (Respite Options for Senior Territorians)",
+      "position": "ROST worker",
+      "location": "Suburban Darwin respite house",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/kicking-goals-at-darwin-rost/",
+      "notes": "Respite house in a suburban Darwin home. Workers support goal-based respite and daily activities."
+    },
+    {
+      "timeframe": "present",
+      "team": "Darwin ROST (Respite Options for Senior Territorians)",
+      "position": "Lifestyle / activities staff",
+      "location": "Suburban Darwin respite house",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/kicking-goals-at-darwin-rost/",
+      "notes": "Lifestyle calendar including entertainers, puzzles, colouring, reading and outings."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Home care / personal care worker",
+      "location": "Darwin (in-home + Juninga ILU cabins)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "Darwin page lists in-home care. Juninga cabins are supported by Community Care Darwin. 2022–23 review lists Darwin Home Care as a Darwin service."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Home care nurse",
+      "location": "Darwin (in-home)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "Nurses visit consumers at home for clinical care and medication. Help at Home lists nursing and medication management."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "In-home respite worker",
+      "location": "Darwin (in-home)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "In-home respite: lifestyle, light duties, personal care, shopping and meal preparation."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Home maintenance / modification worker",
+      "location": "Darwin (in-home)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "Help at Home: home maintenance and modification, cleaning and housework, linen."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Transport / driver",
+      "location": "Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "Help at Home lists transport. Volunteer drivers also cover this work."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Meals / food services",
+      "location": "Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "Help at Home lists meals."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "NDIS / disability support worker",
+      "location": "Darwin",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/darwin/",
+      "notes": "Darwin enquiry form includes disability supports. 2022–23 review includes a Darwin NDIS participant pathway."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Dementia care worker",
+      "location": "Darwin (in-home)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "Help at Home lists dementia care and management."
+    },
+    {
+      "timeframe": "present",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Palliative care (home)",
+      "location": "Darwin (in-home)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/help-at-home/",
+      "notes": "Help at Home lists palliative care and carers support."
+    },
+    {
+      "timeframe": "present",
+      "team": "Maluka Day Programs",
+      "position": "Centre-based day respite / day program staff",
+      "location": "Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "2025 biennial: overnight respite opened at Maluka in Palmerston in 2022–23; centre-based and overnight respite remain integral. 2022–23 review lists Maluka as Darwin-region centre-based day respite."
+    },
+    {
+      "timeframe": "present",
+      "team": "Maluka Day Programs",
+      "position": "Overnight respite staff",
+      "location": "Palmerston",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Overnight respite opened at Maluka in the 2022–23 financial year."
+    },
+    {
+      "timeframe": "present",
+      "team": "Allied health (Darwin delivery)",
+      "position": "Occupational therapist",
+      "location": "Darwin homes and aged-care facilities",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/allied-health/",
+      "notes": "Territory-wide allied health; Darwin is a service/enquiry location. Delivered in home, facilities or centres."
+    },
+    {
+      "timeframe": "present",
+      "team": "Allied health (Darwin delivery)",
+      "position": "Physiotherapist",
+      "location": "Darwin homes and aged-care facilities",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/allied-health/",
+      "notes": "Listed on allied-health and Darwin facility pages."
+    },
+    {
+      "timeframe": "present",
+      "team": "Allied health (Darwin delivery)",
+      "position": "Podiatrist",
+      "location": "Darwin homes and aged-care facilities",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/allied-health/",
+      "notes": "Listed on allied-health and Darwin facility pages."
+    },
+    {
+      "timeframe": "present",
+      "team": "Allied health (Darwin delivery)",
+      "position": "Speech therapist",
+      "location": "Darwin homes and aged-care facilities",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/allied-health/",
+      "notes": "Listed on allied-health and Darwin facility pages."
+    },
+    {
+      "timeframe": "present",
+      "team": "Allied health (Darwin delivery)",
+      "position": "Hydrotherapy",
+      "location": "Darwin (Help at Home / allied health)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/allied-health/",
+      "notes": "Hydrotherapy is listed on Help at Home and allied health. Confirm site before outreach — Fred McKay Day Therapy Centre is Alice Springs."
+    },
+    {
+      "timeframe": "present",
+      "team": "Volunteers (Darwin)",
+      "position": "Bus / car driving volunteer",
+      "location": "Darwin (location option on the form)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/volunteer/",
+      "notes": "Volunteer page is always recruiting. Darwin is a location option."
+    },
+    {
+      "timeframe": "present",
+      "team": "Volunteers (Darwin)",
+      "position": "Deliveries volunteer",
+      "location": "Darwin (location option on the form)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/volunteer/",
+      "notes": "Assisting with deliveries."
+    },
+    {
+      "timeframe": "present",
+      "team": "Volunteers (Darwin)",
+      "position": "Arts, craft, music and storytelling volunteer",
+      "location": "Darwin (location option on the form)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/volunteer/",
+      "notes": "Activity volunteer roles."
+    },
+    {
+      "timeframe": "present",
+      "team": "Volunteers (Darwin)",
+      "position": "Companion volunteer",
+      "location": "Darwin (location option on the form)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/volunteer/",
+      "notes": "Friendly companion role."
+    },
+    {
+      "timeframe": "present",
+      "team": "Executive / corporate (Harry's Place)",
+      "position": "Chief Executive Officer",
+      "location": "Tiwi, Darwin (Harry's Place, 1 Willeroo Street)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/our-executive-team/",
+      "notes": "Executive page lists CEO. 2025 biennial: CEO replaced the General Manager title during the independence transition. Role only — no names in this workbook."
+    },
+    {
+      "timeframe": "present",
+      "team": "Executive / corporate (Harry's Place)",
+      "position": "Executive Manager of Corporate Services",
+      "location": "Tiwi, Darwin (Harry's Place)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Created as part of the 2024–25 finance/payroll independence from UnitingCare Queensland."
+    },
+    {
+      "timeframe": "present",
+      "team": "Executive / corporate (Harry's Place)",
+      "position": "Finance and payroll",
+      "location": "Tiwi, Darwin (Harry's Place)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Finance and payroll moved onto ARRCS-managed systems in 2024–early 2025."
+    },
+    {
+      "timeframe": "present",
+      "team": "Clinical Education Team",
+      "position": "Clinical educator / graduate-nurse preceptor",
+      "location": "NT team; works with Darwin facilities",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Supports the Gerontology Graduate Nursing Program (12–18 month pathway). Face-to-face study days. Not Darwin-only, but Darwin facilities are in scope."
+    },
+    {
+      "timeframe": "present",
+      "team": "First Nations Programs",
+      "position": "First Nations Programs team member",
+      "location": "Darwin (Juninga and Terrace Gardens in scope)",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "2025 biennial: team supports Juninga Women's Focus Groups and Darwin-region cultural work. Do not treat Alice Springs / remote-only programs as Darwin."
+    },
+    {
+      "timeframe": "present",
+      "team": "RAP Working Group",
+      "position": "RAP Working Group member",
+      "location": "Darwin HQ plus site representatives",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Reactivated in the 2024–25 snapshot. NT-wide group with Darwin HQ involvement."
+    },
+    {
+      "timeframe": "present",
+      "team": "Gerontology Graduate Nursing Program",
+      "position": "Graduate nurse",
+      "location": "Darwin facilities in an NT-wide program",
+      "status": "current",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Pilot 2023; first cohort progressing 12–18 months with Clinical Education Team support."
+    },
+    {
+      "timeframe": "past",
+      "team": "Executive / corporate (Harry's Place)",
+      "position": "General Manager",
+      "location": "Tiwi, Darwin (Harry's Place)",
+      "status": "superseded",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Replaced by Chief Executive Officer during the 2024–25 independence transition."
+    },
+    {
+      "timeframe": "past",
+      "team": "Executive / corporate (Harry's Place)",
+      "position": "Project manager (systems independence)",
+      "location": "Darwin HQ",
+      "status": "time-limited",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "Dedicated project-manager role oversaw finance/payroll cutover scope, timeline, workforce alignment and change (2024–early 2025)."
+    },
+    {
+      "timeframe": "past",
+      "team": "Juninga Centre Aged Care",
+      "position": "Service manager / clinical nursing leadership",
+      "location": "Coconut Grove, Darwin",
+      "status": "historical (role still exists)",
+      "source_url": "https://arrcs.org.au/why-jenny-loves-working-at-juninga/",
+      "notes": "Feature article documents 23 years in this Darwin service-manager / nursing leadership role and a 2019 Territory nursing award. Present sheet already lists Service manager — this row is the historical evidence."
+    },
+    {
+      "timeframe": "past",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Clinical nurse manager",
+      "location": "Farrar / Palmerston",
+      "status": "last documented 2020",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Annual-Review-2020.pdf",
+      "notes": "2020 annual review describes a Clinical Nurse Manager pathway at Terrace Gardens. Not named on the current facility page."
+    },
+    {
+      "timeframe": "past",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Activities officer",
+      "location": "Farrar / Palmerston",
+      "status": "last documented 2022–23",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Biennial-Report-2022-2023-Nov-version-Final.pdf",
+      "notes": "2022–23 biennial lists an Activities Officer at Terrace Gardens."
+    },
+    {
+      "timeframe": "past",
+      "team": "Terrace Gardens Aged Care",
+      "position": "Team leader, First Nations",
+      "location": "Farrar / Palmerston",
+      "status": "last documented 2022–23",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Biennial-Report-2022-2023-Nov-version-Final.pdf",
+      "notes": "2022–23 biennial lists a First Nations Team Leader at Terrace Gardens."
+    },
+    {
+      "timeframe": "past",
+      "team": "Facility leadership (Darwin / Palmerston)",
+      "position": "Facility service manager",
+      "location": "Darwin and Palmerston",
+      "status": "last documented 2022–23",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Biennial-Report-2022-2023-Nov-version-Final.pdf",
+      "notes": "2022–23 biennial lists Facility Service Managers for Darwin, Palmerston and Katherine."
+    },
+    {
+      "timeframe": "past",
+      "team": "Clinical leadership",
+      "position": "Regional manager, clinical",
+      "location": "Darwin and Palmerston (also other NT sites)",
+      "status": "last documented 2022–23",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Biennial-Report-2022-2023-Nov-version-Final.pdf",
+      "notes": "2022–23 biennial: Regional Manager Clinical covering Darwin and Palmerston, working with Royal Darwin and Palmerston GPs, plus other NT sites."
+    },
+    {
+      "timeframe": "past",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Regional manager, community (Home Care and NDIS)",
+      "location": "Darwin (jobs expo also ran in other NT centres)",
+      "status": "last documented 2022–23",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Biennial-Report-2022-2023-Nov-version-Final.pdf",
+      "notes": "Led Home Care and NDIS recruiting at Darwin and other NT jobs expos."
+    },
+    {
+      "timeframe": "past",
+      "team": "Community Care Darwin / Help at Home",
+      "position": "Senior support worker",
+      "location": "Darwin Community Care",
+      "status": "last documented 2022–23",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Biennial-Report-2022-2023-Nov-version-Final.pdf",
+      "notes": "Named as a Darwin Community Care role in the 2022–23 biennial (role title only retained here)."
+    },
+    {
+      "timeframe": "past",
+      "team": "First Nations Programs",
+      "position": "Aboriginal liaison officer",
+      "location": "Darwin (covering Darwin and Katherine)",
+      "status": "last documented 2020",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Annual-Review-2020.pdf",
+      "notes": "Role commenced March 2020; a permanent Darwin-based role covering Darwin and Katherine."
+    },
+    {
+      "timeframe": "past",
+      "team": "First Nations Programs",
+      "position": "First Nations cultural specialist",
+      "location": "Juninga and Terrace Gardens, Darwin / Palmerston",
+      "status": "last documented 2021",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/arrcs-annual-report-2021-2.pdf",
+      "notes": "2021 annual review: cultural specialist rotated through Juninga and Terrace Gardens plus other NT aged-care homes."
+    },
+    {
+      "timeframe": "past",
+      "team": "First Nations traineeships",
+      "position": "Personal care worker trainee (Cert III Individual Support)",
+      "location": "Darwin was a program location",
+      "status": "closed intake (2024)",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "2024 intake closed. One intake a year; Darwin remains a form location for the next round (see Future)."
+    },
+    {
+      "timeframe": "past",
+      "team": "First Nations traineeships",
+      "position": "Hospitality worker trainee (Cert III Commercial Cookery)",
+      "location": "Darwin was a program location",
+      "status": "closed intake (2024)",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "2024 intake closed."
+    },
+    {
+      "timeframe": "past",
+      "team": "First Nations traineeships",
+      "position": "Leisure and lifestyle officer trainee (Cert IV Leisure and Health)",
+      "location": "Darwin was a program location",
+      "status": "closed intake (2024)",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "2024 intake closed."
+    },
+    {
+      "timeframe": "past",
+      "team": "First Nations traineeships",
+      "position": "IT worker trainee (Cert III IT)",
+      "location": "Darwin was a program location",
+      "status": "closed intake (2024)",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "2024 intake closed."
+    },
+    {
+      "timeframe": "past",
+      "team": "Recruitment",
+      "position": "Expression of interest (generic)",
+      "location": "All locations including Darwin",
+      "status": "closed 21 Feb 2022",
+      "source_url": "https://arrcs-external.applynow.net.au/jobs/ARRCSEOI-expression-of-interest",
+      "notes": "ApplyNow EOI job ARRCSEOI. Page states this job has closed. Not a live Darwin vacancy."
+    },
+    {
+      "timeframe": "past",
+      "team": "Return to Country / Troopy Program",
+      "position": "Troopy program trainee",
+      "location": "NT program; Darwin mentioned in 2021 review",
+      "status": "last documented 2020–21",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/arrcs-annual-report-2021-2.pdf",
+      "notes": "2021 review documents a 2020 Troopy Program trainee pathway. Darwin appears in the same regional story; not Darwin-only."
+    },
+    {
+      "timeframe": "past",
+      "team": "Juninga Centre Aged Care",
+      "position": "Refurbishment / capital works team",
+      "location": "Coconut Grove, Darwin",
+      "status": "completed",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2026/04/Arrcs-2025-Binenial-review-Final-Version-Compressed.pdf",
+      "notes": "2024–25 snapshot: Juninga refurbishments completed and opened. Event/project, not an ongoing FTE line."
+    },
+    {
+      "timeframe": "past",
+      "team": "Maluka Day Programs",
+      "position": "Maluka Day Programs opening team",
+      "location": "Palmerston",
+      "status": "opened 2022–23",
+      "source_url": "https://arrcs.org.au/wp-content/uploads/2025/10/ARRCS-Biennial-Report-2022-2023-Nov-version-Final.pdf",
+      "notes": "Opening of Maluka Day Programs in Palmerston recorded in the 2022–23 biennial."
+    },
+    {
+      "timeframe": "future",
+      "team": "First Nations traineeships / administration",
+      "position": "First Nations trainee — administration",
+      "location": "Darwin",
+      "status": "live vacancy",
+      "source_url": "https://apply.arrcs.org.au/arrcs/9792357/",
+      "notes": "Live on apply.arrcs.org.au (scraped 28 Aug 2026). Apprentice/Trainee. Must identify as Aboriginal or Torres Strait Islander. Classification: Administration & Office Support."
+    },
+    {
+      "timeframe": "future",
+      "team": "Executive / residential services",
+      "position": "Executive manager — residential services",
+      "location": "Darwin (NT-wide remit, 12 facilities)",
+      "status": "live vacancy",
+      "source_url": "https://apply.arrcs.org.au/arrcs/9784188/",
+      "notes": "Live on apply.arrcs.org.au (scraped 28 Aug 2026). Full-time. Based Darwin; leads residential aged care across the Territory."
+    },
+    {
+      "timeframe": "future",
+      "team": "First Nations traineeships",
+      "position": "Personal care worker trainee (Cert III Individual Support)",
+      "location": "Darwin (form location)",
+      "status": "next intake / enquire",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "Program still advertised. 2024 intake closed; page says one intake a year. Darwin is a location on the enquiry form."
+    },
+    {
+      "timeframe": "future",
+      "team": "First Nations traineeships",
+      "position": "Hospitality worker trainee (Cert III Commercial Cookery)",
+      "location": "Darwin (form location)",
+      "status": "next intake / enquire",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "Paid on-the-job training with CDU TAFE. Next intake via enquiry form."
+    },
+    {
+      "timeframe": "future",
+      "team": "First Nations traineeships",
+      "position": "Leisure and lifestyle officer trainee (Cert IV Leisure and Health)",
+      "location": "Darwin (form location)",
+      "status": "next intake / enquire",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "Training via Dovaston Training and Assessment Centre. Next intake via enquiry form."
+    },
+    {
+      "timeframe": "future",
+      "team": "First Nations traineeships",
+      "position": "IT worker trainee (Cert III IT)",
+      "location": "Darwin (form location)",
+      "status": "next intake / enquire",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/first-nations-traineeships/",
+      "notes": "Training via CDU TAFE. Next intake via enquiry form."
+    },
+    {
+      "timeframe": "future",
+      "team": "Volunteers (Darwin)",
+      "position": "Volunteer (all advertised volunteer types)",
+      "location": "Darwin",
+      "status": "always recruiting",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/volunteer/",
+      "notes": "Volunteer page: always looking. Darwin is a location option."
+    },
+    {
+      "timeframe": "future",
+      "team": "Careers pipeline (not a named Darwin ad)",
+      "position": "Nursing (registered / enrolled)",
+      "location": "Darwin is named as a Territory workplace",
+      "status": "always recruiting",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/careers/",
+      "notes": "Careers page lists nursing among ongoing career types from tropical Darwin to the Central Desert. Not a live Darwin vacancy on the jobs board (28 Aug 2026)."
+    },
+    {
+      "timeframe": "future",
+      "team": "Careers pipeline (not a named Darwin ad)",
+      "position": "Home care assistance",
+      "location": "Darwin is named as a Territory workplace",
+      "status": "always recruiting",
+      "source_url": "https://arrcs.org.au/work-with-arrcs/careers/",
+      "notes": "Careers page lists home care assistance as an ongoing career type. No live Darwin home-care ad on the jobs board (28 Aug 2026)."
+    },
+    {
+      "timeframe": "future",
+      "team": "SEEK search (blocked)",
+      "position": "(none listed — search not readable from this environment)",
+      "location": "Darwin keywords",
+      "status": "blocked",
+      "source_url": "https://www.seek.com.au/jobs?keywords=ARRCS%20Darwin",
+      "notes": "SEEK ?keywords=ARRCS Darwin is allowed by our SEEK policy, but this environment gets Cloudflare 403. Individual SEEK /job/ URLs are never fetched. Do not invent SEEK vacancies."
+    }
+  ]
+}
