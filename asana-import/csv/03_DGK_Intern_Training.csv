@@ -1,0 +1,26 @@
+﻿Name,Description,Section,Assignee,Collaborators,Start Date,Due Date,Type,Tags,Parent Task,Task Category,Client Name,Project Phase,Priority Level,Task Stage,QA Status,Blocked Reason,Completion Notes,Time Spent (hrs),Deliverable Link,Metrics / KPIs,Issues / Blockers Encountered,Assigned Role,Reviewed By,Review Date,Admin Notes,Week Number,Supervisor
+Welcome to DGK on Asana 👋 (duplicate for each intern),"Welcome to DGK on Asana 👋
+Here is how your task system works:
+1. Check THIS board every morning
+2. Start with TODAY column first
+3. Change Task Stage to In Progress
+   when you start working
+4. If you get stuck: change to Blocked
+   and fill in the Blocked Reason field
+5. Before submitting: fill in ALL fields
+   (Completion Notes, Time Spent,
+   Deliverable Link, Metrics/KPIs)
+6. Change Task Stage to Ready for Review
+   DO NOT mark complete yourself
+7. Dilip reviews and approves —
+   you will get a notification
+
+Duplicate this task for each new intern and assign it to them.",📚 Intern Onboarding,,,,,Task,,,Intern Training / Supervision,DGK Internal,,Critical,Not Started,Awaiting Submission,,,,,,,Intern,,,,,Shuvang@dgkbusinessconsultancy.com
+Intern Asana access set up,"Created fresh for every new intern from this project's task template. Duplicate this task, assign the intern's supervisor in Supervisor, and complete before the intern starts work.",📚 Intern Onboarding,,,,,Task,,,Intern Training / Supervision,DGK Internal,,Critical,Not Started,Awaiting Submission,,,,,,,Allrounder / Senior,,,,,Shuvang@dgkbusinessconsultancy.com
+Intern briefed on task SOP,Walk intern through the 5-step task process. Confirm understood in Completion Notes.,📚 Intern Onboarding,,,,,Task,,,Intern Training / Supervision,DGK Internal,,Critical,Not Started,Awaiting Submission,,,,,,,Allrounder / Senior,,,,,Shuvang@dgkbusinessconsultancy.com
+Intern completes first practice task,Intern's first real task to test the workflow end to end.,🔄 Active Training Tasks,,,,,Task,,,Intern Training / Supervision,DGK Internal,,High,Not Started,Awaiting Submission,,,,,,,Intern,,,,,Shuvang@dgkbusinessconsultancy.com
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,📝 Skill Assessments,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,
+First week supervisor check-in,"Weekly supervisor check-in for the intern.
+
+CSV cannot create a repeating schedule. After import, set Recurring: Weekly (every Monday).",👀 Supervisor Review,Shuvang@dgkbusinessconsultancy.com,,,,Task,,,Intern Training / Supervision,DGK Internal,,High,Not Started,Awaiting Submission,,,,,,,Allrounder / Senior,,,,,Shuvang@dgkbusinessconsultancy.com
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,✅ Training Signed Off,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,

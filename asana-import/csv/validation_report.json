@@ -1,0 +1,139 @@
+{
+  "files": {
+    "00_custom_field_seed.csv": {
+      "rows": 44,
+      "sections": [
+        "Field option seed (delete project after conversion)"
+      ],
+      "assignees": []
+    },
+    "01_CLIENT_project_master_template.csv": {
+      "rows": 10,
+      "sections": [
+        "\ud83d\udccb Briefing & Onboarding",
+        "\ud83d\udd27 In Progress",
+        "\ud83d\udc40 Ready for Dilip Review",
+        "\ud83d\udd04 Revision Needed",
+        "\u2705 Approved & Complete",
+        "\ud83d\uddc4\ufe0f Archive"
+      ],
+      "assignees": []
+    },
+    "02_DGK_Social_Media_Content.csv": {
+      "rows": 6,
+      "sections": [
+        "\ud83d\udcc5 Content Calendar",
+        "\u270d\ufe0f In Creation",
+        "\ud83c\udfa8 Design \u2014 Canva",
+        "\ud83d\udc40 Ready for Dilip Review",
+        "\u2705 Approved & Scheduled",
+        "\ud83d\udce2 Published"
+      ],
+      "assignees": []
+    },
+    "03_DGK_Intern_Training.csv": {
+      "rows": 7,
+      "sections": [
+        "\ud83d\udcda Intern Onboarding",
+        "\ud83d\udd04 Active Training Tasks",
+        "\ud83d\udcdd Skill Assessments",
+        "\ud83d\udc40 Supervisor Review",
+        "\u2705 Training Signed Off"
+      ],
+      "assignees": [
+        "Shuvang@dgkbusinessconsultancy.com"
+      ]
+    },
+    "04_DGK_Internal_Admin.csv": {
+      "rows": 7,
+      "sections": [
+        "\ud83d\udd04 Ongoing Operations",
+        "\ud83d\udcca Reporting & Data",
+        "\ud83d\udee0\ufe0f Tools & Systems",
+        "\ud83d\udcbc Business Development",
+        "\u2705 Done"
+      ],
+      "assignees": [
+        "Shuvang@dgkbusinessconsultancy.com",
+        "Support@dgkbusinessconsultancy.com"
+      ]
+    },
+    "05_DGK_Dilip_Master_Tracker.csv": {
+      "rows": 5,
+      "sections": [
+        "\ud83d\udd34 Needs Immediate Attention",
+        "\ud83d\udc40 Pending Dilip Review",
+        "\ud83d\udd04 All In Progress \u2014 Full Team",
+        "\u2705 Approved This Week",
+        "\ud83d\udccb Full Task History"
+      ],
+      "assignees": []
+    },
+    "06_DGK_Setup_Checklist.csv": {
+      "rows": 31,
+      "sections": [
+        "1. Teams (CSV cannot create teams)",
+        "2. Convert custom fields to organization-level",
+        "3. Place projects in the correct team",
+        "4. Portfolios (CSV cannot create portfolios)",
+        "5. Automation rules (CSV cannot create rules)",
+        "6. Dashboards (CSV cannot create dashboards)",
+        "7. My Tasks views (CSV cannot configure other users)",
+        "8. Recurring schedules (CSV cannot set recurrence)",
+        "9. Save client project as Asana template"
+      ],
+      "assignees": [
+        "Support@dgkbusinessconsultancy.com"
+      ]
+    },
+    "DGK_ALL_IN_ONE.csv": {
+      "rows": 110,
+      "sections": [
+        "00 FIELD SEED \u2014 delete these tasks after import | Field option seed (delete project after conversion)",
+        "\ud83c\udfe2 CLIENT \u2014 [Client Name] | \ud83d\udccb Briefing & Onboarding",
+        "\ud83c\udfe2 CLIENT \u2014 [Client Name] | \ud83d\udd27 In Progress",
+        "\ud83c\udfe2 CLIENT \u2014 [Client Name] | \ud83d\udc40 Ready for Dilip Review",
+        "\ud83c\udfe2 CLIENT \u2014 [Client Name] | \ud83d\udd04 Revision Needed",
+        "\ud83c\udfe2 CLIENT \u2014 [Client Name] | \u2705 Approved & Complete",
+        "\ud83c\udfe2 CLIENT \u2014 [Client Name] | \ud83d\uddc4\ufe0f Archive",
+        "\ud83d\udcf1 DGK \u2014 Social Media & Content | \ud83d\udcc5 Content Calendar",
+        "\ud83d\udcf1 DGK \u2014 Social Media & Content | \u270d\ufe0f In Creation",
+        "\ud83d\udcf1 DGK \u2014 Social Media & Content | \ud83c\udfa8 Design \u2014 Canva",
+        "\ud83d\udcf1 DGK \u2014 Social Media & Content | \ud83d\udc40 Ready for Dilip Review",
+        "\ud83d\udcf1 DGK \u2014 Social Media & Content | \u2705 Approved & Scheduled",
+        "\ud83d\udcf1 DGK \u2014 Social Media & Content | \ud83d\udce2 Published",
+        "\ud83c\udf93 DGK \u2014 Intern Training | \ud83d\udcda Intern Onboarding",
+        "\ud83c\udf93 DGK \u2014 Intern Training | \ud83d\udd04 Active Training Tasks",
+        "\ud83c\udf93 DGK \u2014 Intern Training | \ud83d\udcdd Skill Assessments",
+        "\ud83c\udf93 DGK \u2014 Intern Training | \ud83d\udc40 Supervisor Review",
+        "\ud83c\udf93 DGK \u2014 Intern Training | \u2705 Training Signed Off",
+        "\u2699\ufe0f DGK \u2014 Internal Admin | \ud83d\udd04 Ongoing Operations",
+        "\u2699\ufe0f DGK \u2014 Internal Admin | \ud83d\udcca Reporting & Data",
+        "\u2699\ufe0f DGK \u2014 Internal Admin | \ud83d\udee0\ufe0f Tools & Systems",
+        "\u2699\ufe0f DGK \u2014 Internal Admin | \ud83d\udcbc Business Development",
+        "\u2699\ufe0f DGK \u2014 Internal Admin | \u2705 Done",
+        "\ud83d\udcca DGK \u2014 Dilip Master Tracker | \ud83d\udd34 Needs Immediate Attention",
+        "\ud83d\udcca DGK \u2014 Dilip Master Tracker | \ud83d\udc40 Pending Dilip Review",
+        "\ud83d\udcca DGK \u2014 Dilip Master Tracker | \ud83d\udd04 All In Progress \u2014 Full Team",
+        "\ud83d\udcca DGK \u2014 Dilip Master Tracker | \u2705 Approved This Week",
+        "\ud83d\udcca DGK \u2014 Dilip Master Tracker | \ud83d\udccb Full Task History",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 1. Teams (CSV cannot create teams)",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 2. Convert custom fields to organization-level",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 3. Place projects in the correct team",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 4. Portfolios (CSV cannot create portfolios)",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 5. Automation rules (CSV cannot create rules)",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 6. Dashboards (CSV cannot create dashboards)",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 7. My Tasks views (CSV cannot configure other users)",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 8. Recurring schedules (CSV cannot set recurrence)",
+        "\ud83d\udee0\ufe0f DGK \u2014 Remaining setup | 9. Save client project as Asana template"
+      ],
+      "assignees": [
+        "Shuvang@dgkbusinessconsultancy.com",
+        "Support@dgkbusinessconsultancy.com"
+      ]
+    }
+  },
+  "errors": [],
+  "ok": true,
+  "total_rows": 220
+}
