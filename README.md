@@ -114,3 +114,18 @@ python3 scripts/arrcs_darwin_teams.py
 Writes `feeds/ARRCS_Darwin_teams_roles.xlsx`, plus JSON and CSV. Console download: `GET /download/arrcs-darwin-teams.xlsx`.
 
 Scope: Darwin, Palmerston, Tiwi, Coconut Grove, Farrar, Casuarina, Maluka. Family Support (Mutitjulu / Alice Springs) and Flynn Lodge are excluded. SEEK `?keywords=ARRCS Darwin` is attempted as a search URL only; this environment currently gets Cloudflare 403 and individual SEEK `/job/` pages are never fetched. LinkedIn is not crawled. ARRCS `robots.txt` allows the crawl (`Disallow` empty).
+
+## NDIS disability companies and non-profits
+
+The [NDIS Provider Finder](https://www.ndis.gov.au/participants/working-providers/finding-providers/provider-finder) is a React search over registered providers. This project downloads the official NDIS Commission register CSV (robots-allowed) and keeps two kinds of Approved organisations:
+
+- **Disability company** — Pty Ltd / Pty Limited with core disability registration groups
+- **Non-profit** — Inc, Association, Foundation, Aboriginal Corporation, or Ltd without Pty plus core disability groups (usually limited by guarantee). Insurers and clinic brands are excluded.
+
+Sole traders, partnerships, government, and clinic-only Pty Ltds (therapy / plan management / equipment only) are excluded. ACNC bulk data is not fetched (`data.gov.au` robots `Disallow: /`).
+
+```bash
+python3 scripts/ndis_provider_filter.py
+```
+
+Writes `feeds/NDIS_disability_nonprofit.xlsx`. Console: `GET /download/ndis-disability-nonprofit.xlsx`.

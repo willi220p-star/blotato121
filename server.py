@@ -88,6 +88,8 @@ class Handler(BaseHTTPRequestHandler):
             "/download/apa-physio-leads.csv": "dgk-apa-physio-leads.clay.csv",
             "/download/arrcs-darwin-teams.xlsx": "ARRCS_Darwin_teams_roles.xlsx",
             "/download/arrcs-darwin-teams.csv": "arrcs-darwin-teams.csv",
+            "/download/ndis-disability-nonprofit.xlsx": "NDIS_disability_nonprofit.xlsx",
+            "/download/ndis-disability-nonprofit.csv": "ndis-disability-nonprofit.nt.csv",
         }
         if path in downloads:
             file_path = (FEEDS / downloads[path]).resolve()
