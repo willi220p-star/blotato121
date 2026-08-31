@@ -1,0 +1,115 @@
+﻿Name,Description,Section,Assignee,Collaborators,Start Date,Due Date,Type,Tags,Parent Task,Task Category,Client Name,Project Phase,Priority Level,Task Stage,QA Status,Blocked Reason,Completion Notes,Time Spent (hrs),Deliverable Link,Metrics / KPIs,Issues / Blockers Encountered,Assigned Role,Reviewed By,Review Date,Admin Notes,Week Number,Supervisor
+📋 TEAM SOP — How to Handle Any Task,"STEP 1 — RECEIVE YOUR TASK
+✅ Check your My Tasks board every morning
+✅ Start with Today column
+✅ Read the full task description
+✅ If anything is unclear, comment
+   on the task and tag your supervisor
+   Do NOT ask via WhatsApp or
+   any other channel
+
+STEP 2 — START THE TASK
+✅ Change Task Stage → In Progress
+✅ Note your start time
+✅ If you hit a blocker at any point:
+   → Change Task Stage → Blocked
+   → Fill in Blocked Reason field
+   → Add details in comments
+   → Your supervisor is auto-notified
+
+STEP 3 — COMPLETE THE TASK
+Before submitting — fill in ALL of these:
+✅ Completion Notes — what you did,
+   how it went (REQUIRED — cannot submit without)
+✅ Time Spent — hours and decimals
+   e.g. 1.5 = 1hr 30mins
+✅ Deliverable Link — paste the URL
+   to your work output
+✅ Metrics/KPIs — any numbers
+   that show your output
+✅ Issues/Blockers — anything that
+   slowed you down (even if resolved)
+
+STEP 4 — SUBMIT FOR REVIEW
+✅ Change Task Stage → Ready for Review
+✅ Dilip is automatically notified
+✅ DO NOT mark the task complete yourself
+✅ Do not chase Dilip on other channels —
+   wait for Asana notification
+
+STEP 5 — AFTER DILIP REVIEWS
+If Approved:
+✅ You get a notification
+✅ Task is marked complete automatically
+✅ Nothing else needed
+
+If Revision Required:
+✅ Check Admin Notes for Dilip's feedback
+✅ Make the changes
+✅ Resubmit (repeat from Step 3)",🔄 Ongoing Operations,Support@dgkbusinessconsultancy.com,Shuvang@dgkbusinessconsultancy.com,,,Task,,,Intern Training / Supervision,DGK Internal,,Critical,In Progress,Approved by Dilip,,,,,,,Admin,,,,,
+👑 DILIP SOP — Daily Review Routine,"DAILY MORNING — 5 MINUTES MAX
+
+Step 1: Open Daily Morning Briefing dashboard
+Step 2: Check ""Pending Your Review"" widget
+  → Open each task
+  → Read Completion Notes
+  → Check Deliverable Link
+  → Set QA Status:
+     Approved by Dilip → auto-closes ✅
+     Revision Required → add Admin Notes
+     explaining what needs changing ✅
+Step 3: Check Overdue Tasks widget
+  → Comment on the task directly
+     (not Slack or WhatsApp)
+Step 4: Check Blocked Tasks widget
+  → Comment with solution to unblock
+Step 5: Check Intern Check-ins widget
+  → Follow up if needed
+Done ✅ — 5 minutes maximum
+
+WEEKLY FRIDAY — 15 MINUTES
+
+Step 1: Open Weekly Performance dashboard
+Step 2: Review completion rates per person
+Step 3: Read completion notes on key tasks
+Step 4: Check KPIs logged this week
+Step 5: Update Portfolio health status
+  🟢 On Track
+  🟡 At Risk
+  🔴 Off Track
+Step 6: Plan next week's task delegations
+Done ✅",🔄 Ongoing Operations,Support@dgkbusinessconsultancy.com,,,,Task,,,Internal Admin,DGK Internal,,Critical,In Progress,Approved by Dilip,,,,,,,Admin,,,,,
+🎓 SUPERVISOR SOP — Managing Interns,"WHEN ASSIGNING A TASK TO AN INTERN:
+✅ Fill in the Supervisor field with your name
+✅ Write a clear task description including:
+   → Exactly what needs to be done
+   → Where to find what they need
+   → What ""done"" looks like specifically
+   → Example or reference if possible
+✅ Set a realistic due date
+✅ Set Priority Level
+✅ Set Assigned Role → Intern
+
+MONITORING INTERN TASKS:
+✅ Check ""Intern Tasks I Supervise""
+   column in My Tasks daily
+✅ You are auto-notified if an intern
+   task has no update for 24 hours
+✅ When notified — comment on the task
+   to check in. Do not use WhatsApp.
+✅ If intern is stuck — help them
+   update the Blocked Reason field
+
+REVIEWING INTERN WORK:
+✅ Interns submit to Dilip directly
+   (Dilip is final approver on all tasks)
+✅ You may add a comment on the task
+   with your own feedback before
+   Dilip reviews if helpful
+✅ If intern work is clearly not ready —
+   change QA Status to Revision Required
+   yourself and add Admin Notes",🔄 Ongoing Operations,Shuvang@dgkbusinessconsultancy.com,Support@dgkbusinessconsultancy.com,,,Task,,,Intern Training / Supervision,DGK Internal,,Critical,In Progress,Approved by Dilip,,,,,,,Allrounder / Senior,,,,,Shuvang@dgkbusinessconsultancy.com
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,📊 Reporting & Data,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,🛠️ Tools & Systems,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,💼 Business Development,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,✅ Done,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,

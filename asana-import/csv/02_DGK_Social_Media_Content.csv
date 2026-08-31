@@ -1,0 +1,24 @@
+﻿Name,Description,Section,Assignee,Collaborators,Start Date,Due Date,Type,Tags,Parent Task,Task Category,Client Name,Project Phase,Priority Level,Task Stage,QA Status,Blocked Reason,Completion Notes,Time Spent (hrs),Deliverable Link,Metrics / KPIs,Issues / Blockers Encountered,Assigned Role,Reviewed By,Review Date,Admin Notes,Week Number,Supervisor
+Weekly content plan — Week [set week number],"Plan the week's posts.
+Log plan link in Deliverable Link.
+
+CSV cannot create a repeating schedule. After import, open this task and set Recurring.
+Recurrence: Every Monday.
+Due: Wednesday same week.",📅 Content Calendar,,,,,Task,,,Social Media Content,DGK Internal,,High,Not Started,Awaiting Submission,,,,,,,Allrounder / Senior,,,,,
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,✍️ In Creation,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,
+Create social graphics in Canva,"Paste Canva design link in Deliverable Link.
+
+CSV cannot create a repeating schedule. After import, open this task and set Recurring.
+Recurrence: Every Monday.
+Due: Thursday same week.",🎨 Design — Canva,,,,,Task,,,Social Media Content,DGK Internal,,High,Not Started,Awaiting Submission,,,,,,,Allrounder / Senior,,,,,
+— Section placeholder (delete after import),Placeholder so Asana creates this section during CSV import. Delete this task after import.,👀 Ready for Dilip Review,,,,,Task,,,,,,,Not Started,Awaiting Submission,,,,,,,,,,,,
+Schedule posts for the week,"Confirm scheduled in Completion Notes.
+
+CSV cannot create a repeating schedule. After import, open this task and set Recurring.
+Recurrence: Every Thursday.
+Due: Friday same week.",✅ Approved & Scheduled,,,,,Task,,,Social Media Content,DGK Internal,,Medium,Not Started,Awaiting Submission,,,,,,,Allrounder / Senior,,,,,
+Weekly social media report,"Log reach, engagement, follower change in Metrics/KPIs field.
+
+CSV cannot create a repeating schedule. After import, open this task and set Recurring.
+Recurrence: Every Friday.
+Due: Friday same week.",📢 Published,,,,,Task,,,Social Media Content,DGK Internal,,Medium,Not Started,Awaiting Submission,,,,,,,Allrounder / Senior,,,,,
