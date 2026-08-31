@@ -1056,6 +1056,8 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for name, rows in files.items():
         write_csv(OUT / name, rows)
+    # Easy GitHub download: copy the combined file to the repo root.
+    write_csv(OUT.parent.parent / "DGK_Asana_Import.csv", files["DGK_ALL_IN_ONE.csv"])
     (OUT / "validation_report.json").write_text(
         json.dumps(report, indent=2), encoding="utf-8"
     )

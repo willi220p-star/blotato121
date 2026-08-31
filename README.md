@@ -1,3 +1,5 @@
 # blotato121
 
-DGK Asana import files live in [`asana-import/`](asana-import/README.md).
+Download the Asana import file: [`DGK_Asana_Import.csv`](DGK_Asana_Import.csv)
+
+How to import: [`asana-import/README.md`](asana-import/README.md).

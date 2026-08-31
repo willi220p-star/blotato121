@@ -35,6 +35,8 @@ class CsvPackTests(unittest.TestCase):
         ]
         for name in names:
             self.assertTrue((CSV_DIR / name).is_file(), name)
+        root_copy = Path(__file__).resolve().parent.parent / "DGK_Asana_Import.csv"
+        self.assertTrue(root_copy.is_file(), "DGK_Asana_Import.csv must be at repo root")
 
     def test_all_in_one_contains_six_project_areas(self) -> None:
         path = CSV_DIR / "DGK_ALL_IN_ONE.csv"

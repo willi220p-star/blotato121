@@ -4,7 +4,7 @@ Asana CSV import can create **projects, sections, tasks, assignees, collaborator
 
 ## Use this one file
 
-Import **`csv/DGK_ALL_IN_ONE.csv`** once. It already contains:
+Download **`DGK_Asana_Import.csv`** from the repo root (same content as `csv/DGK_ALL_IN_ONE.csv`). Import that file once. It already contains:
 
 - custom-field seed tasks (delete after import)
 - client template
