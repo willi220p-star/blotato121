@@ -2,12 +2,38 @@
 
 Asana CSV import can create **projects, sections, tasks, assignees, collaborators, due dates, tags, and local custom fields**. It cannot create teams, organization-level fields, rules, portfolios, dashboards, My Tasks layouts, templates, or repeating schedules.
 
-This pack gives you importable CSVs for the DGK system, plus a setup checklist project for everything CSV cannot build.
+## Use this one file
+
+Import **`csv/DGK_ALL_IN_ONE.csv`** once. It already contains:
+
+- custom-field seed tasks (delete after import)
+- client template
+- social media
+- intern training
+- internal admin + SOP tasks
+- Dilip master tracker
+- remaining-setup checklist
+
+Asana still creates **one project** from one CSV. Sections are prefixed so the six areas stay separate, for example `⚙️ DGK — Internal Admin | 🔄 Ongoing Operations`.
+
+### Import steps
+
+1. Download `asana-import/csv/DGK_ALL_IN_ONE.csv`.
+2. In Asana click **+** → **Project** → **Import** / **Import spreadsheet**.
+3. Choose `DGK_ALL_IN_ONE.csv`.
+4. Name the project `DGK — Full system`.
+5. Tick **Use first row as column names** if you see it.
+6. Map `Name` → Task name, `Description` → Description, `Section` → Section, `Assignee` → Assignee.
+7. Start import.
+8. Delete every task named `FIELD SEED — delete:` and `— Section placeholder (delete after import)`.
+
+The separate `01`–`06` files are optional if you later want six Asana projects instead of one.
 
 ## Files
 
 | File | Import as this Asana project | Team after import |
 | --- | --- | --- |
+| `csv/DGK_ALL_IN_ONE.csv` | `DGK — Full system` (all six areas in one project) | Any; move later |
 | `csv/00_custom_field_seed.csv` | `DGK — Custom Field Seed (DELETE)` | Any; delete after converting fields |
 | `csv/01_CLIENT_project_master_template.csv` | `🏢 CLIENT — [Client Name]` | DGK — Client Operations |
 | `csv/02_DGK_Social_Media_Content.csv` | `📱 DGK — Social Media & Content` | DGK — Internal Operations |
@@ -41,9 +67,9 @@ python3 asana-import/generate_asana_csvs.py
 8. Delete every task named `— Section placeholder (delete after import)`.
 9. Delete the whole seed project after fields are organization-level.
 
-Do **not** import all files into one project. Section names would collide.
+If you use `DGK_ALL_IN_ONE.csv`, skip the separate files.
 
-## Import order
+## Import order (only if you want 6 separate Asana projects)
 
 1. `00_custom_field_seed.csv`
 2. Convert the 18 fields to **organization** fields. Colour the dropdown options (CSV cannot set colours).

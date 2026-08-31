@@ -299,6 +299,34 @@ def write_csv(path: Path, rows: list[dict[str, str]]) -> None:
             writer.writerow(row)
 
 
+def prefix_sections(rows: list[dict[str, str]], project: str) -> list[dict[str, str]]:
+    """Keep each original project distinct when merged into one Asana project."""
+    prefixed: list[dict[str, str]] = []
+    for row in rows:
+        copy = dict(row)
+        copy["Section"] = f"{project} | {row['Section']}"
+        prefixed.append(copy)
+    return prefixed
+
+
+COMBINED_PARTS = [
+    ("00 FIELD SEED — delete these tasks after import", "00_custom_field_seed.csv"),
+    ("🏢 CLIENT — [Client Name]", "01_CLIENT_project_master_template.csv"),
+    ("📱 DGK — Social Media & Content", "02_DGK_Social_Media_Content.csv"),
+    ("🎓 DGK — Intern Training", "03_DGK_Intern_Training.csv"),
+    ("⚙️ DGK — Internal Admin", "04_DGK_Internal_Admin.csv"),
+    ("📊 DGK — Dilip Master Tracker", "05_DGK_Dilip_Master_Tracker.csv"),
+    ("🛠️ DGK — Remaining setup", "06_DGK_Setup_Checklist.csv"),
+]
+
+
+def combined_rows(files: dict[str, list[dict[str, str]]]) -> list[dict[str, str]]:
+    merged: list[dict[str, str]] = []
+    for project, filename in COMBINED_PARTS:
+        merged.extend(prefix_sections(files[filename], project))
+    return merged
+
+
 def seed_rows() -> list[dict[str, str]]:
     """One row per dropdown option so Asana creates every choice."""
     rows: list[dict[str, str]] = []
@@ -1000,6 +1028,12 @@ def validate(files: dict[str, list[dict[str, str]]]) -> dict:
         missing_opts = [opt for opt in options if opt not in found]
         if missing_opts:
             report["errors"].append(f"seed missing {field} options: {missing_opts}")
+    combined = files.get("DGK_ALL_IN_ONE.csv", [])
+    expected_combined = sum(len(files[name]) for _, name in COMBINED_PARTS if name in files)
+    if combined and len(combined) != expected_combined:
+        report["errors"].append(
+            f"combined row count {len(combined)} != {expected_combined}"
+        )
     report["ok"] = not report["errors"]
     report["total_rows"] = sum(len(rows) for rows in files.values())
     return report
@@ -1015,6 +1049,7 @@ def main() -> None:
         "05_DGK_Dilip_Master_Tracker.csv": master_tracker_rows(),
         "06_DGK_Setup_Checklist.csv": setup_checklist_rows(),
     }
+    files["DGK_ALL_IN_ONE.csv"] = combined_rows(files)
     report = validate(files)
     if not report["ok"]:
         raise SystemExit("CSV validation failed:\n" + "\n".join(report["errors"]))

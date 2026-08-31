@@ -31,9 +31,27 @@ class CsvPackTests(unittest.TestCase):
             "04_DGK_Internal_Admin.csv",
             "05_DGK_Dilip_Master_Tracker.csv",
             "06_DGK_Setup_Checklist.csv",
+            "DGK_ALL_IN_ONE.csv",
         ]
         for name in names:
             self.assertTrue((CSV_DIR / name).is_file(), name)
+
+    def test_all_in_one_contains_six_project_areas(self) -> None:
+        path = CSV_DIR / "DGK_ALL_IN_ONE.csv"
+        with path.open(encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        prefixes = {
+            "00 FIELD SEED — delete these tasks after import",
+            "🏢 CLIENT — [Client Name]",
+            "📱 DGK — Social Media & Content",
+            "🎓 DGK — Intern Training",
+            "⚙️ DGK — Internal Admin",
+            "📊 DGK — Dilip Master Tracker",
+            "🛠️ DGK — Remaining setup",
+        }
+        found = {row["Section"].split(" | ", 1)[0] for row in rows}
+        self.assertEqual(prefixes, found)
+        self.assertGreater(len(rows), 100)
 
     def test_header_order_and_custom_fields(self) -> None:
         path = CSV_DIR / "01_CLIENT_project_master_template.csv"
