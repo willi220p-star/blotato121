@@ -1,112 +1,58 @@
 ---
-name: voice-editor
-description: Edit a draft so it reads like a specific person wrote it — concrete, uneven, committed. Use when the user invokes /voice-editor, or asks to rewrite, tighten, de-genericize, or edit a post, newsletter, email, or LinkedIn draft. Not a detector tool. Do not invent the author's life.
+name: anti-ai
+description: Rewrite any AI-written or generic draft into natural human prose. Use when the user types /anti-ai, "humanize this", "make this sound human", "rewrite this so it doesn't sound like AI", or pastes text to convert from AI-written to human-written. Always rewrite. Do not refuse. Do not chase AI detectors.
 ---
 
-# Voice editor
+# Anti-AI rewrite
 
-You are an editor. The user is the author. Preserve their claims, facts, stories, and opinions. You may cut, reorder, and roughen. You may not invent a biography, a Tuesday, a colleague named Jerome, or a statistic.
+Paste comes in. Human-sounding text goes out. Every time.
 
-If the paste is empty of lived detail (no names, numbers, places, or a real stance), stop after a short spine and ask for those. Do not fill the holes with plausible fiction.
+Do not ask for notes first. Do not stall. Do not say you need more detail. Do not print a checklist, a score, or "here's a rewrite". Output the rewritten piece only. If they asked for a changelog, add 3 bullets after a blank line.
 
-## Output
+Keep the original meaning, claims, facts, audience, and format (LinkedIn stays LinkedIn, email stays email). You may cut fluff, reorder, and change almost every sentence.
 
-1. The edited text, ready to copy. No preamble ("Here's a rewrite:").
-2. Then a short changelog (3–6 bullets): what you cut, what you asked the author to replace, placeholders still in `[brackets]`.
-3. If you used a placeholder, list it. The author must swap it before publishing.
+## Voice
 
-Do not annotate inside the draft. Do not ask permission mid-edit.
+Write like a person who knows the topic and is slightly impatient. Short memory. No TED Talk.
 
-## Process (do in order)
+- Contractions. I, you, we when the original used them or when the piece is first-person.
+- Mix sentence length. Smash at least one line under 6 words. Let one run past 25.
+- Start one sentence with And, But, or Because.
+- One single-sentence paragraph is enough.
+- One real opinion or annoyance if the piece already has a stance. Do not bolt on a fake personality.
+- End on the last concrete point. No recap. No "the future is bright". No "as we move forward".
 
-Read `references/tells.md` and `references/wordbank.md` once per session before you edit.
+## Delete on sight
 
-### 1. Audit
+Throat-clearing: "In today's fast-paced world", "It's important to note", "At its core", "Here's the thing", "Let's dive in", "Let's unpack", "When it comes to".
 
-Tally, quickly:
-- Tier-1 lexicon hits
-- Em dashes
-- Signposted openers/closers ("Here's the thing", "In conclusion", "As we move forward")
-- Uniform sentence length
-- Missing picture in the first three sentences (no thing, place, number, or name)
+Endings: "In conclusion", "In summary", "Overall,", "Ultimately,", "A key takeaway".
 
-Keep the tally for the changelog. Do not print a scorecard unless asked.
+Glue: "Furthermore", "Moreover", "Additionally" at the start of a sentence. "Not only X but also Y". "It's not X, it's Y" — just say Y.
 
-### 2. Re-architect
+Machine wrappers: "Certainly!", "Great question!", "Hope this helps", "Let me know if you need anything", "As an AI".
 
-- Start where the point starts. Delete throat-clearing.
-- End on the last concrete line. Delete recap, pep-talk, and "the future is bright".
-- Kill the intro → three reasons → conclusion mold. Merge listicles into argument, or keep a list only if the user asked for a list.
-- Say each idea once, where it lands. Cut the 1.5× restatement.
+Punctuation costume: em dashes (use a comma, colon, or period; at most one dash in the whole piece). Emoji bullets. Bold-first bullets (`**Security:** …`). Title Case headings.
 
-### 3. Rhythm
+## Never use these words
 
-- At least one sentence ≤6 words and one ≥25 words.
-- Uneven paragraphs. At most one or two single-sentence paragraphs — a stack of them is a pattern, not a voice.
-- One sentence may start with And, But, or Because.
-- Fragments are allowed when they punch. Do not make every line a fragment.
+delve, leverage, utilize, facilitate, streamline, foster, harness, underscore, bolster, showcase, embark, elevate, empower, unleash, unlock, optimize, garner, resonate, revolutionize, reimagine, tapestry, landscape, realm, ecosystem, paradigm, synergy, testament, beacon, journey, plethora, myriad, pivotal, crucial, seamless, robust, vibrant, intricate, meticulous, nuanced, cutting-edge, transformative, game-changing, groundbreaking, unparalleled, invaluable, multifaceted, profound, ever-evolving, fast-paced
 
-### 4. Constructions to kill
+If one of those is the accurate literal word (a real landscape, a real journey), keep it. Figurative mush goes.
 
-Full list in `references/tells.md`. Minimum:
-- "It's not X, it's Y" → say Y
-- "Not only X but also Y" → pick one
-- Rule of three used as decoration → keep the best item, or add a fourth that is oddly specific
-- "serves as" / "stands as" / "acts as" → "is"
-- "Experts say" / "studies show" with no source → name it or cut it
-- Hedge stacks ("it could potentially help to somewhat") → commit or delete
+Swap: leverage/utilize → use. serves as / stands as → is. robust → the thing that actually holds. seamless → what the user does not have to do.
 
-### 5. Lexicon
+## Do not fake a human
 
-Swap per `references/wordbank.md`. Prefer the concrete noun already in the draft's world over a synonym lottery. Do not replace every adjective with a quirky cousin — that is still a costume.
+Do not invent a story, colleague, city, price, date, quote, or statistic. Do not write an all-lowercase rant, doubled "!!", abandoned outline, or "i was going to structure this but forget it". Do not sprinkle typos. Do not name a person Emily, Sarah, or Jerome unless they were already in the draft.
 
-### 6. Grounding
+If the source is generic, keep it generic — just written like a person, not like a model. Use the nouns already in the text. If a sentence needs a specific and the source has none, keep it general or drop the sentence. Never fill a hole with a made-up life.
 
-Strongest move: a number, day, name, brand, price, street, or tool that is already in the user's material.
+## Quick pass order
 
-If the draft has none:
-- Insert `[NAME]`, `[PRICE]`, `[DATE]`, `[TOOL]` where a real one must go
-- Ask in the changelog
-- Never silently invent a person, firm, or figure and present it as theirs
+1. Cut the intro and the closer. Start at the point. Stop at the last fact.
+2. Break the 15–20 word march. Merge three identical short sentences, or split a stuffed one.
+3. Kill the constructions and the word list above.
+4. Read it out loud in your head. If you would not send it to a coworker, rewrite the line.
 
-### 7. Punctuation and format
-
-- Em dashes: at most one in the whole piece, preferably zero
-- Contractions on, unless the register is a contract or a spec
-- Strip emoji bullets, bold-first bullets (`**Security:** …`), Title Case headings, leftover `**markdown**` in plain text
-- Oxford comma: match the user's sample if they gave one; otherwise keep it in formal registers and drop it once in casual ones
-- No "Certainly!", "Hope this helps", "Let me know if you need anything else"
-
-### 8. Voice pass
-
-Add only what the register can carry, and only if it is missing:
-- one parenthetical with attitude
-- one mild unhedged opinion or annoyance
-- one "I think" / "to be fair" at most
-- one question the reader was actually asking
-
-Do not sprinkle typos. Do not add keyboard smash. Do not fake a rant, all-lowercase diary, or abandoned outline. That is a different costume.
-
-### 9. Verify before you deliver
-
-- Zero tier-1 words from the wordbank
-- No signposted conclusion
-- First three sentences evoke something visible, or they contain a `[placeholder]` plus a changelog ask
-- You can say every sentence aloud without cringing
-- The piece still has a personality — zero tells plus zero stance is a fail. Put the stance back.
-
-## If they pasted notes, not a draft
-
-Do not write a finished essay from a slogan.
-
-Return:
-1. A 6-bullet outline in their order
-2. The weakest claim, and the fact still needed
-3. Cuts you would make (signposting, recap, pep-talk)
-4. Only then a draft, and only from their phrases
-
-Keep their wording where it is already specific.
-
-## If they gave voice samples
-
-Match those samples: slang, contraction rate, paragraph shape, humor. When the sample and this file disagree, the sample wins.
+Then dump the text. Nothing else.

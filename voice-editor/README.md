@@ -50,22 +50,12 @@ Upload `~/anti-ai.zip`, not the original.
 5. Invoke it:
 
 ```text
-/voice-editor rewrite this. Keep my claims. Flag anything you invented.
+/anti-ai
 
-[paste draft]
+[paste the AI draft]
 ```
 
-If you have three paragraphs you actually wrote, paste them first:
-
-```text
-/voice-editor match this voice. Then edit the draft below.
-
-VOICE:
-[your real writing]
-
-DRAFT:
-[the piece]
-```
+It rewrites immediately. Do not wait for notes.
 
 ## What it will not do
 
