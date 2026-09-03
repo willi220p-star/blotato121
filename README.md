@@ -129,3 +129,16 @@ python3 scripts/ndis_provider_filter.py
 ```
 
 Writes `feeds/NDIS_disability_nonprofit.xlsx`. Console: `GET /download/ndis-disability-nonprofit.xlsx`.
+
+### LinkedIn organisation-page enrichment
+
+Add confirmed LinkedIn organisation pages to the non-profit sheets:
+
+```bash
+python3 scripts/enrich_ndis_linkedin.py path/to/NDIS_disability_nonprofit.xlsx
+```
+
+The enrichment checks each non-profit's official website for a published
+LinkedIn company, showcase, or school URL. It does not fetch LinkedIn pages,
+does not include personal `/in/` profiles, and leaves uncertain matches blank.
+The output adds the URL, profile name, source page, and discovery status.
