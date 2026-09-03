@@ -142,3 +142,23 @@ The enrichment checks each non-profit's official website for a published
 LinkedIn company, showcase, or school URL. It does not fetch LinkedIn pages,
 does not include personal `/in/` profiles, and leaves uncertain matches blank.
 The output adds the URL, profile name, source page, and discovery status.
+
+## Upcoming earnings technical workbook
+
+Generate the next 30 calendar days of Nasdaq earnings announcements with
+market data and technical indicators:
+
+```bash
+python3 scripts/nasdaq_upcoming_earnings.py --start 2026-09-04 --days 30
+```
+
+The workbook includes consensus EPS, prior-year EPS, price, 52-week range,
+RSI, MACD, SMA/EMA 20/50/200, Bollinger Bands, stochastic, ADX, CCI,
+momentum, VWMA, ATR, relative volume, 1/3/6-month returns and TradingView
+technical ratings. Its one-month range is `price ± ATR(14) × √21`; this is a
+volatility scenario, not a target, forecast or financial advice.
+
+Earnings metadata comes from Nasdaq's calendar. Technical data comes from
+TradingView's `/global/scan`, which its robots file explicitly allows. Output:
+`feeds/NASDAQ_upcoming_earnings_technical.xlsx` and CSV. Console:
+`GET /download/nasdaq-upcoming-earnings.xlsx`.
