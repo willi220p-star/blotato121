@@ -468,6 +468,12 @@ def _style_table(ws: Worksheet, rows: list[dict]) -> None:
                 cell.number_format = "#,##0"
             elif key.endswith("_pct") or key.startswith("return_") or key.startswith("distance_"):
                 cell.number_format = "0.00"
+            elif key in {"rsi_14", "stochastic_k", "stochastic_d", "adx", "adx_plus_di", "adx_minus_di", "cci_20", "relative_volume_10d"}:
+                cell.number_format = "0.00"
+            elif key in {"macd", "macd_signal_line", "momentum", "technical_rating_score"}:
+                cell.number_format = "0.0000"
+            elif key == "number_of_estimates":
+                cell.number_format = "0"
         ws.row_dimensions[row_no].height = 34
     widths = {
         "earnings_date": 13,
@@ -478,6 +484,14 @@ def _style_table(ws: Worksheet, rows: list[dict]) -> None:
         "trend_structure": 21,
         "technical_rating": 16,
         "future_bias_not_forecast": 26,
+        "rsi_14": 12,
+        "macd": 16,
+        "macd_signal_line": 18,
+        "stochastic_k": 15,
+        "stochastic_d": 15,
+        "adx_plus_di": 14,
+        "adx_minus_di": 14,
+        "technical_rating_score": 20,
         "data_status": 24,
         "earnings_source": 35,
         "technical_source": 35,
