@@ -1,0 +1,15 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local Cognee clone, data, and frontend deps
+cognee/
+cloned/
+.data/
+.cognee_system/
+**/node_modules/
+.next/
+*.lance/

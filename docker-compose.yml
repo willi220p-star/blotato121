@@ -1,0 +1,43 @@
+# Prebuilt Cognee API (no local build). Docker is optional on this host —
+# the Python path in scripts/ is the default here.
+#
+#   export LLM_API_KEY=sk-...
+#   docker compose up
+
+services:
+  cognee:
+    image: cognee/cognee:main
+    ports:
+      - "8000:8000"
+    environment:
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      LLM_MODEL: ${LLM_MODEL:-openai/gpt-4o-mini}
+      ENABLE_BACKEND_ACCESS_CONTROL: "false"
+      REQUIRE_AUTHENTICATION: "false"
+      ENV: local
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-*}
+      DATA_ROOT_DIRECTORY: /cognee-data/data
+      SYSTEM_ROOT_DIRECTORY: /cognee-data/system
+    volumes:
+      - cognee_data:/cognee-data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    image: cognee/cognee-ui:latest
+    profiles: ["ui"]
+    ports:
+      - "3000:3000"
+    environment:
+      COGNEE_BACKEND_URL: ${COGNEE_BACKEND_URL:-}
+    depends_on:
+      cognee:
+        condition: service_healthy
+
+volumes:
+  cognee_data:
