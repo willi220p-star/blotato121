@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="KISHUKA mark">
+  <title>KISHUKA mark</title>
+  <g transform="translate(256,268)">
+    <path d="M0,-186 C-7,-186 -164,10 -164,96 C-164,188 -92,254 0,254 C92,254 164,188 164,96 C164,10 7,-186 0,-186 Z" fill="#0F5C5B"/>
+    <rect x="-64" y="-58" width="32" height="176" rx="9" fill="#FFFFFF"/>
+    <path d="M-18,24 L58,-54 C65,-61 76,-58 78,-49 L86,-24 C88,-15 81,-8 72,-4 L10,34 L76,118 C82,126 76,138 64,138 L38,138 C31,138 25,134 22,127 L-18,70 Z" fill="#FFFFFF"/>
+    <path d="M132,-158 L141,-122 L177,-113 L141,-104 L132,-68 L123,-104 L87,-113 L123,-122 Z" fill="#E8B84A"/>
+  </g>
+</svg>
