@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="KISHUKA Steam and Clean">
+  <title>KISHUKA Steam &amp; Clean</title>
+  <rect width="1024" height="1024" fill="#FFFFFF"/>
+
+  <!-- Steam-K mark: droplet with a geometric K and gold spark -->
+  <g transform="translate(512,330)">
+    <path d="M0,-168 C-6,-168 -148,8 -148,86 C-148,168 -82,228 0,228 C82,228 148,168 148,86 C148,8 6,-168 0,-168 Z" fill="#0F5C5B"/>
+    <!-- inner K cut from negative space via cream bars -->
+    <rect x="-58" y="-52" width="28" height="156" rx="8" fill="#FFFFFF"/>
+    <path d="M-18,22 L52,-48 C58,-54 68,-52 70,-44 L78,-22 C80,-14 74,-8 66,-4 L8,32 L70,108 C76,116 70,126 60,126 L36,126 C30,126 24,122 22,116 L-18,64 Z" fill="#FFFFFF"/>
+    <!-- gold spark -->
+    <path d="M118,-142 L126,-110 L158,-102 L126,-94 L118,-62 L110,-94 L78,-102 L110,-110 Z" fill="#E8B84A"/>
+  </g>
+
+  <text x="512" y="690" text-anchor="middle" font-family="Montserrat, Avenir Next, Arial Black, Arial, sans-serif" font-size="96" font-weight="800" letter-spacing="10" fill="#1C1C1C">KISHUKA</text>
+  <text x="512" y="748" text-anchor="middle" font-family="Montserrat, Avenir Next, Arial, sans-serif" font-size="28" font-weight="600" letter-spacing="8" fill="#E8B84A">STEAM &amp; CLEAN</text>
+  <text x="512" y="792" text-anchor="middle" font-family="Montserrat, Avenir Next, Arial, sans-serif" font-size="20" font-weight="500" letter-spacing="6" fill="#0F5C5B">DARWIN NT</text>
+</svg>
