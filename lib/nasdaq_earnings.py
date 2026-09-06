@@ -138,6 +138,9 @@ COLUMNS = (
 )
 
 HEADER_FILL = PatternFill("solid", fgColor="D9FF4F")
+BUY_FILL = PatternFill("solid", fgColor="C6EFCE")
+SELL_FILL = PatternFill("solid", fgColor="FFC7CE")
+NEUTRAL_FILL = PatternFill("solid", fgColor="FFEB9C")
 HEADER_FONT = Font(bold=True, color="14160F")
 TITLE_FONT = Font(bold=True, size=15, color="14160F")
 WRAP = Alignment(wrap_text=True, vertical="top")
@@ -489,6 +492,14 @@ def _style_table(ws: Worksheet, rows: list[dict]) -> None:
             if key in {"earnings_source", "technical_source"} and row.get(key):
                 cell.hyperlink = row[key]
                 cell.style = "Hyperlink"
+            if key == "bullish_bearish_signal":
+                cell.fill = (
+                    BUY_FILL
+                    if row.get(key) == "Bullish"
+                    else SELL_FILL
+                    if row.get(key) == "Bearish"
+                    else NEUTRAL_FILL
+                )
             if key in {"price", "52_week_low", "52_week_high", "sma_20", "sma_50", "sma_200", "ema_20", "ema_50", "ema_200", "bollinger_lower", "bollinger_upper", "atr_14", "one_month_scenario_low", "one_month_scenario_high"}:
                 cell.number_format = "$#,##0.00"
             elif key in {"nasdaq_market_cap", "technical_market_cap", "volume"}:
