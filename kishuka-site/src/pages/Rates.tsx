@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { asset } from "../asset";
 import { RATES } from "../data";
 
 export default function Rates() {
@@ -50,6 +51,11 @@ export default function Rates() {
               Get 25% off
             </Link>
           </p>
+          <img
+            src={asset("images/end_of_lease.png")}
+            alt="Freshly cleaned Darwin home ready for inspection"
+            style={{ borderRadius: 16, marginTop: "0.9rem" }}
+          />
         </aside>
       </div>
     </section>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { asset } from "../asset";
 import { OFFERS } from "../data";
 
 const hrefs: Record<string, string> = {
@@ -13,9 +14,12 @@ export default function OfferGrid() {
     <div className="offer-grid">
       {OFFERS.map((o) => (
         <Link className={`blow ${o.tone}`} to={hrefs[o.id]} key={o.id}>
-          <small>{o.kicker}</small>
-          <h3>{o.title}</h3>
-          <p>{o.detail}</p>
+          <img src={asset(o.image)} alt="" />
+          <div className="blow-copy">
+            <small>{o.kicker}</small>
+            <h3>{o.title}</h3>
+            <p>{o.detail}</p>
+          </div>
         </Link>
       ))}
     </div>

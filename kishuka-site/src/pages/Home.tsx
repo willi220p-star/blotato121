@@ -10,9 +10,6 @@ export default function Home() {
       <OfferTicker />
 
       <section className="hero-band">
-        <div className="blob blob-a" aria-hidden="true" />
-        <div className="blob blob-b" aria-hidden="true" />
-        <div className="blob blob-c" aria-hidden="true" />
         <div className="shell hero">
           <div>
             <p className="eyebrow">Darwin · Palmerston · rural NT</p>
@@ -21,7 +18,7 @@ export default function Home() {
             </h1>
             <p>
               KISHUKA is Kishan and Binuka. Carpet steam, vacuum extraction, and home
-              cleaning built for Top End humidity. Bright work. Bright rooms.
+              cleaning built for Top End humidity.
             </p>
             <div className="hero-actions">
               <Link className="cta-book" to="/book">
@@ -29,9 +26,6 @@ export default function Home() {
               </Link>
               <Link className="cta-refer" to="/rates">
                 See rates
-              </Link>
-              <Link className="cta-google" to="/referral">
-                25% referral
               </Link>
             </div>
             <ul className="hero-pills">
@@ -51,9 +45,9 @@ export default function Home() {
       </section>
 
       <section className="shell section">
-        <h2>Offers that pop</h2>
+        <h2>Current offers</h2>
         <p className="lede">
-          Hover or tap a card. It blows up so you can read the deal, then jump
+          Hover or tap a card. It opens up so you can read the deal, then jump
           straight into booking or a referral.
         </p>
         <OfferGrid />
@@ -61,10 +55,10 @@ export default function Home() {
 
       <section className="section marquee-section">
         <div className="shell">
-          <h2>Cards keep sliding</h2>
+          <h2>Services on the move</h2>
           <p className="lede">
-            One row rolls left. The next rolls right. Hover to pause. Each card
-            grows so you can pick a job.
+            One row rolls left. The next rolls right. Every card has a photo.
+            Hover to pause.
           </p>
         </div>
         <CardMarquee />
@@ -74,9 +68,7 @@ export default function Home() {
 
       <section className="shell section">
         <h2>Steam in the room</h2>
-        <p className="lede">
-          Real kit, real pile, real steam. Hover the photos and they open up.
-        </p>
+        <p className="lede">Hover the photos and they open up.</p>
         <div className="photo-grid">
           <figure className="zoom-card tall">
             <img
@@ -92,10 +84,10 @@ export default function Home() {
             </figure>
             <figure className="zoom-card short">
               <img
-                src={asset("images/steam_wand_closeup.png")}
-                alt="Close up of a steam wand extracting carpet soil"
+                src={asset("images/tiles_grout.png")}
+                alt="Steam cleaning tiles and grout"
               />
-              <figcaption>Wand extraction</figcaption>
+              <figcaption>Tiles and grout</figcaption>
             </figure>
           </div>
         </div>

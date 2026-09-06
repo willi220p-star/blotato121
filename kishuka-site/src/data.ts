@@ -33,11 +33,13 @@ export const SERVICES = [
     id: "tiles",
     title: "Tiles and grout",
     blurb: "Hard floors, bathrooms, and outdoor tiles that hold Darwin dust.",
+    image: "/images/tiles_grout.png",
   },
   {
     id: "lease",
     title: "End of lease",
     blurb: "A sparkle clean written for NT agent inspections, including carpets.",
+    image: "/images/end_of_lease.png",
   },
 ];
 
@@ -48,6 +50,7 @@ export const OFFERS = [
     title: "$40 off first steam",
     detail: "Book your first carpet steam with KISHUKA and we take $40 off the visit.",
     tone: "green",
+    image: "/images/steam_carpet_living_room.png",
   },
   {
     id: "refer",
@@ -55,6 +58,7 @@ export const OFFERS = [
     title: "25% off next clean",
     detail: "When a friend you refer books a paid job, your next service drops 25%.",
     tone: "yellow",
+    image: "/images/steam_crew_hallway.png",
   },
   {
     id: "midweek",
@@ -62,13 +66,15 @@ export const OFFERS = [
     title: "Fabric protect included",
     detail: "Midweek carpet jobs over 40 sqm get a complimentary protector pass.",
     tone: "blue",
+    image: "/images/steam_upholstery_sofa.png",
   },
   {
     id: "sameday",
     kicker: "Darwin today",
     title: "Same-day steam window",
     detail: "Ask for a same-day slot before 11am. We squeeze in Nightcliff to Palmerston runs.",
-    tone: "coral",
+    tone: "green",
+    image: "/images/steam_wand_closeup.png",
   },
 ];
 

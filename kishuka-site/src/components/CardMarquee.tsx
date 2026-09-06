@@ -9,7 +9,7 @@ export default function CardMarquee({ reverse = false }: { reverse?: boolean }) 
       <div className={`marquee-track ${reverse ? "reverse" : ""}`}>
         {loop.map((s, i) => (
           <Link className="service-card" to="/services" key={`${s.id}-${i}-${reverse ? "r" : "f"}`}>
-            {s.image ? <img src={asset(s.image)} alt="" /> : <div className="card-fallback" />}
+            <img src={asset(s.image)} alt="" />
             <div>
               <h3>{s.title}</h3>
               <p>{s.blurb}</p>
