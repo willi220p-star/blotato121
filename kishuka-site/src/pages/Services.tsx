@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { asset } from "../asset";
 import { SERVICES } from "../data";
 
 export default function Services() {
@@ -12,7 +13,7 @@ export default function Services() {
       <div className="offer-grid">
         {SERVICES.map((s) => (
           <article className="service-card" key={s.id} style={{ width: "auto" }}>
-            {s.image ? <img src={s.image} alt="" /> : null}
+            {s.image ? <img src={asset(s.image)} alt="" /> : <div className="card-fallback" />}
             <div>
               <h3>{s.title}</h3>
               <p>{s.blurb}</p>

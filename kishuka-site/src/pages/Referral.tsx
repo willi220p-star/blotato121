@@ -1,14 +1,17 @@
 import { FormEvent, useState } from "react";
-import { SUBURBS } from "../data";
+import { EMAIL, SUBURBS } from "../data";
+import { trackAction } from "../notify";
 import { makeCode, saveReferral } from "../storage";
 
 export default function Referral() {
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
+  const [sending, setSending] = useState(false);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     const yourName = String(form.get("yourName") || "").trim();
     const yourPhone = String(form.get("yourPhone") || "").trim();
     const friendName = String(form.get("friendName") || "").trim();
@@ -28,10 +31,26 @@ export default function Referral() {
       friendPhone,
       suburb,
     };
-    saveReferral(referral);
+    setSending(true);
     setError("");
+    try {
+      await trackAction("referral", {
+        code: referral.code,
+        yourName,
+        yourPhone,
+        friendName,
+        friendPhone,
+        suburb,
+      });
+    } catch {
+      setError(
+        "Saved here, but the mailbox ping failed. The first send needs a FormSubmit confirm click in Gmail.",
+      );
+    }
+    saveReferral(referral);
     setCode(referral.code);
-    e.currentTarget.reset();
+    setSending(false);
+    formEl.reset();
   }
 
   return (
@@ -39,7 +58,8 @@ export default function Referral() {
       <h2>Referral: 25% off</h2>
       <p className="lede">
         Send a neighbour to KISHUKA. When they book and pay for a service, your
-        next clean is 25% off. One code per paid referral.
+        next clean is 25% off. One code per paid referral. Each submit is emailed
+        to {EMAIL}.
       </p>
       <div className="split">
         <form className="form panel" onSubmit={onSubmit}>
@@ -73,12 +93,13 @@ export default function Referral() {
           {error ? <div className="error">{error}</div> : null}
           {code ? (
             <div className="ok-box">
-              Referral in. Your 25% code is <code>{code}</code>. Quote it on
-              your next booking after they complete their job.
+              Referral in. Your 25% code is <code>{code}</code>. A copy went to
+              the KISHUKA mailbox. Quote it on your next booking after they
+              complete their job.
             </div>
           ) : null}
-          <button className="submit-yellow" type="submit">
-            Send referral
+          <button className="submit-yellow" type="submit" disabled={sending}>
+            {sending ? "Sending…" : "Send referral"}
           </button>
         </form>
         <aside className="panel">

@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { EMAIL, PHONE_DISPLAY } from "../data";
+import { asset } from "../asset";
+import { trackVisit } from "../notify";
 
 const links = [
   { to: "/", label: "Home" },
@@ -12,6 +14,15 @@ const links = [
 
 export default function Layout() {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    trackVisit(location.pathname || "/");
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
@@ -21,7 +32,7 @@ export default function Layout() {
       <header className="site-header">
         <div className="header-inner">
           <NavLink to="/" className="brand" onClick={() => setOpen(false)}>
-            <img src="/brand/kishuka_mark_white.png" alt="KISHUKA mark" />
+            <img src={asset("brand/kishuka_mark_white.png")} alt="KISHUKA mark" />
             <div>
               <b>KISHUKA</b>
               <span>Steam and Clean</span>
@@ -63,7 +74,7 @@ export default function Layout() {
       <footer className="site-footer">
         <div className="shell foot-grid">
           <div className="foot-brand">
-            <img src="/brand/kishuka_logo_stacked.png" alt="KISHUKA" />
+            <img src={asset("brand/kishuka_logo_stacked.png")} alt="KISHUKA" />
             <div>
               <strong>KISHUKA Steam and Clean</strong>
               <p style={{ margin: "0.3rem 0 0" }}>Kishan and Binuka. Darwin NT.</p>

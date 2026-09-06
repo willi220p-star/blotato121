@@ -1,20 +1,23 @@
 import { FormEvent, useMemo, useState } from "react";
-import { GOOGLE_REVIEW_URL, SUBURBS } from "../data";
+import { EMAIL, GOOGLE_REVIEW_URL, SUBURBS } from "../data";
+import { trackAction } from "../notify";
 import { loadReviews, saveReview } from "../storage";
 
 export default function Reviews() {
   const [reviews, setReviews] = useState(() => loadReviews());
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [sending, setSending] = useState(false);
 
   const average = useMemo(() => {
     if (!reviews.length) return 0;
     return reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
   }, [reviews]);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     const name = String(form.get("name") || "").trim();
     const suburb = String(form.get("suburb") || "").trim();
     const rating = Number(form.get("rating"));
@@ -34,19 +37,34 @@ export default function Reviews() {
       message,
       createdAt: new Date().toISOString().slice(0, 10),
     };
+    setSending(true);
+    setError("");
+    try {
+      await trackAction("review", {
+        name,
+        suburb,
+        rating: String(rating),
+        service,
+        message,
+      });
+    } catch {
+      setError(
+        "Saved on the page, but the mailbox ping failed. The first send needs a FormSubmit confirm click in Gmail.",
+      );
+    }
     saveReview(review);
     setReviews(loadReviews());
-    setError("");
     setSaved(true);
-    e.currentTarget.reset();
+    setSending(false);
+    formEl.reset();
   }
 
   return (
     <section className="shell section">
       <h2>Reviews</h2>
       <p className="lede">
-        Leave feedback for KISHUKA on this page. You can also jump to Google and
-        post a public review there.
+        Leave feedback for KISHUKA on this page. It also lands in {EMAIL}. You
+        can jump to Google and post a public review there too.
       </p>
       <p>
         <a className="cta-google" href={GOOGLE_REVIEW_URL} target="_blank" rel="noreferrer">
@@ -100,9 +118,11 @@ export default function Reviews() {
             <textarea name="message" rows={4} />
           </label>
           {error ? <div className="error">{error}</div> : null}
-          {saved ? <div className="ok-box">Thanks. Your review is on the page.</div> : null}
-          <button className="submit-blue" type="submit">
-            Post review
+          {saved ? (
+            <div className="ok-box">Thanks. Your review is on the page and in the mailbox.</div>
+          ) : null}
+          <button className="submit-blue" type="submit" disabled={sending}>
+            {sending ? "Sending…" : "Post review"}
           </button>
         </form>
         <div className="review-list">

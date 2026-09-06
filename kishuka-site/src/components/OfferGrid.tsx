@@ -5,6 +5,7 @@ const hrefs: Record<string, string> = {
   first: "/book",
   refer: "/referral",
   midweek: "/rates",
+  sameday: "/book",
 };
 
 export default function OfferGrid() {

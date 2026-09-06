@@ -1,14 +1,18 @@
 import { FormEvent, useState } from "react";
 import { EMAIL, PHONE_DISPLAY, SUBURBS } from "../data";
+import { asset } from "../asset";
+import { trackAction } from "../notify";
 import { saveBooking } from "../storage";
 
 export default function Book() {
   const [error, setError] = useState("");
   const [id, setId] = useState("");
+  const [sending, setSending] = useState(false);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     const name = String(form.get("name") || "").trim();
     const phone = String(form.get("phone") || "").trim();
     const email = String(form.get("email") || "").trim();
@@ -31,18 +35,37 @@ export default function Book() {
       date,
       notes,
     };
-    saveBooking(booking);
+    setSending(true);
     setError("");
+    try {
+      await trackAction("booking", {
+        reference: booking.id,
+        name,
+        phone,
+        email,
+        suburb,
+        service,
+        date,
+        notes: notes || "(none)",
+        _replyto: email,
+      });
+    } catch {
+      setError(
+        "Saved here, but the mailbox ping failed. The first send needs a FormSubmit confirm click in Gmail.",
+      );
+    }
+    saveBooking(booking);
     setId(booking.id);
-    e.currentTarget.reset();
+    setSending(false);
+    formEl.reset();
   }
 
   return (
     <section className="shell section">
       <h2>Book a clean</h2>
       <p className="lede">
-        Tell us the job and the suburb. Kishan or Binuka will confirm the time.
-        Call {PHONE_DISPLAY} or email {EMAIL} if you need today.
+        Tell us the job and the suburb. This form lands in the KISHUKA mailbox
+        at {EMAIL}. Call {PHONE_DISPLAY} if you need today.
       </p>
       <div className="split">
         <form className="form panel" onSubmit={onSubmit}>
@@ -93,12 +116,12 @@ export default function Book() {
           {error ? <div className="error">{error}</div> : null}
           {id ? (
             <div className="ok-box">
-              Booking received. Your reference is <code>{id}</code>. We will
-              text you to lock the time.
+              Booking received. Your reference is <code>{id}</code>. A copy went
+              to the KISHUKA mailbox. We will text you to lock the time.
             </div>
           ) : null}
-          <button className="submit-green" type="submit">
-            Send booking
+          <button className="submit-green" type="submit" disabled={sending}>
+            {sending ? "Sending…" : "Send booking"}
           </button>
         </form>
         <aside className="panel">
@@ -112,7 +135,7 @@ export default function Book() {
           </p>
           <p>Hours: Monday to Saturday, 8am to 6pm.</p>
           <img
-            src="/images/steam_upholstery_sofa.png"
+            src={asset("images/steam_upholstery_sofa.png")}
             alt="Upholstery steam in a Darwin home"
             style={{ borderRadius: 16, marginTop: "0.8rem" }}
           />

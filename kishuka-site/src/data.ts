@@ -1,5 +1,5 @@
 export const PHONE_DISPLAY = "04XX XXX XXX";
-export const EMAIL = "hello@kishuka.com.au";
+export const EMAIL = "regmisushant94@gmail.com";
 export const AREA = "Darwin, Palmerston and rural NT";
 export const GOOGLE_REVIEW_URL =
   "https://www.google.com/maps/search/?api=1&query=KISHUKA+Steam+and+Clean+Darwin+NT";
@@ -62,6 +62,13 @@ export const OFFERS = [
     title: "Fabric protect included",
     detail: "Midweek carpet jobs over 40 sqm get a complimentary protector pass.",
     tone: "blue",
+  },
+  {
+    id: "sameday",
+    kicker: "Darwin today",
+    title: "Same-day steam window",
+    detail: "Ask for a same-day slot before 11am. We squeeze in Nightcliff to Palmerston runs.",
+    tone: "coral",
   },
 ];
 

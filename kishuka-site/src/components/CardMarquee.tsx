@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
+import { asset } from "../asset";
 import { SERVICES } from "../data";
 
-export default function CardMarquee() {
+export default function CardMarquee({ reverse = false }: { reverse?: boolean }) {
   const loop = [...SERVICES, ...SERVICES];
   return (
     <div className="marquee-wrap" aria-label="Service cards">
-      <div className="marquee-track">
+      <div className={`marquee-track ${reverse ? "reverse" : ""}`}>
         {loop.map((s, i) => (
-          <Link className="service-card" to="/services" key={`${s.id}-${i}`}>
-            {s.image ? <img src={s.image} alt="" /> : null}
+          <Link className="service-card" to="/services" key={`${s.id}-${i}-${reverse ? "r" : "f"}`}>
+            {s.image ? <img src={asset(s.image)} alt="" /> : <div className="card-fallback" />}
             <div>
               <h3>{s.title}</h3>
               <p>{s.blurb}</p>
