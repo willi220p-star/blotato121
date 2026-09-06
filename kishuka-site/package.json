@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
-    "build:pages": "vite build && rm -rf ../docs && mkdir -p ../docs && cp -r dist/. ../docs && touch ../docs/.nojekyll"
+    "build:pages": "vite build && rm -rf ../docs && mkdir -p ../docs && cp -r dist/. ../docs && cp ../docs/index.html ../docs/404.html && touch ../docs/.nojekyll"
   },
   "dependencies": {
     "react": "^19.1.0",
