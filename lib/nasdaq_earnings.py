@@ -33,6 +33,7 @@ TV_COLUMNS = (
     "type",
     "subtype",
     "exchange",
+    "country",
     "close",
     "change",
     "volume",
@@ -75,6 +76,7 @@ COLUMNS = (
     "symbol",
     "company_name",
     "exchange",
+    "country",
     "fiscal_quarter_ending",
     "consensus_eps_forecast",
     "number_of_estimates",
@@ -122,6 +124,7 @@ COLUMNS = (
     "return_6m_pct",
     "technical_rating_score",
     "technical_rating",
+    "bullish_bearish_signal",
     "moving_average_rating",
     "oscillator_rating",
     "future_bias_not_forecast",
@@ -237,6 +240,14 @@ def technical_bias(score: float | None, trend: str, macd_direction: str, rsi: fl
     if points <= -3:
         return "Bearish technical bias"
     return "Neutral / mixed technical bias"
+
+
+def bullish_bearish_signal(bias: str) -> str:
+    if bias == "Bullish technical bias":
+        return "Bullish"
+    if bias == "Bearish technical bias":
+        return "Bearish"
+    return "Neutral"
 
 
 def scenario_range(price: float | None, atr: float | None, trading_days: int = 21) -> tuple[float | None, float | None, float | None]:
@@ -382,6 +393,7 @@ def build_rows(earnings: list[dict], technicals: dict[str, dict], captured_at: s
                 "symbol": symbol,
                 "company_name": item.get("name") or tech.get("description") or "",
                 "exchange": tech.get("exchange") or "",
+                "country": tech.get("country") or "",
                 "fiscal_quarter_ending": item.get("fiscalQuarterEnding") or "",
                 "consensus_eps_forecast": eps_forecast,
                 "number_of_estimates": parse_number(item.get("noOfEsts")),
@@ -429,6 +441,9 @@ def build_rows(earnings: list[dict], technicals: dict[str, dict], captured_at: s
                 "return_6m_pct": parse_number(tech.get("Perf.6M")),
                 "technical_rating_score": rating_score,
                 "technical_rating": rating_label(rating_score),
+                "bullish_bearish_signal": bullish_bearish_signal(
+                    technical_bias(rating_score, trend, macd_direction, rsi)
+                ),
                 "moving_average_rating": rating_label(parse_number(tech.get("Recommend.MA"))),
                 "oscillator_rating": rating_label(parse_number(tech.get("Recommend.Other"))),
                 "future_bias_not_forecast": technical_bias(rating_score, trend, macd_direction, rsi),
@@ -443,6 +458,18 @@ def build_rows(earnings: list[dict], technicals: dict[str, dict], captured_at: s
         )
     rows.sort(key=lambda row: (row["earnings_date"], row["report_time"], -(row["nasdaq_market_cap"] or 0)))
     return rows
+
+
+def us_market_cap_rows(rows: list[dict]) -> list[dict]:
+    """Keep US-domiciled companies and order largest to smallest."""
+    filtered = [row for row in rows if row.get("country") == "United States"]
+    return sorted(
+        filtered,
+        key=lambda row: (
+            -(row.get("technical_market_cap") or row.get("nasdaq_market_cap") or 0),
+            row.get("symbol") or "",
+        ),
+    )
 
 
 def _style_table(ws: Worksheet, rows: list[dict]) -> None:
@@ -480,9 +507,11 @@ def _style_table(ws: Worksheet, rows: list[dict]) -> None:
         "report_time": 16,
         "symbol": 11,
         "company_name": 34,
+        "country": 16,
         "earnings_expectation": 26,
         "trend_structure": 21,
         "technical_rating": 16,
+        "bullish_bearish_signal": 18,
         "future_bias_not_forecast": 26,
         "rsi_14": 12,
         "macd": 16,
@@ -507,12 +536,20 @@ def _style_table(ws: Worksheet, rows: list[dict]) -> None:
         )
 
 
-def _how_to_use(ws: Worksheet, start: date, end: date, rows: list[dict]) -> None:
+def _how_to_use(
+    ws: Worksheet,
+    start: date,
+    end: date,
+    rows: list[dict],
+    scope_description: str = "All companies on the Nasdaq earnings calendar",
+    order_description: str = "Earnings date, report time, then market cap",
+) -> None:
     complete = sum(row["data_status"] == "Complete" for row in rows)
     lines = [
         ("Upcoming earnings + technical indicators", TITLE_FONT),
         ("", None),
         (f"Window: {start.isoformat()} through {end.isoformat()} (30 calendar days). Companies: {len(rows)}.", None),
+        (f"Scope: {scope_description}. Order: {order_description}.", None),
         (f"Technical data matched: {complete}; unmatched: {len(rows) - complete}. Missing values are left blank.", None),
         ("", None),
         ("Sources", HEADER_FONT),
@@ -542,18 +579,27 @@ def _how_to_use(ws: Worksheet, start: date, end: date, rows: list[dict]) -> None
         ws.row_dimensions[row_no].height = 22 if text else 10
 
 
-def write_workbook(path: Path, rows: list[dict], start: date, end: date) -> None:
+def write_workbook(
+    path: Path,
+    rows: list[dict],
+    start: date,
+    end: date,
+    *,
+    scope_description: str = "All companies on the Nasdaq earnings calendar",
+    order_description: str = "Earnings date, report time, then market cap",
+) -> None:
     wb = Workbook()
     guide = wb.active
     guide.title = "How to use"
-    _how_to_use(guide, start, end, rows)
+    _how_to_use(guide, start, end, rows, scope_description, order_description)
     all_ws = wb.create_sheet("All upcoming earnings")
     _style_table(all_ws, rows)
     for label, predicate in (
         ("Forecast profit EPS", lambda row: (row["consensus_eps_forecast"] or 0) > 0),
         ("Forecast loss EPS", lambda row: row["consensus_eps_forecast"] is not None and row["consensus_eps_forecast"] < 0),
-        ("Bullish bias", lambda row: row["future_bias_not_forecast"] == "Bullish technical bias"),
-        ("Bearish bias", lambda row: row["future_bias_not_forecast"] == "Bearish technical bias"),
+        ("Bullish signal", lambda row: row["bullish_bearish_signal"] == "Bullish"),
+        ("Bearish signal", lambda row: row["bullish_bearish_signal"] == "Bearish"),
+        ("Neutral signal", lambda row: row["bullish_bearish_signal"] == "Neutral"),
         ("Pre-market", lambda row: row["report_time"] == "Pre-market"),
         ("After hours", lambda row: row["report_time"] == "After hours"),
         ("Missing technicals", lambda row: row["data_status"] != "Complete"),

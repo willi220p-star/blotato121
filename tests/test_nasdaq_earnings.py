@@ -15,6 +15,7 @@ from lib.nasdaq_earnings import (
     scenario_range,
     technical_bias,
     trend_structure,
+    us_market_cap_rows,
     write_workbook,
 )
 
@@ -71,6 +72,7 @@ class NasdaqEarningsTest(unittest.TestCase):
             "DEMO": {
                 "_ticker": "NASDAQ:DEMO",
                 "exchange": "NASDAQ",
+                "country": "United States",
                 "close": 120,
                 "change": 1.5,
                 "volume": 1000,
@@ -97,6 +99,8 @@ class NasdaqEarningsTest(unittest.TestCase):
         row = build_rows(earnings, technicals, "2026-09-03T00:00:00+00:00")[0]
         self.assertEqual(row["report_time"], "After hours")
         self.assertEqual(row["technical_rating"], "Strong Buy")
+        self.assertEqual(row["country"], "United States")
+        self.assertEqual(row["bullish_bearish_signal"], "Bullish")
         self.assertEqual(row["future_bias_not_forecast"], "Bullish technical bias")
         self.assertEqual(row["earnings_expectation"], "Forecast EPS growth")
         self.assertEqual(row["data_status"], "Complete")
@@ -110,6 +114,7 @@ class NasdaqEarningsTest(unittest.TestCase):
                 "company_name": "Demo Corp",
                 "report_time": "After hours",
                 "consensus_eps_forecast": 1.2,
+                "bullish_bearish_signal": "Bullish",
                 "future_bias_not_forecast": "Bullish technical bias",
                 "data_status": "Complete",
             }
@@ -120,8 +125,18 @@ class NasdaqEarningsTest(unittest.TestCase):
             wb = load_workbook(path, read_only=True)
             self.assertIn("All upcoming earnings", wb.sheetnames)
             self.assertIn("Forecast profit EPS", wb.sheetnames)
-            self.assertIn("Bullish bias", wb.sheetnames)
+            self.assertIn("Bullish signal", wb.sheetnames)
+            self.assertIn("Bearish signal", wb.sheetnames)
             self.assertEqual(wb["Forecast profit EPS"].max_row, 2)
+
+    def test_us_market_cap_rows_filters_and_sorts(self):
+        rows = [
+            {"symbol": "FOREIGN", "country": "Canada", "technical_market_cap": 5000},
+            {"symbol": "SMALL", "country": "United States", "technical_market_cap": 100},
+            {"symbol": "BIG", "country": "United States", "technical_market_cap": 1000},
+        ]
+        result = us_market_cap_rows(rows)
+        self.assertEqual([row["symbol"] for row in result], ["BIG", "SMALL"])
 
 
 if __name__ == "__main__":
