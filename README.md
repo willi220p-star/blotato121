@@ -149,7 +149,12 @@ Generate the next 30 calendar days of Nasdaq earnings announcements with
 market data and technical indicators:
 
 ```bash
-python3 scripts/nasdaq_upcoming_earnings.py --start 2026-09-04 --days 30
+python3 scripts/nasdaq_upcoming_earnings.py \
+  --start 2026-09-07 \
+  --days 30 \
+  --us-only \
+  --sort-market-cap \
+  --out feeds/NASDAQ_US_upcoming_earnings_signals.xlsx
 ```
 
 The workbook includes consensus EPS, prior-year EPS, price, 52-week range,
@@ -159,6 +164,8 @@ technical ratings. Its one-month range is `price ± ATR(14) × √21`; this is a
 volatility scenario, not a target, forecast or financial advice.
 
 Earnings metadata comes from Nasdaq's calendar. Technical data comes from
-TradingView's `/global/scan`, which its robots file explicitly allows. Output:
-`feeds/NASDAQ_upcoming_earnings_technical.xlsx` and CSV. Console:
+TradingView's `/global/scan`, including the country classification used by
+`--us-only`. `--sort-market-cap` orders every sheet from largest to smallest.
+The workbook has dedicated Bullish, Bearish and Neutral signal sheets. Output:
+`feeds/NASDAQ_US_upcoming_earnings_signals.xlsx` and CSV. Console:
 `GET /download/nasdaq-upcoming-earnings.xlsx`.

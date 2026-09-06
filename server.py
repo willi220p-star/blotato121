@@ -90,8 +90,8 @@ class Handler(BaseHTTPRequestHandler):
             "/download/arrcs-darwin-teams.csv": "arrcs-darwin-teams.csv",
             "/download/ndis-disability-nonprofit.xlsx": "NDIS_disability_nonprofit.xlsx",
             "/download/ndis-disability-nonprofit.csv": "ndis-disability-nonprofit.nt.csv",
-            "/download/nasdaq-upcoming-earnings.xlsx": "NASDAQ_upcoming_earnings_technical.xlsx",
-            "/download/nasdaq-upcoming-earnings.csv": "NASDAQ_upcoming_earnings_technical.csv",
+            "/download/nasdaq-upcoming-earnings.xlsx": "NASDAQ_US_upcoming_earnings_signals.xlsx",
+            "/download/nasdaq-upcoming-earnings.csv": "NASDAQ_US_upcoming_earnings_signals.csv",
         }
         if path in downloads:
             file_path = (FEEDS / downloads[path]).resolve()
