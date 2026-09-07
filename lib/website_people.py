@@ -40,6 +40,11 @@ ROLE_WORDS = re.compile(
     r"practitioner|therapist|psychologist|advisor|consultant|supervisor)\b",
     re.I,
 )
+NAME_ROLE_LINE = re.compile(
+    r"^\s*(?P<name>[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ'.-]+"
+    r"(?:\s+(?:[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ'.-]+|de|del|di|da|la|le|van|von|der)){1,4})"
+    r"\s*[–—]\s*(?P<role>.{2,100})\s*$"
+)
 NAME_EXCLUSIONS = {
     "about us",
     "our team",
@@ -143,7 +148,21 @@ def _nearest_name(node, fallback_url: str = "") -> str:
 
 
 def _nearest_role(node, person_name: str) -> str:
+    following = node.xpath(
+        "following::*[self::p or self::span or self::h4 or self::h5][1]"
+    )
+    if following:
+        segment = _clean_text(" ".join(following[0].itertext()))
+        if (
+            segment
+            and segment != person_name
+            and len(segment) <= 120
+            and ROLE_WORDS.search(segment)
+        ):
+            return segment
     for sibling in list(node.itersiblings())[:3]:
+        if not isinstance(sibling.tag, str):
+            continue
         segment = _clean_text(" ".join(sibling.itertext()))
         if (
             segment
@@ -253,6 +272,25 @@ def extract_people_from_html(content: str, source_url: str) -> list[dict]:
             continue
         role = _nearest_role(heading, name)
         if not role:
+            continue
+        found.append(
+            {
+                "person_name": name,
+                "role": role,
+                "linkedin_profile_url": "",
+                "source_type": "official website staff page",
+                "source_url": source_url,
+                "confidence": "medium",
+            }
+        )
+    for text_node in document.xpath("//text()[normalize-space()]"):
+        line = _clean_text(str(text_node))
+        match = NAME_ROLE_LINE.match(line)
+        if not match:
+            continue
+        name = _clean_text(match.group("name"))
+        role = _clean_text(match.group("role"))
+        if not _plausible_name(name) or not ROLE_WORDS.search(role):
             continue
         found.append(
             {

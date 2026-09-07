@@ -36,6 +36,11 @@ class WebsitePeopleTest(unittest.TestCase):
           <script type="application/ld+json">
             {"@type":"Person","name":"David Jones","jobTitle":"Director"}
           </script>
+          <p>Heidi Coleman – Head Of Finance</p>
+          <h3>Tre Manning-Watson</h3>
+          <p>Regional Manager – Northern Territory &amp; South Australia</p>
+          <h3>Jack Hatcher</h3>
+          <p>Regional Manager – Cairns</p>
         </body></html>
         """
         people = extract_people_from_html(page, "https://example.org/our-team")
@@ -46,6 +51,12 @@ class WebsitePeopleTest(unittest.TestCase):
         )
         self.assertIn("Chief Executive Officer", by_name["Jane Smith"]["role"])
         self.assertEqual(by_name["David Jones"]["role"], "Director")
+        self.assertEqual(by_name["Heidi Coleman"]["role"], "Head Of Finance")
+        self.assertEqual(
+            by_name["Tre Manning-Watson"]["role"],
+            "Regional Manager – Northern Territory & South Australia",
+        )
+        self.assertEqual(by_name["Jack Hatcher"]["role"], "Regional Manager – Cairns")
 
     def test_excludes_article_headings_that_are_not_people(self):
         page = """
