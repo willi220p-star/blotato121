@@ -160,6 +160,25 @@ public search result identifies the same person and current organization.
 LinkedIn itself is not crawled, Apify is not used, and blank results do not mean
 an organization has no employees.
 
+### Disability position filtering
+
+Filter public staff titles and research official career pages for disability
+positions:
+
+```bash
+python3 scripts/ndis_disability_positions.py \
+  feeds/NDIS_disability_nonprofit.xlsx
+```
+
+The resulting workbook adds `Disability Role People`, `Disability Job Openings`,
+and `Company Role Summary`. Covered categories include disability support
+workers, case managers, occupational therapists, behaviour support
+practitioners, support coordinators, team leaders, service coordinators,
+psychologists, social workers, recovery coaches, carers, allied health, nurses,
+therapy assistants, and related care roles. The summary lists filtered position
+titles and staff/opening counts for each company. Published links without a
+closing date may be stale and should be checked manually.
+
 ## Upcoming earnings technical workbook
 
 Generate the next 30 calendar days of Nasdaq earnings announcements with
