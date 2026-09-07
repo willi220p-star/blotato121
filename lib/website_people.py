@@ -235,14 +235,17 @@ def extract_people_from_html(content: str, source_url: str) -> list[dict]:
                 "confidence": "medium",
             }
         )
-    deduped: dict[tuple[str, str], dict] = {}
+    deduped: dict[str, dict] = {}
     for person in found:
-        key = (
-            person["linkedin_profile_url"].lower(),
-            re.sub(r"\W", "", person["person_name"].lower()),
-        )
+        key = re.sub(r"\W", "", person["person_name"].lower())
         current = deduped.get(key)
-        if current is None or (not current["role"] and person["role"]):
+        if (
+            current is None
+            or (person["linkedin_profile_url"] and not current["linkedin_profile_url"])
+            or (not current["role"] and person["role"])
+        ):
+            if current and not person["role"]:
+                person["role"] = current["role"]
             deduped[key] = person
     return list(deduped.values())
 
@@ -331,13 +334,14 @@ def discover_website_people(website: str, timeout: int = 8) -> dict:
                 continue
         checked.append(final_url)
         people.extend(extract_people_from_html(page_content, final_url))
-    unique: dict[tuple[str, str], dict] = {}
+    unique: dict[str, dict] = {}
     for person in people:
-        key = (
-            person["linkedin_profile_url"].lower(),
-            re.sub(r"\W", "", person["person_name"].lower()),
-        )
-        unique.setdefault(key, person)
+        key = re.sub(r"\W", "", person["person_name"].lower())
+        current = unique.get(key)
+        if current is None or (
+            person["linkedin_profile_url"] and not current["linkedin_profile_url"]
+        ):
+            unique[key] = person
     return {
         "status": "people found" if unique else "no public staff found",
         "people": list(unique.values()),
