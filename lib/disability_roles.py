@@ -181,8 +181,9 @@ JOB_ROLE_NOUN_RE = re.compile(
     re.I,
 )
 NON_JOB_TITLE_RE = re.compile(
-    r"^(?:a career|a rewarding|being |career in|careers?:|do |from |how |"
-    r"i am |kira |learn |see |the essential|what |why )|"
+    r"^(?:a career|a rewarding|being |benefits? |career in|careers?:|do |from |how |"
+    r"i am |kira |learn |requirements? |responsibilities |see |"
+    r"the essential|what |why )|"
     r"\b(?:read more|staff stor(?:y|ies)|team mentor|view locations)\b",
     re.I,
 )

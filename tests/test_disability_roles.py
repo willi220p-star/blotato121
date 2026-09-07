@@ -41,6 +41,7 @@ class DisabilityRolesTest(unittest.TestCase):
             "The Essential Role of Male Disability Support Workers",
             "Do I need experience in disability support to apply?",
             "A rewarding career: Mukti's story as a Home Support Worker",
+            "Responsibilities of a Disability Support Worker",
             "Allied Health Jobs",
         )
         for title in rejected:
