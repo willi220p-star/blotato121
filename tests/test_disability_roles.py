@@ -64,6 +64,7 @@ class DisabilityRolesTest(unittest.TestCase):
           ]
           </script>
           <a href="/careers/occupational-therapist">Occupational Therapist</a>
+          <a href="/careers/occupational-therapist">Occupational therapy jobs</a>
         </body></html>
         """
         openings = extract_job_openings(page, "https://example.org/careers")

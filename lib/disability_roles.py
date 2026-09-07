@@ -359,10 +359,13 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
     for opening in found:
         key = (
             opening["job_url"].lower().rstrip("/"),
-            re.sub(r"\W", "", opening["position_title"].lower()),
+            opening["role_category"],
         )
         current = unique.get(key)
-        if current is None or current["status"] != "Published JobPosting":
+        if current is None or (
+            opening["status"] == "Published JobPosting"
+            and current["status"] != "Published JobPosting"
+        ):
             unique[key] = opening
     return list(unique.values())
 
@@ -410,7 +413,7 @@ def discover_organisation_jobs(website: str, timeout: int = 7) -> dict:
             continue
         key = (
             str(opening.get("job_url") or "").lower().rstrip("/"),
-            re.sub(r"\W", "", str(opening.get("position_title") or "").lower()),
+            str(opening.get("role_category") or ""),
         )
         unique.setdefault(key, opening)
     return {
