@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scrapling console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow">Deployed from github.com/D4Vinci/Scrapling</p>
+        <h1>Scrapling console</h1>
+        <p class="lede">
+          Paste a page URL, pick a fetcher, and optionally a CSS selector. Results stay on this machine so you can keep scraping from Cursor.
+        </p>
+        <p id="status" class="status">Checking install…</p>
+      </header>
+
+      <form id="form">
+        <label>
+          Page URL
+          <input id="url" name="url" type="url" required placeholder="https://quotes.toscrape.com/" value="https://quotes.toscrape.com/" />
+        </label>
+        <div class="row">
+          <label>
+            Fetcher
+            <select id="fetcher" name="fetcher">
+              <option value="http" selected>HTTP (curl_cffi)</option>
+              <option value="stealthy">Stealthy browser</option>
+              <option value="dynamic">Dynamic Chromium</option>
+            </select>
+          </label>
+          <label>
+            CSS selector
+            <input id="css" name="css" placeholder=".quote .text::text" value=".quote .text::text" />
+          </label>
+        </div>
+        <button type="submit" id="go">Scrape</button>
+      </form>
+
+      <section>
+        <h2>Result</h2>
+        <pre id="out">Waiting for a scrape…</pre>
+      </section>
+
+      <section>
+        <h2>dgk-signal-source</h2>
+        <p class="lede">Hiring, expansion, and tech-stack signals from About/careers pages. SEEK keyword search is attempted; LinkedIn is recorded, not crawled.</p>
+        <div class="row">
+          <button type="button" id="load-signals">Load feed</button>
+          <button type="button" id="run-signals">Run detection</button>
+        </div>
+        <pre id="signals-out">Load the latest feed or run a new scan…</pre>
+      </section>
+
+      <section>
+        <h2>dgk-list-enrichment</h2>
+        <p class="lede">Clay/Apollo/FullEnrich-shaped rows from niche directories: NDIS (Carevo), legal (Law Society NT PDFs), accounting (ZipLeaf), physio (APA Find a Physio). No LinkedIn crawl. DGK /directory is skipped.</p>
+        <div class="row">
+          <button type="button" id="load-enrich">Load list</button>
+          <button type="button" id="run-enrich">Run enrichment</button>
+          <a class="download" href="/download/apa-physio-leads.xlsx" download="APA_NT_physio_leads.xlsx">Download Excel</a>
+          <a class="download ghost" href="/download/apa-physio-leads.csv" download="APA_NT_physio_leads.csv">Download CSV</a>
+        </div>
+        <pre id="enrich-out">Load the latest enrichment list or run a new scrape…</pre>
+      </section>
+
+      <section>
+        <h2>ARRCS Darwin teams</h2>
+        <p class="lede">Past, present and future teams and positions for ARRCS Darwin / Palmerston. Roles only — no named people. Live job ads are Future.</p>
+        <div class="row">
+          <a class="download" href="/download/arrcs-darwin-teams.xlsx" download="ARRCS_Darwin_teams_roles.xlsx">Download Excel</a>
+          <a class="download ghost" href="/download/arrcs-darwin-teams.csv" download="ARRCS_Darwin_teams_roles.csv">Download CSV</a>
+        </div>
+      </section>
+
+      <section>
+        <h2>NDIS disability companies and non-profits</h2>
+        <p class="lede">Approved providers from the official NDIS Commission register, filtered to disability companies and non-profits. The workbook includes Organizations and People sheets with staff published on official websites and verified publicly indexed LinkedIn profile links. Public staff coverage is incomplete.</p>
+        <div class="row">
+          <a class="download" href="/download/ndis-disability-nonprofit.xlsx" download="NDIS_disability_nonprofit.xlsx">Download Excel</a>
+          <a class="download" href="/download/ndis-disability-positions.xlsx" download="NDIS_disability_nonprofit_positions.xlsx">Download Positions Excel</a>
+          <a class="download ghost" href="/download/ndis-disability-nonprofit.csv" download="NDIS_NT_disability_nonprofit.csv">Download NT CSV</a>
+        </div>
+      </section>
+
+      <section>
+        <h2>US upcoming earnings and signals</h2>
+        <p class="lede">Next 30 calendar days of United States companies on the Nasdaq earnings calendar, ordered from largest to smallest market cap. Includes price, 52-week range, EPS expectations, technical indicators and color-coded bullish, bearish and neutral signals. Research only — not financial advice.</p>
+        <div class="row">
+          <a class="download" href="/download/nasdaq-upcoming-earnings.xlsx" download="NASDAQ_US_upcoming_earnings_signals.xlsx">Download Excel</a>
+          <a class="download ghost" href="/download/nasdaq-upcoming-earnings.csv" download="NASDAQ_US_upcoming_earnings_signals.csv">Download CSV</a>
+        </div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
