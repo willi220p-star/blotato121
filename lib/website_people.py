@@ -67,6 +67,14 @@ NAME_EXCLUSIONS = {
     "social media",
     "linkedin profile",
     "follow us",
+    "protecting your rights",
+    "experience supporting autistic males",
+    "fuel your life",
+    "more opportunities",
+    "cnc empowercare",
+    "goodwill procare",
+    "mycare css",
+    "mycare keeper",
 }
 NAME_PARTICLES = {"de", "del", "di", "da", "la", "le", "van", "von", "der"}
 NON_PERSON_NAME_WORDS = {
