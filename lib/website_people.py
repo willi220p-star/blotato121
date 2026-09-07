@@ -148,11 +148,9 @@ def _nearest_name(node, fallback_url: str = "") -> str:
 
 
 def _nearest_role(node, person_name: str) -> str:
-    following = node.xpath(
-        "following::*[self::p or self::span or self::h4 or self::h5][1]"
-    )
-    if following:
-        segment = _clean_text(" ".join(following[0].itertext()))
+    if isinstance(node.tag, str) and node.tag.lower() in {"h1", "h2", "h3", "h4", "h5"}:
+        following_text = node.xpath("following::text()[normalize-space()][1]")
+        segment = _clean_text(str(following_text[0])) if following_text else ""
         if (
             segment
             and segment != person_name
