@@ -6,6 +6,7 @@ from openpyxl import Workbook, load_workbook
 
 from lib.website_people import (
     extract_people_from_html,
+    merge_public_search_people,
     normalise_person_linkedin_url,
     organisations_from_workbook,
     write_enriched_workbook,
@@ -136,6 +137,32 @@ class WebsitePeopleTest(unittest.TestCase):
                 "https://www.linkedin.com/in/jane-smith",
             )
             self.assertEqual(summary["public_people"], 1)
+
+    def test_merges_verified_public_search_result(self):
+        results = {
+            "12345678901": {
+                "status": "no public staff found",
+                "pages_checked": [],
+                "people": [],
+            }
+        }
+        merge_public_search_people(
+            results,
+            [
+                {
+                    "abn": "123 456 789 01",
+                    "person_name": "Jane Smith",
+                    "role": "Chief Executive Officer",
+                    "linkedin_profile_url": "https://au.linkedin.com/in/jane-smith",
+                }
+            ],
+        )
+        person = results["12345678901"]["people"][0]
+        self.assertEqual(
+            person["linkedin_profile_url"],
+            "https://www.linkedin.com/in/jane-smith",
+        )
+        self.assertEqual(person["source_type"], "publicly indexed LinkedIn result")
 
 
 if __name__ == "__main__":

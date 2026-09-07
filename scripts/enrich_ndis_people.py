@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT))
 
 from lib.website_people import (  # noqa: E402
     discover_many_websites,
+    merge_public_search_people,
     organisations_from_workbook,
     write_enriched_workbook,
 )
@@ -35,6 +36,11 @@ def main() -> int:
     )
     parser.add_argument("--workers", type=int, default=24)
     parser.add_argument("--timeout", type=int, default=8)
+    parser.add_argument(
+        "--public-search-results",
+        type=Path,
+        help="Optional JSON array of manually verified public-index profile results",
+    )
     args = parser.parse_args()
 
     organisations = organisations_from_workbook(args.source)
@@ -44,6 +50,11 @@ def main() -> int:
         timeout=args.timeout,
         checkpoint=args.checkpoint,
     )
+    if args.public_search_results:
+        merge_public_search_people(
+            results,
+            json.loads(args.public_search_results.read_text(encoding="utf-8")),
+        )
     summary = write_enriched_workbook(
         args.source,
         args.out,

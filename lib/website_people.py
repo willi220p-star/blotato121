@@ -505,6 +505,48 @@ def discover_many_websites(
     return results
 
 
+def merge_public_search_people(results: dict[str, dict], records: list[dict]) -> None:
+    """Merge explicitly verified public-index records into crawl results."""
+    for record in records:
+        abn = re.sub(r"\D", "", str(record.get("abn") or ""))
+        name = _clean_text(str(record.get("person_name") or ""))
+        linkedin_url = normalise_person_linkedin_url(
+            str(record.get("linkedin_profile_url") or "")
+        )
+        if not abn or not _plausible_name(name) or not linkedin_url:
+            continue
+        result = results.setdefault(
+            abn,
+            {"status": "public search people found", "people": [], "pages_checked": []},
+        )
+        people = result.setdefault("people", [])
+        normalised_name = re.sub(r"\W", "", name.lower())
+        existing = next(
+            (
+                person
+                for person in people
+                if person.get("linkedin_profile_url", "").lower() == linkedin_url.lower()
+                or re.sub(r"\W", "", person.get("person_name", "").lower())
+                == normalised_name
+            ),
+            None,
+        )
+        person = {
+            "person_name": name,
+            "role": _clean_text(str(record.get("role") or "")),
+            "linkedin_profile_url": linkedin_url,
+            "source_type": "publicly indexed LinkedIn result",
+            "source_url": linkedin_url,
+            "confidence": "high",
+        }
+        if existing:
+            existing.update(person)
+        else:
+            people.append(person)
+        if people:
+            result["status"] = "people found"
+
+
 def write_enriched_workbook(
     source: Path,
     destination: Path,
