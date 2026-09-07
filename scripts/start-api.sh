@@ -21,6 +21,8 @@ export ENABLE_BACKEND_ACCESS_CONTROL="${ENABLE_BACKEND_ACCESS_CONTROL:-false}"
 export REQUIRE_AUTHENTICATION="${REQUIRE_AUTHENTICATION:-false}"
 export ENV="${ENV:-local}"
 export CORS_ALLOWED_ORIGINS="${CORS_ALLOWED_ORIGINS:-*}"
+export SYSTEM_ROOT_DIRECTORY="${SYSTEM_ROOT_DIRECTORY:-$ROOT/cognee-data/system}"
+export DATA_ROOT_DIRECTORY="${DATA_ROOT_DIRECTORY:-$ROOT/cognee-data/data}"
 
 cd "$ROOT"
 exec "$ROOT/.venv/bin/uvicorn" cognee.api.client:app \
