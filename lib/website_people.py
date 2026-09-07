@@ -69,6 +69,62 @@ NAME_EXCLUSIONS = {
     "follow us",
 }
 NAME_PARTICLES = {"de", "del", "di", "da", "la", "le", "van", "von", "der"}
+NON_PERSON_NAME_WORDS = {
+    "ability",
+    "about",
+    "access",
+    "admin",
+    "administrative",
+    "aged",
+    "australia",
+    "australian",
+    "behaviour",
+    "board",
+    "business",
+    "care",
+    "clinical",
+    "committee",
+    "community",
+    "connect",
+    "contact",
+    "coordination",
+    "corporate",
+    "development",
+    "directors",
+    "disability",
+    "education",
+    "enterprise",
+    "enterprises",
+    "foundation",
+    "group",
+    "healthcare",
+    "homecare",
+    "hours",
+    "information",
+    "leadership",
+    "lifecare",
+    "management",
+    "media",
+    "member",
+    "members",
+    "ndis",
+    "office",
+    "opening",
+    "organisation",
+    "organization",
+    "people",
+    "plan",
+    "provider",
+    "psychology",
+    "services",
+    "skills",
+    "solutions",
+    "staff",
+    "support",
+    "supported",
+    "team",
+    "therapy",
+}
 ROLE_PREFIXES = {
     "acting",
     "advisor",
@@ -188,6 +244,16 @@ def _plausible_name(value: str) -> bool:
     if not 2 <= len(words) <= 5:
         return False
     if ROLE_WORDS.search(value):
+        return False
+    lower_words = {
+        re.sub(r"[^a-z]", "", word.lower())
+        for word in words
+    }
+    compact = re.sub(r"[^a-z]", "", value.lower())
+    if lower_words & NON_PERSON_NAME_WORDS or any(
+        marker in compact
+        for marker in ("disability", "healthcare", "management", "servicespty", "supportservices")
+    ):
         return False
     for word in words:
         if word.lower() in NAME_PARTICLES:

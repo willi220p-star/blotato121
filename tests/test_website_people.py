@@ -71,6 +71,10 @@ class WebsitePeopleTest(unittest.TestCase):
             <p>Our Manager can explain the service.</p>
             <h3>Richard Drevid</h3>
             <h3>Alextina Javi Manager</h3>
+            <h3>Board Members</h3>
+            <p>Board Director</p>
+            <h3>Voyage Support</h3>
+            <p>Services Manager</p>
           </article>
         </body></html>
         """
