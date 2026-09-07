@@ -44,6 +44,7 @@ NAME_EXCLUSIONS = {
     "about us",
     "our team",
     "meet the team",
+    "meet our team",
     "our people",
     "leadership team",
     "board of directors",
@@ -51,7 +52,18 @@ NAME_EXCLUSIONS = {
     "contact us",
     "who we are",
     "executive team",
+    "share this on",
 }
+NAME_PARTICLES = {"de", "del", "di", "da", "la", "le", "van", "von", "der"}
+NEGATIVE_PAGE_PATHS = (
+    "/blog/",
+    "/news/",
+    "/article/",
+    "/articles/",
+    "/content-hub/",
+    "/resources/",
+    "/events/",
+)
 _local = threading.local()
 
 
@@ -100,7 +112,12 @@ def _plausible_name(value: str) -> bool:
         return False
     if ROLE_WORDS.search(value):
         return False
-    return all(re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ'.-]*$", word) for word in words)
+    for word in words:
+        if word.lower() in NAME_PARTICLES:
+            continue
+        if not re.match(r"^[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ'.-]*$", word):
+            return False
+    return True
 
 
 def _name_from_slug(url: str) -> str:
@@ -126,14 +143,26 @@ def _nearest_name(node, fallback_url: str = "") -> str:
 
 
 def _nearest_role(node, person_name: str) -> str:
+    for sibling in list(node.itersiblings())[:3]:
+        segment = _clean_text(" ".join(sibling.itertext()))
+        if (
+            segment
+            and segment != person_name
+            and len(segment) <= 120
+            and ROLE_WORDS.search(segment)
+        ):
+            return segment
     parent = node
     for _ in range(4):
         parent = parent.getparent()
         if parent is None:
             break
+        parent_text = _clean_text(" ".join(parent.itertext()))
+        if len(parent_text) > 500:
+            continue
         segments = [
             _clean_text(" ".join(item.itertext()))
-            for item in parent.xpath(".//p|.//span|.//div|.//*[@itemprop='jobTitle']")
+            for item in parent.xpath("./p|./span|./div|./*[@itemprop='jobTitle']")
         ]
         for segment in segments:
             if (
@@ -279,8 +308,21 @@ def _candidate_people_pages(home_url: str, content: str, limit: int = 5) -> list
         target_parsed = urlparse(target)
         if target_parsed.netloc.lower() != parsed.netloc.lower():
             continue
+        if any(part in target_parsed.path.lower() for part in NEGATIVE_PAGE_PATHS):
+            continue
         text = f"{target_parsed.path} {_clean_text(' '.join(anchor.itertext()))}".lower()
-        score = sum(hint in text for hint in PAGE_HINTS)
+        path_segments = {
+            segment
+            for segment in re.split(r"[/_-]+", target_parsed.path.lower())
+            if segment
+        }
+        anchor_text = _clean_text(" ".join(anchor.itertext())).lower()
+        score = sum(
+            hint in path_segments
+            or hint.replace("-", " ") in anchor_text
+            or f"/{hint}/" in f"{target_parsed.path.lower().rstrip('/')}/"
+            for hint in PAGE_HINTS
+        )
         if not score:
             continue
         clean = urlunparse(

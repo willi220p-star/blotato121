@@ -47,6 +47,22 @@ class WebsitePeopleTest(unittest.TestCase):
         self.assertIn("Chief Executive Officer", by_name["Jane Smith"]["role"])
         self.assertEqual(by_name["David Jones"]["role"], "Director")
 
+    def test_excludes_article_headings_that_are_not_people(self):
+        page = """
+        <html><body>
+          <article>
+            <h2>How you pay for providers</h2>
+            <p>Before your Plan Manager starts helping you manage your plan.</p>
+            <h3>Meet Our Team</h3>
+            <p>Our team includes experienced managers.</p>
+          </article>
+        </body></html>
+        """
+        self.assertEqual(
+            extract_people_from_html(page, "https://example.org/content-hub/article"),
+            [],
+        )
+
     def test_writes_joined_people_sheet(self):
         with TemporaryDirectory() as tmp:
             source = Path(tmp) / "source.xlsx"
