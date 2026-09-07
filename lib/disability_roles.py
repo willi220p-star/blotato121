@@ -321,7 +321,7 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
     for anchor in document.xpath("//a[@href]"):
         title = _clean_text(" ".join(anchor.itertext()))
         category = classify_disability_role(title)
-        if not category or not 3 <= len(title.split()) <= 16:
+        if not category or not 2 <= len(title.split()) <= 16:
             continue
         found.append(
             {
