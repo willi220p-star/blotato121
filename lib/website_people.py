@@ -64,6 +64,9 @@ NAME_EXCLUSIONS = {
     "learn more",
     "plan management",
     "positive behaviour support",
+    "social media",
+    "linkedin profile",
+    "follow us",
 }
 NAME_PARTICLES = {"de", "del", "di", "da", "la", "le", "van", "von", "der"}
 ROLE_PREFIXES = {
