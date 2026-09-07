@@ -79,6 +79,18 @@ class DisabilityRolesTest(unittest.TestCase):
         )
         self.assertEqual(support["location"], "Darwin, NT, AU")
 
+    def test_does_not_treat_service_links_as_job_openings(self):
+        page = """
+        <html><body>
+          <a href="/services/support-coordination">Support Coordination</a>
+          <a href="/services/occupational-therapy">Occupational Therapy</a>
+        </body></html>
+        """
+        self.assertEqual(
+            extract_job_openings(page, "https://example.org/"),
+            [],
+        )
+
     def test_writes_three_role_tabs_and_summary_counts(self):
         with TemporaryDirectory() as tmp:
             source = Path(tmp) / "source.xlsx"

@@ -167,6 +167,12 @@ ATS_HOSTS = (
     "bamboohr.com",
     "smartjobs.qld.gov.au",
 )
+JOB_CONTEXT_RE = re.compile(
+    r"\b(?:apply|career|careers|employment|job|jobs|join|opening|openings|"
+    r"opportunit(?:y|ies)|position|positions|recruit|recruitment|role|roles|"
+    r"vacancy|vacancies|work with us)\b",
+    re.I,
+)
 
 
 def classify_disability_role(title: str) -> str:
@@ -195,6 +201,14 @@ def filtered_people(path: Path) -> list[dict]:
     return rows
 
 
+def _has_job_context(target_url: str, text: str) -> bool:
+    parsed = urlparse(target_url)
+    value = f"{parsed.path.replace('-', ' ').replace('_', ' ')} {text}"
+    return bool(JOB_CONTEXT_RE.search(value)) or any(
+        parsed.netloc.lower().endswith(host) for host in ATS_HOSTS
+    )
+
+
 def _career_pages(home_url: str, content: str, limit: int = 6) -> tuple[list[str], list[dict]]:
     parsed = urlparse(home_url)
     try:
@@ -210,7 +224,7 @@ def _career_pages(home_url: str, content: str, limit: int = 6) -> tuple[list[str
         text = _clean_text(" ".join(anchor.itertext()))
         low = f"{target_parsed.path} {text}".lower()
         category = classify_disability_role(text)
-        if category:
+        if category and _has_job_context(target, text):
             linked_openings.append(
                 {
                     "role_category": category,
@@ -318,16 +332,22 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
                     "employment_type": _clean_text(str(item.get("employmentType") or "")),
                 }
             )
+    source_is_careers = _has_job_context(source_url, "")
     for anchor in document.xpath("//a[@href]"):
         title = _clean_text(" ".join(anchor.itertext()))
         category = classify_disability_role(title)
-        if not category or not 2 <= len(title.split()) <= 16:
+        target = urljoin(source_url, anchor.get("href") or "")
+        if (
+            not category
+            or not 2 <= len(title.split()) <= 16
+            or not (source_is_careers or _has_job_context(target, title))
+        ):
             continue
         found.append(
             {
                 "role_category": category,
                 "position_title": title,
-                "job_url": urljoin(source_url, anchor.get("href") or ""),
+                "job_url": target,
                 "source_page": source_url,
                 "status": "Published careers-page link; closing date not supplied",
                 "date_posted": "",
