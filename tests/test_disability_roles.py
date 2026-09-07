@@ -90,6 +90,10 @@ class DisabilityRolesTest(unittest.TestCase):
             extract_job_openings(page, "https://example.org/"),
             [],
         )
+        self.assertEqual(
+            extract_job_openings(page, "https://example.org/careers"),
+            [],
+        )
 
     def test_writes_three_role_tabs_and_summary_counts(self):
         with TemporaryDirectory() as tmp:

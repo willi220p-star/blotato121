@@ -332,7 +332,6 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
                     "employment_type": _clean_text(str(item.get("employmentType") or "")),
                 }
             )
-    source_is_careers = _has_job_context(source_url, "")
     for anchor in document.xpath("//a[@href]"):
         title = _clean_text(" ".join(anchor.itertext()))
         category = classify_disability_role(title)
@@ -340,7 +339,7 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
         if (
             not category
             or not 2 <= len(title.split()) <= 16
-            or not (source_is_careers or _has_job_context(target, title))
+            or not _has_job_context(target, title)
         ):
             continue
         found.append(
