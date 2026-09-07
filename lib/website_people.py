@@ -58,8 +58,70 @@ NAME_EXCLUSIONS = {
     "who we are",
     "executive team",
     "share this on",
+    "support coordination",
+    "frequently asked questions",
+    "get in touch",
+    "learn more",
+    "plan management",
+    "positive behaviour support",
 }
 NAME_PARTICLES = {"de", "del", "di", "da", "la", "le", "van", "von", "der"}
+ROLE_PREFIXES = {
+    "acting",
+    "advisor",
+    "allied",
+    "assistant",
+    "behaviour",
+    "behavior",
+    "board",
+    "business",
+    "ceo",
+    "cfo",
+    "chair",
+    "chief",
+    "clinical",
+    "community",
+    "consultant",
+    "coo",
+    "coordinator",
+    "corporate",
+    "customer",
+    "director",
+    "disability",
+    "employment",
+    "executive",
+    "finance",
+    "founder",
+    "general",
+    "head",
+    "human",
+    "information",
+    "leader",
+    "manager",
+    "national",
+    "occupational",
+    "operations",
+    "people",
+    "practitioner",
+    "president",
+    "program",
+    "project",
+    "psychologist",
+    "quality",
+    "regional",
+    "secretary",
+    "senior",
+    "service",
+    "services",
+    "speech",
+    "state",
+    "supervisor",
+    "support",
+    "team",
+    "technology",
+    "therapist",
+    "treasurer",
+}
 NEGATIVE_PAGE_PATHS = (
     "/blog/",
     "/news/",
@@ -110,7 +172,14 @@ def _clean_text(value: str) -> str:
 
 def _plausible_name(value: str) -> bool:
     value = _clean_text(value).strip("–—|,;:")
-    if not value or value.lower() in NAME_EXCLUSIONS or len(value) > 70:
+    if (
+        not value
+        or value.lower() in NAME_EXCLUSIONS
+        or value.lower().startswith(
+            ("our ", "meet ", "frequently ", "support ", "ndis ", "plan ")
+        )
+        or len(value) > 70
+    ):
         return False
     words = value.split()
     if not 2 <= len(words) <= 5:
@@ -123,6 +192,14 @@ def _plausible_name(value: str) -> bool:
         if not re.match(r"^[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ'.-]*$", word):
             return False
     return True
+
+
+def _plausible_role(value: str) -> bool:
+    value = _clean_text(value)
+    if not value or len(value) > 120 or not ROLE_WORDS.search(value):
+        return False
+    first = re.sub(r"[^A-Za-z]", "", value.split()[0]).lower()
+    return first in ROLE_PREFIXES
 
 
 def _name_from_slug(url: str) -> str:
@@ -154,8 +231,7 @@ def _nearest_role(node, person_name: str) -> str:
         if (
             segment
             and segment != person_name
-            and len(segment) <= 120
-            and ROLE_WORDS.search(segment)
+            and _plausible_role(segment)
         ):
             return segment
     for sibling in list(node.itersiblings())[:3]:
@@ -165,8 +241,7 @@ def _nearest_role(node, person_name: str) -> str:
         if (
             segment
             and segment != person_name
-            and len(segment) <= 120
-            and ROLE_WORDS.search(segment)
+            and _plausible_role(segment)
         ):
             return segment
     parent = node
@@ -185,8 +260,7 @@ def _nearest_role(node, person_name: str) -> str:
             if (
                 segment
                 and segment != person_name
-                and len(segment) <= 120
-                and ROLE_WORDS.search(segment)
+                and _plausible_role(segment)
             ):
                 return segment
     return ""
@@ -288,7 +362,7 @@ def extract_people_from_html(content: str, source_url: str) -> list[dict]:
             continue
         name = _clean_text(match.group("name"))
         role = _clean_text(match.group("role"))
-        if not _plausible_name(name) or not ROLE_WORDS.search(role):
+        if not _plausible_name(name) or not _plausible_role(role):
             continue
         found.append(
             {
@@ -547,6 +621,34 @@ def merge_public_search_people(results: dict[str, dict], records: list[dict]) ->
             result["status"] = "people found"
 
 
+def _verified_people(people: list[dict]) -> list[dict]:
+    verified: dict[tuple[str, str], dict] = {}
+    for person in people:
+        name = _clean_text(str(person.get("person_name") or ""))
+        role = _clean_text(str(person.get("role") or ""))
+        linkedin_url = normalise_person_linkedin_url(
+            str(person.get("linkedin_profile_url") or "")
+        )
+        source_type = str(person.get("source_type") or "")
+        if not _plausible_name(name):
+            continue
+        if source_type == "official website staff page" and not _plausible_role(role):
+            continue
+        if source_type == "official website LinkedIn link" and not linkedin_url:
+            continue
+        cleaned = {
+            **person,
+            "person_name": name,
+            "role": role,
+            "linkedin_profile_url": linkedin_url,
+        }
+        key = (linkedin_url.lower(), re.sub(r"\W", "", name.lower()))
+        current = verified.get(key)
+        if current is None or (not current.get("role") and role):
+            verified[key] = cleaned
+    return list(verified.values())
+
+
 def write_enriched_workbook(
     source: Path,
     destination: Path,
@@ -595,7 +697,7 @@ def write_enriched_workbook(
             "people": [],
             "pages_checked": [],
         }
-        people = result.get("people") or []
+        people = _verified_people(result.get("people") or [])
         linked_people = sum(bool(person.get("linkedin_profile_url")) for person in people)
         org_sheet.append(
             (
@@ -674,6 +776,7 @@ def write_enriched_workbook(
         "public_people": people_count,
         "people_with_linkedin_profile": linkedin_people_count,
         "organisations_with_people": sum(
-            bool((results.get(abn) or {}).get("people")) for abn in organisations
+            bool(_verified_people((results.get(abn) or {}).get("people") or []))
+            for abn in organisations
         ),
     }

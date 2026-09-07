@@ -67,6 +67,10 @@ class WebsitePeopleTest(unittest.TestCase):
             <p>Before your Plan Manager starts helping you manage your plan.</p>
             <h3>Meet Our Team</h3>
             <p>Our team includes experienced managers.</p>
+            <h3>Support Coordination</h3>
+            <p>Our Manager can explain the service.</p>
+            <h3>Richard Drevid</h3>
+            <h3>Alextina Javi Manager</h3>
           </article>
         </body></html>
         """
@@ -118,6 +122,22 @@ class WebsitePeopleTest(unittest.TestCase):
                             "source_type": "official website LinkedIn link",
                             "source_url": "https://example.org/team",
                             "confidence": "high",
+                        },
+                        {
+                            "person_name": "Support Coordination",
+                            "role": "Manager",
+                            "linkedin_profile_url": "",
+                            "source_type": "official website staff page",
+                            "source_url": "https://example.org/services",
+                            "confidence": "medium",
+                        },
+                        {
+                            "person_name": "Richard Drevid",
+                            "role": "Alextina Javi Manager",
+                            "linkedin_profile_url": "",
+                            "source_type": "official website staff page",
+                            "source_url": "https://example.org/team",
+                            "confidence": "medium",
                         }
                     ],
                 }
@@ -132,6 +152,7 @@ class WebsitePeopleTest(unittest.TestCase):
             self.assertIn("Organizations", output.sheetnames)
             self.assertIn("People", output.sheetnames)
             self.assertEqual(output["People"]["D2"].value, "Jane Smith")
+            self.assertEqual(output["People"].max_row, 2)
             self.assertEqual(
                 output["People"]["F2"].hyperlink.target,
                 "https://www.linkedin.com/in/jane-smith",
