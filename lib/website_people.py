@@ -75,6 +75,117 @@ NAME_EXCLUSIONS = {
     "goodwill procare",
     "mycare css",
     "mycare keeper",
+    "acca it",
+    "acnc website",
+    "alice springs",
+    "allied health",
+    "allied health assistance",
+    "allied health jobs",
+    "areas we serve",
+    "astris pme",
+    "auto extras",
+    "bvc marketing",
+    "bayside counselling",
+    "blank dev site",
+    "bright labs",
+    "brisbane air con servicing",
+    "building unlimited",
+    "caring arms",
+    "caterpillar clinic",
+    "choices and rights",
+    "clinic beat",
+    "clutch digital",
+    "club mates travel",
+    "coming soon",
+    "companion health",
+    "compliance assistant",
+    "controlled online assessments",
+    "creative canary",
+    "critical social",
+    "current intake availability",
+    "current openings:",
+    "current vacancies",
+    "current vacant positions",
+    "dari's kitchen",
+    "digital thing",
+    "dilate digital",
+    "edenbridge living",
+    "emotional wellbeing",
+    "enable wa",
+    "enliven housing",
+    "enrolled nurse",
+    "every life deserves more",
+    "general info",
+    "general managers",
+    "giant steps events",
+    "growth digital",
+    "harissons holdings",
+    "icsa sydney",
+    "independent living",
+    "independent living victoria",
+    "indigo studio",
+    "insight pbs",
+    "inspire independence",
+    "jane doe",
+    "john doe",
+    "kool kids tutoring",
+    "lifted lives",
+    "linkedin linkedin",
+    "linkedin bio",
+    "marathon health",
+    "menu item",
+    "mental health",
+    "metier health",
+    "mint cleaning",
+    "mr. meticulous",
+    "my planwell",
+    "naked digital",
+    "new haven farm",
+    "occupational therapists",
+    "older australians",
+    "one designer",
+    "online form",
+    "planet potential",
+    "para mobility",
+    "participant family",
+    "personal preference",
+    "program centre",
+    "quality life for all",
+    "quick enquiry test",
+    "quick links",
+    "reception autism alliance",
+    "regional housing",
+    "registered nurse",
+    "remuneration policy",
+    "roobix minimalist theme",
+    "sss trinity",
+    "service areas",
+    "service locations",
+    "sf aus",
+    "sign up",
+    "spartan first",
+    "speech pathology",
+    "spinal home help",
+    "starting soon",
+    "super user",
+    "swift ict",
+    "sydney high quality cleaning",
+    "taylor made outcomes",
+    "the bee family",
+    "transport and travel assistance",
+    "the phoenix spectrum",
+    "tpm the physio movement",
+    "top notch tree surgeons",
+    "toronto health",
+    "true hands",
+    "valorous place",
+    "valued lives",
+    "view linkedin profile",
+    "visit linkedin",
+    "wp creative wp creative",
+    "we provide",
+    "wellbeing systems",
+    "windsor health",
 }
 NAME_PARTICLES = {"de", "del", "di", "da", "la", "le", "van", "von", "der"}
 NON_PERSON_NAME_WORDS = {
@@ -287,18 +398,43 @@ def _name_from_slug(url: str) -> str:
 
 
 def _nearest_name(node, fallback_url: str = "") -> str:
-    candidates = [_clean_text(" ".join(node.itertext()))]
+    candidates = [
+        _clean_text(" ".join(node.itertext())),
+        _clean_text(node.get("aria-label") or ""),
+        _clean_text(node.get("title") or ""),
+    ]
     parent = node
     for _ in range(4):
         parent = parent.getparent()
         if parent is None:
             break
+        parent_text = _clean_text(" ".join(parent.itertext()))
+        if len(parent_text) > 500:
+            continue
+        if len(parent.xpath(".//a[contains(@href, 'linkedin.com/in/')]")) > 1:
+            continue
         for heading in parent.xpath(".//h1|.//h2|.//h3|.//h4|.//h5|.//*[@itemprop='name']"):
             candidates.append(_clean_text(" ".join(heading.itertext())))
     for candidate in candidates:
         if _plausible_name(candidate):
             return candidate
     return _name_from_slug(fallback_url)
+
+
+def _linkedin_name_agrees(person_name: str, linkedin_url: str) -> bool:
+    slug_name = _name_from_slug(linkedin_url)
+    if not slug_name:
+        return True
+    person_tokens = {
+        token.lower()
+        for token in re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ]{3,}", person_name)
+    }
+    slug_tokens = {
+        token.lower()
+        for token in re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿ]{3,}", slug_name)
+        if token.lower() not in {"linkedin", "profile"}
+    }
+    return not slug_tokens or bool(person_tokens & slug_tokens)
 
 
 def _nearest_role(node, person_name: str) -> str:
@@ -411,7 +547,7 @@ def extract_people_from_html(content: str, source_url: str) -> list[dict]:
         if not linkedin_url:
             continue
         name = _nearest_name(anchor, linkedin_url)
-        if not name:
+        if not name or not _linkedin_name_agrees(name, linkedin_url):
             continue
         found.append(
             {
@@ -719,7 +855,11 @@ def _verified_people(people: list[dict]) -> list[dict]:
             continue
         if source_type == "official website staff page" and not _plausible_role(role):
             continue
+        if source_type == "official website structured Person" and not (role or linkedin_url):
+            continue
         if source_type == "official website LinkedIn link" and not linkedin_url:
+            continue
+        if linkedin_url and not _linkedin_name_agrees(name, linkedin_url):
             continue
         cleaned = {
             **person,

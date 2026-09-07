@@ -75,6 +75,14 @@ class WebsitePeopleTest(unittest.TestCase):
             <p>Board Director</p>
             <h3>Voyage Support</h3>
             <p>Services Manager</p>
+            <section>
+              <h3>Mahesh Perera</h3>
+              <p>Director</p>
+              <a href="https://www.linkedin.com/in/freehold-lisasmith">LinkedIn</a>
+            </section>
+            <script type="application/ld+json">
+              {"@type":"Person","name":"Bright Labs"}
+            </script>
           </article>
         </body></html>
         """
