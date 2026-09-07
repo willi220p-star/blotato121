@@ -86,10 +86,13 @@ class WebsitePeopleTest(unittest.TestCase):
           </article>
         </body></html>
         """
-        self.assertEqual(
-            extract_people_from_html(page, "https://example.org/content-hub/article"),
-            [],
+        people = extract_people_from_html(
+            page,
+            "https://example.org/content-hub/article",
         )
+        self.assertEqual(len(people), 1)
+        self.assertEqual(people[0]["person_name"], "Mahesh Perera")
+        self.assertEqual(people[0]["linkedin_profile_url"], "")
 
     def test_writes_joined_people_sheet(self):
         with TemporaryDirectory() as tmp:
