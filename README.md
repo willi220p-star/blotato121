@@ -143,6 +143,23 @@ LinkedIn company, showcase, or school URL. It does not fetch LinkedIn pages,
 does not include personal `/in/` profiles, and leaves uncertain matches blank.
 The output adds the URL, profile name, source page, and discovery status.
 
+### Public staff and profile enrichment
+
+Add people published on official organization staff, leadership, board, and
+structured-data pages, plus manually verified public search results:
+
+```bash
+python3 scripts/enrich_ndis_people.py path/to/NDIS_disability_nonprofit.xlsx \
+  --public-search-results feeds/ndis-public-linkedin-search-results.json
+```
+
+The output preserves every original sheet and adds normalized `Organizations`
+and `People` sheets joined by ABN. Each person includes role, source page,
+confidence, and an individual LinkedIn URL when an official website or verified
+public search result identifies the same person and current organization.
+LinkedIn itself is not crawled, Apify is not used, and blank results do not mean
+an organization has no employees.
+
 ## Upcoming earnings technical workbook
 
 Generate the next 30 calendar days of Nasdaq earnings announcements with
