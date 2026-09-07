@@ -7,6 +7,7 @@ from openpyxl import Workbook, load_workbook
 from lib.disability_roles import (
     classify_disability_role,
     extract_job_openings,
+    plausible_job_title,
     write_role_workbook,
 )
 
@@ -31,6 +32,22 @@ class DisabilityRolesTest(unittest.TestCase):
         self.assertEqual(classify_disability_role("Finance Coordinator"), "")
         self.assertEqual(classify_disability_role("Marketing Team Leader"), "")
         self.assertEqual(classify_disability_role("Project Coordinator"), "")
+
+    def test_rejects_services_stories_and_questions_as_openings(self):
+        rejected = (
+            "Support Coordination",
+            "Occupational Therapy",
+            "Positive Behaviour Support",
+            "The Essential Role of Male Disability Support Workers",
+            "Do I need experience in disability support to apply?",
+            "A rewarding career: Mukti's story as a Home Support Worker",
+            "Allied Health Jobs",
+        )
+        for title in rejected:
+            with self.subTest(title=title):
+                self.assertFalse(plausible_job_title(title))
+        self.assertTrue(plausible_job_title("Disability Support Worker"))
+        self.assertTrue(plausible_job_title("Senior Occupational Therapist"))
 
     def test_extracts_current_disability_job_postings(self):
         page = """

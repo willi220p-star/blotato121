@@ -173,6 +173,26 @@ JOB_CONTEXT_RE = re.compile(
     r"vacancy|vacancies|work with us)\b",
     re.I,
 )
+JOB_ROLE_NOUN_RE = re.compile(
+    r"\b(?:assistant|caregiver|carer|caseworker|clinician|coach|consultant|"
+    r"coordinator|counsell?or|educator|leader|manager|nurse|pathologist|"
+    r"physiotherapist|practitioner|psychologist|social worker|specialist|"
+    r"therapist|worker)\b",
+    re.I,
+)
+NON_JOB_TITLE_RE = re.compile(
+    r"^(?:a career|a rewarding|being |career in|careers?:|do |from |how |"
+    r"i am |kira |learn |see |the essential|what |why )|"
+    r"\b(?:read more|staff stor(?:y|ies)|team mentor|view locations)\b",
+    re.I,
+)
+SERVICE_TITLE_RE = re.compile(
+    r"^(?:ndis )?(?:specialist )?support coordination(?: \(cos\))?$|"
+    r"^occupational therapy$|^physiotherapy$|^speech pathology$|"
+    r"^positive behaviou?r support$|^allied health$|"
+    r"^disability support services(?: expand)?$",
+    re.I,
+)
 
 
 def classify_disability_role(title: str) -> str:
@@ -186,6 +206,19 @@ def classify_disability_role(title: str) -> str:
             return ""
         return category
     return ""
+
+
+def plausible_job_title(title: str) -> bool:
+    value = _clean_text(title)
+    words = value.split()
+    return bool(
+        classify_disability_role(value)
+        and 2 <= len(words) <= 16
+        and "?" not in value
+        and JOB_ROLE_NOUN_RE.search(value)
+        and not NON_JOB_TITLE_RE.search(value)
+        and not SERVICE_TITLE_RE.fullmatch(value)
+    )
 
 
 def filtered_people(path: Path) -> list[dict]:
@@ -224,7 +257,7 @@ def _career_pages(home_url: str, content: str, limit: int = 6) -> tuple[list[str
         text = _clean_text(" ".join(anchor.itertext()))
         low = f"{target_parsed.path} {text}".lower()
         category = classify_disability_role(text)
-        if category and _has_job_context(target, text):
+        if category and plausible_job_title(text) and _has_job_context(target, text):
             linked_openings.append(
                 {
                     "role_category": category,
@@ -314,7 +347,7 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
                 continue
             title = _clean_text(str(item.get("title") or ""))
             category = classify_disability_role(title)
-            if not category:
+            if not category or not plausible_job_title(title):
                 continue
             valid = str(item.get("validThrough") or "")
             if valid and valid[:10] < date.today().isoformat():
@@ -338,7 +371,7 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
         target = urljoin(source_url, anchor.get("href") or "")
         if (
             not category
-            or not 2 <= len(title.split()) <= 16
+            or not plausible_job_title(title)
             or not _has_job_context(target, title)
         ):
             continue
@@ -421,6 +454,27 @@ def discover_organisation_jobs(website: str, timeout: int = 7) -> dict:
         "openings": list(unique.values()),
         "pages_checked": checked,
     }
+
+
+def verified_openings(openings: list[dict]) -> list[dict]:
+    unique: dict[tuple[str, str], dict] = {}
+    for opening in openings:
+        title = _clean_text(str(opening.get("position_title") or ""))
+        category = classify_disability_role(title)
+        if not category or not plausible_job_title(title):
+            continue
+        cleaned = {**opening, "position_title": title, "role_category": category}
+        key = (
+            str(cleaned.get("job_url") or "").lower().rstrip("/"),
+            category,
+        )
+        current = unique.get(key)
+        if current is None or (
+            cleaned.get("status") == "Published JobPosting"
+            and current.get("status") != "Published JobPosting"
+        ):
+            unique[key] = cleaned
+    return list(unique.values())
 
 
 def discover_many_jobs(
@@ -546,7 +600,7 @@ def write_role_workbook(
     openings: list[dict] = []
     for abn, result in job_results.items():
         organisation = organisations.get(abn) or {}
-        for opening in result.get("openings") or []:
+        for opening in verified_openings(result.get("openings") or []):
             openings.append({"abn": abn, **organisation, **opening})
     for row in sorted(
         openings,
