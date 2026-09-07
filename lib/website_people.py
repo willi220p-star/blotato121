@@ -294,7 +294,14 @@ def _nearest_name(node, fallback_url: str = "") -> str:
 
 
 def _nearest_role(node, person_name: str) -> str:
-    if isinstance(node.tag, str) and node.tag.lower() in {"h1", "h2", "h3", "h4", "h5"}:
+    is_heading = isinstance(node.tag, str) and node.tag.lower() in {
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+    }
+    if is_heading:
         following_text = node.xpath("following::text()[normalize-space()][1]")
         segment = _clean_text(str(following_text[0])) if following_text else ""
         if (
@@ -303,6 +310,7 @@ def _nearest_role(node, person_name: str) -> str:
             and _plausible_role(segment)
         ):
             return segment
+        return ""
     for sibling in list(node.itersiblings())[:3]:
         if not isinstance(sibling.tag, str):
             continue
