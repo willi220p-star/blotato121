@@ -1,0 +1,42 @@
+{
+  "lang": "en",
+  "availableLangs": ["en", "de"],
+  "content": [
+    {
+      "text": "All right, so here we are, in front of the\nelephants",
+      "offset": 1200,
+      "duration": 2160,
+      "lang": "en"
+    },
+    {
+      "text": "the cool thing about these guys is that they\nhave really...",
+      "offset": 5318,
+      "duration": 2656,
+      "lang": "en"
+    },
+    {
+      "text": "really really long trunks",
+      "offset": 7974,
+      "duration": 4642,
+      "lang": "en"
+    },
+    {
+      "text": "and that's cool",
+      "offset": 12616,
+      "duration": 1751,
+      "lang": "en"
+    },
+    {
+      "text": "(baaaaaaaaaaahhh!!)",
+      "offset": 14421,
+      "duration": 1312,
+      "lang": "en"
+    },
+    {
+      "text": "and that's pretty much all there is to\nsay",
+      "offset": 16881,
+      "duration": 2000,
+      "lang": "en"
+    }
+  ]
+}
