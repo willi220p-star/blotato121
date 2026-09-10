@@ -1,15 +1,17 @@
 # ReplikBot
 
-Paste `GROKBOT_CREATE_PROMPT.md` into Grok Bot (New → Create new agent, or ask your current Bot to create this teammate). That file is the full create-prompt.
+Paste `GROKBOT_CREATE_PROMPT.md` into Grok Bot (`New` → `Create new agent`). That file is the full create-prompt.
 
 ## What it automates
 
-Airtable tag `Generate` → watch the YouTube original → write a 2–3s icebreaker in that voice → RepliQ launch (site background + lower-left face bubble) → ready gate → write `REPLIQ DATABASE` Sheet1.
+I add a row to Google Sheet **REPLIQ DATABASE** (Website + lead details) → ReplikBot picks the Dilip RepliQ template (site background + lower-left face bubble) → RepliQ generates the icebreaker/hook → the same row gets Video link, Video Html, and Icebreaker.
 
-## Systems already wired in the prompt
+Face comes from Dilip’s video attached in Grok Bot, not from a voice-reference clip. Voice may be extracted from a separate source video and is never written to the sheet.
 
-- Airtable: [ReplikBot](https://airtable.com/appyGe81SFdPW8Ivz)
-- Google Sheet: [REPLIQ DATABASE](https://docs.google.com/spreadsheets/d/1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI/edit)
-- n8n graphs (import if you still use n8n): `n8n/01-launch.json`, `n8n/02-ready-gate.json`, `n8n/03-sheets-gate.json`
+## Sheet
 
-Put YouTube URLs and RepliQ template IDs on Original Videos rows `Original 1` and `Original 2`. Store the RepliQ key as `REPLIQ_API_KEY` via Grok Bot’s secure secret flow — never in the prompt.
+[REPLIQ DATABASE](https://docs.google.com/spreadsheets/d/1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI/edit) · tab Sheet1
+
+n8n graphs (optional): `n8n/01-launch.json`, `n8n/02-ready-gate.json`, `n8n/03-sheets-gate.json`
+
+Store the RepliQ key as `REPLIQ_API_KEY` via Grok Bot’s secure secret flow — never in the prompt.

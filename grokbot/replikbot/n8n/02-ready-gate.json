@@ -46,63 +46,68 @@
     {
       "parameters": {
         "operation": "update",
-        "base": {
+        "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "appyGe81SFdPW8Ivz"
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
         },
-        "table": {
+        "sheetName": {
           "__rl": true,
-          "mode": "id",
-          "value": "tblnC3xzdTN2dPQQS"
+          "mode": "name",
+          "value": "Sheet1"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "id": "={{ $json.body.airtableRecordId || $json.airtableRecordId }}",
-            "Status": "Ready",
-            "videoSuccess": "YES",
             "Video id": "={{ $json.body.id || $json.id }}",
             "Video link": "={{ $json.body.videoLink || $json.videoLink }}",
             "Video Html": "={{ $json.body.htmlCode || $json.htmlCode }}",
-            "Icebreaker id": "={{ $json.body.icebreakerId || $json.icebreakerId || '' }}"
-          }
+            "Icebreaker id": "={{ $json.body.icebreakerId || $json.icebreakerId || '' }}",
+            "Icebreaker": "={{ $json.body.icebreaker || $json.icebreaker || '' }}",
+            "updates": "Ready"
+          },
+          "matchingColumns": ["Video id"]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
         }
       },
-      "id": "ready-mark-ready",
-      "name": "Mark job Ready",
-      "type": "n8n-nodes-base.airtable",
-      "typeVersion": 2.1,
-      "position": [500, -80]
+      "id": "ready-write-success",
+      "name": "Write video link and icebreaker",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [500, -80],
+      "notes": "Fill Video link + Icebreaker on the same Sheet1 row. Do not write voice."
     },
     {
       "parameters": {
         "operation": "update",
-        "base": {
+        "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "appyGe81SFdPW8Ivz"
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
         },
-        "table": {
+        "sheetName": {
           "__rl": true,
-          "mode": "id",
-          "value": "tblnC3xzdTN2dPQQS"
+          "mode": "name",
+          "value": "Sheet1"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "id": "={{ $json.body.airtableRecordId || $json.airtableRecordId }}",
-            "Status": "Failed",
-            "videoSuccess": "NO",
-            "Tags": ["Failed"],
-            "Error": "={{ $json.body.status || $json.status || 'RepliQ videoSuccess was not YES' }}"
-          }
+            "Video id": "={{ $json.body.id || $json.id }}",
+            "updates": "Failed: videoSuccess was not YES"
+          },
+          "matchingColumns": ["Video id"]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
         }
       },
-      "id": "ready-mark-failed",
-      "name": "Mark job Failed",
-      "type": "n8n-nodes-base.airtable",
-      "typeVersion": 2.1,
+      "id": "ready-write-fail",
+      "name": "Write failure note",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
       "position": [500, 120]
     }
   ],
@@ -122,14 +127,14 @@
       "main": [
         [
           {
-            "node": "Mark job Ready",
+            "node": "Write video link and icebreaker",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Mark job Failed",
+            "node": "Write failure note",
             "type": "main",
             "index": 0
           }
@@ -142,6 +147,6 @@
     "executionOrder": "v1"
   },
   "meta": {
-    "description": "Gate 2: RepliQ webhook. Only YES continues. Put this webhook URL into Launch as webhook."
+    "description": "Gate 2: RepliQ webhook. On YES, write Video link and Icebreaker into Sheet1. Never write voice."
   }
 }

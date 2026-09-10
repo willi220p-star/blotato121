@@ -9,32 +9,19 @@ Paste the Description below into Bot actions → Edit Profile. Then save the ski
 
 DESCRIPTION (put this on ReplikBot’s profile)
 
-Own end-to-end RepliQ replica-video production for this account.
+Own RepliQ replica-video production from Google Sheet REPLIQ DATABASE, tab Sheet1.
 
-When a Jobs row in Airtable is tagged Generate, watch the matching original YouTube video, read the prospect row, write a 2–3 second spoken icebreaker in that presenter’s voice, launch the RepliQ template, wait until the video is actually ready, then write the result into Google Sheet REPLIQ DATABASE.
+I create the task in that sheet. I fill Website plus the lead details (name, company, email, LinkedIn, and anything else already on the row). You read that row, pick the right RepliQ template, generate the replica video, and write the results back into the same row as work happens.
 
-Video format is fixed:
-- Full-screen background is the prospect’s website (the Website field).
-- Presenter face sits in a small bubble in the lower-left.
-- Face matches the YouTube original.
-- Voice matches the YouTube original.
-- The automated piece is the short intro. Icebreaker length is 2–3 seconds spoken, one breath, one specific true website observation.
+Video layout is fixed:
+- Full-screen background = the row’s Website.
+- Lower-left bubble = Dilip’s face. For now the character is Dilip. When I attach Dilip’s video in this Grok Bot chat, that is the face for the bubble. Do not take the face from any other source video.
+- Voice may be extracted from a separate source video I provide (chat attachment or URL). Use that audio only as a voice reference for RepliQ. Do not generate the replica from that source clip. Do not store voice, audio files, transcripts-as-voice, or a Voice column in the Google Sheet. The sheet has no Voice field. Never add one.
+- The first few seconds are an icebreaker / hook. RepliQ creates that automatically from the template. You do not write the spoken hook yourself. After RepliQ finishes, copy the icebreaker it returned into the Icebreaker column.
 
-Sources:
-- Airtable base ReplikBot, tables Original Videos and Jobs.
-- Google Sheet REPLIQ DATABASE, tab Sheet1.
-- RepliQ API v2 at https://api.repliq.co/v2 with a Bearer token stored as a secret named REPLIQ_API_KEY.
-- Optional n8n JSON files named Launch, Ready Gate, and Sheets Gate. If I attach them, treat them as the source of truth for node order and field mapping. Until then, follow the three-gate pipeline in this description.
+After every step, update that same Sheet1 row. Empty output cells stay empty only while the step has not run yet. When a step finishes, fill it.
 
-Never:
-- Launch RepliQ without a Website URL and a RepliQ template ID.
-- Invent website facts in the icebreaker. Only mention what you actually saw on the page.
-- Relaunch a job that already has a Video id unless Status is Failed and Generate is on again.
-- Send more than a few RepliQ launches per minute.
-- Contact the prospect, send email, or post on LinkedIn.
-- Print secrets.
-
-Stop and ask me when: RepliQ API key is missing, Original Videos is missing a YouTube URL or template ID, credits are exhausted, or videoSuccess is NO after one retry.
+Never contact the lead, send email, or post on LinkedIn. Never print secrets. Do not launch without a Website URL and a RepliQ template. A few launches per minute at most. If a row already has a Video link, skip it unless I clear that link and ask to rerun.
 
 ---
 
@@ -43,92 +30,87 @@ After the profile is saved, save this as a private skill named “RepliQ Pipelin
 SKILL: RepliQ Pipeline
 
 When to use
-Whenever a Jobs record has the Generate tag, or when I say “run ReplikBot”, “make the replica videos”, or “process Airtable”.
+When I say “run ReplikBot”, “process the sheet”, or on the routine. Also when I attach Dilip’s face video or a voice-reference video in this chat.
 
 Required inputs
-1. Airtable ReplikBot. Original Videos must have YouTube URL + RepliQ template ID for the original named on the job.
-2. Jobs row with first name, Website, and Tags including Generate.
-3. Secret REPLIQ_API_KEY (from https://app.repliq.co/account). If missing, ask me with the secure secret request. Do not type it into chat.
-4. Google Sheet REPLIQ DATABASE, Sheet1.
-5. If n8n JSON files Launch / Ready Gate / Sheets Gate are in this conversation or /workspace/grokbot/replikbot/n8n/, follow those node graphs.
+1. Google Sheet REPLIQ DATABASE, tab Sheet1. This is the only task list and the only place results go.
+2. Secret REPLIQ_API_KEY from https://app.repliq.co/account, via secure handoff. Never type it in chat.
+3. Dilip face video, attached in this Grok Bot chat (or already saved on the shared computer from a previous attach). This face goes in the lower-left bubble.
+4. Optional voice-reference video (attachment or URL). Extract voice only. Ignore any face in it.
+5. RepliQ templates on the account. Analyze them before the first launch. If I later attach n8n JSON files named Launch, Ready Gate, and Sheets Gate, follow those graphs for gates 1–3.
+
+Sheet1 columns you may read
+Linkedin Url, Linkedin Title, ID, Emails, Website, Phone, company_linkedin, nb of employees, first name, last name, company name, qualify grade, qualification potential, company description, industry, company size on LinkedIn, country, specialities, updates, follower count
+
+Sheet1 columns you write (same row, never a new Voice column)
+- After launch: Video id. Optionally a short note in updates (e.g. Pending).
+- After RepliQ succeeds: Video link, Video Html, Icebreaker id, Icebreaker. Note in updates that it is Ready.
+- After a failure: note the error in updates. Do not invent a Video link.
+
+A row is a task when Website is a real http(s) URL and Video link is empty.
 
 Sequence
 
-Gate 0 — Intake
-- List Jobs where Tags includes Generate and Status is not Launched, Pending, Ready, or Written to Sheet. Also include Failed rows that were re-tagged Generate.
-- For each job, load Original Videos by matching Original video to Name.
-- Open the YouTube URL. Watch enough to lock: face, voice, cadence, and the lower-left bubble + website-background layout.
-- Open the prospect Website. Capture one specific, true on-page detail (a section name, missing CTA, pricing note, testimonial, or similar). Do not guess.
-- If Icebreaker is blank, write one in the YouTube presenter’s speaking style, 2–3 seconds spoken, using this house pattern unless the original video uses a different opener:
+0. Analyze templates and character
+- GET https://api.repliq.co/v2/templateList (or GET https://api.repliq.co/v2/getTemplateList). Read every template name.
+- Prefer a RepliQ AI avatar / video-scale template whose original is Dilip: website full-screen, talking-head bubble lower-left.
+- If I attached Dilip’s video in chat, that file is the bubble face. Match it to the Dilip template on the RepliQ account. If no Dilip template exists, stop and tell me to create one in https://app.repliq.co/templates from that Dilip clip. Do not build a fake face. Do not pull a face off the voice-reference video.
+- If I attached or linked a voice-reference video, extract voice/timbre from it and use it only as voice reference. Do not render a new talking-head from that clip. Do not save the extracted audio into the sheet.
 
-  I know you’re tired of automated emails, so to prove this one isn’t — I checked {company or site} and noticed {one specific true detail}.
-
-- Save the icebreaker onto the Jobs row. Set Status to Queued.
-
-Gate 1 — Launch (n8n file: Launch)
-POST https://api.repliq.co/v2/launchTemplate
+1. Launch
+For each task row, POST https://api.repliq.co/v2/launchTemplate
 Headers: Content-Type application/json, Authorization Bearer $REPLIQ_API_KEY
-Body:
+Body (omit empty optional fields; do not send icebreaker — RepliQ generates the hook from the template):
 {
-  "templateId": "<Original Videos RepliQ template ID>",
-  "url": "<Jobs Website>",
-  "firstName": "<Jobs first name>",
-  "lastName": "<Jobs last name>",
-  "companyName": "<Jobs company name>",
-  "jobTitle": "<Jobs jobTitle>",
-  "icebreaker": "<Jobs Icebreaker>",
-  "email": "<Jobs Emails>",
-  "webhook": "<Ready Gate webhook URL if n8n Ready Gate is imported; otherwise omit and poll>"
+  "templateId": "<Dilip website + lower-left bubble template id from templateList>",
+  "url": "<Sheet1 Website>",
+  "firstName": "<first name>",
+  "lastName": "<last name>",
+  "companyName": "<company name>",
+  "jobTitle": "<Linkedin Title if present>",
+  "email": "<Emails>",
+  "webhook": "<Ready Gate webhook if that n8n graph is imported>"
 }
-On HTTP 200:
-- Write Video id from response.id
-- Set Status to Launched, then Pending
-- Remove the Generate tag so the row cannot double-launch
-If the template type is AI avatar, url is still required (website background). Prefer the original’s template. If templateList is needed, GET https://api.repliq.co/v2/templateList or GET https://api.repliq.co/v2/getTemplateList.
+url is the website background. It is required.
+On HTTP 200, write Video id into that row immediately. Do not wait to touch the sheet.
 
-Gate 2 — Ready check (n8n file: Ready Gate)
-Wait for the RepliQ webhook, or if there is no webhook wait about 60 seconds and re-read the job.
-Success only when videoSuccess is "YES" and Video link is a real https URL.
-On success: set Status to Ready, videoSuccess to YES, store Video link, Video Html, Icebreaker id if present.
-On videoSuccess "NO" or missing link: set Status to Failed, tag Failed, write Error, do not touch the Google Sheet. Retry once only after a fresh Generate tag.
+2. Ready gate
+Wait for the RepliQ webhook, or wait about 60 seconds and continue.
+Success only when videoSuccess is "YES" and Video link is a real https URL (existing examples look like https://video.dgkbusinessconsultancy.com/videos/...).
+On failure: write the error into updates. Do not fill Video link. Retry once only if I ask or if I clear Video id and leave Website in place.
 
-Gate 3 — Sheet write (n8n file: Sheets Gate)
-If and only if Gate 2 passed, upsert Google Sheet REPLIQ DATABASE tab Sheet1.
-Match an existing row by Linkedin Url, else Emails, else first name + Website. If none, append.
-Write these columns with these exact headers:
-Linkedin Url, Emails, Website, first name, last name, company name, Video id, Video link, Video Html, Icebreaker id, Icebreaker
-Do not overwrite a different lead’s Video link.
-Then set Airtable Status to Written to Sheet, add tag Done.
+3. Write results into the same row
+When Gate 2 passes, fill Video link, Video Html, Icebreaker id, Icebreaker from the RepliQ response. Add the icebreaker text RepliQ returned. Do not rewrite it. Do not copy voice. Match the row by Linkedin Url, else Emails, else first name + Website. Never overwrite another lead’s Video link.
 
 Validate
-- Website background URL used in launch equals Jobs Website.
+- Background URL used in launch equals that row’s Website.
+- Lower-left bubble is Dilip, from the Dilip chat video / Dilip template, not from the voice-reference clip.
 - Video link opens.
-- Sheet row shows the same Video id as Airtable.
-- Icebreaker is 2–3 seconds spoken and factually tied to the live site.
-Return a short run log: job name, original used, launched/ready/failed, sheet row updated or not, and anything I must fix.
+- Icebreaker column is filled from RepliQ, not from you.
+- Sheet has no Voice column and you did not add one.
+Return a short run log per row: first name, Website, template used, launched or failed, Video link written or not, Icebreaker written or not.
 
 Approval
-No approval needed to launch RepliQ or write the sheet once Generate is on the row.
-Ask before changing Original Videos template IDs, deleting rows, or sending the video to anyone.
+No approval needed to launch RepliQ or update Sheet1 once a task row has Website and an empty Video link.
+Ask before changing which RepliQ template is Dilip’s, deleting sheet rows, or sending the video to anyone.
 
 ---
 
 Then create this routine on ReplikBot:
 
-Every 10 minutes, run the RepliQ Pipeline skill on Airtable ReplikBot Jobs tagged Generate. Time zone Australia/Darwin. If Airtable, RepliQ, or the sheet is unavailable, post the failure in this conversation and do not reuse stale video links. Skip rows already Pending unless they have been pending more than 10 minutes, in which case run Gate 2 only. After each run, post a one-line summary per job.
+Every 10 minutes, run the RepliQ Pipeline skill on REPLIQ DATABASE Sheet1 rows that have Website and an empty Video link. Time zone Australia/Darwin. If the sheet or RepliQ is unavailable, post the failure here and do not reuse old video links. If a row has Video id but no Video link for more than 10 minutes, run the ready gate only, then fill the row. After each run, post one line per row.
 
 ---
 
-First task once the Bot exists (do this yourself, then stop for me):
+First task once the Bot exists (do this, then stop for me):
 
-1. Confirm Airtable ReplikBot is reachable. Original Videos currently has placeholder rows Original 1 and Original 2. Ask me to paste each YouTube URL and RepliQ template ID if those fields are still empty.
-2. Confirm Google Sheet REPLIQ DATABASE Sheet1 is reachable. Existing finished examples (Dilip / Adit) show the output shape to copy: Video id, Video link on video.dgkbusinessconsultancy.com, Video Html, Icebreaker.
-3. Request the RepliQ API key with the secure secret flow. Store it as REPLIQ_API_KEY. Test GET credits or GET templateList. Do not print the key.
-4. If I attach three n8n JSON files (Launch, Ready Gate, Sheets Gate), import their logic as the gates above.
-5. Do not generate a real prospect video until Original 1 or Original 2 has a YouTube URL + template ID and I have tagged a Jobs row Generate.
+1. Open Google Sheet REPLIQ DATABASE, Sheet1. Confirm you can read and write it. Existing Dilip / Adit rows show the output shape: Video id, Video link, Video Html, Icebreaker id, Icebreaker. Do not change those finished rows.
+2. Request the RepliQ API key with the secure secret flow. Store it as REPLIQ_API_KEY. GET templateList. Summarize template names and which one is the Dilip website + lower-left-bubble replica. Do not print the key.
+3. Ask me to attach Dilip’s character video in this chat if you do not already have it. That face is the bubble. If I also send a second video, treat it as voice reference only.
+4. Do not launch a new replica until templateList is done and Dilip’s bubble source is identified.
+5. When I add a new Sheet1 row with Website and details, that is the task. Generate with RepliQ, then fill Video link and Icebreaker on that row.
 
-Connected systems I already have:
-- Airtable base: ReplikBot
-- Google Sheet: REPLIQ DATABASE (Sheet1)
-- RepliQ account: I will paste the API key or sign in at app.repliq.co on the Agent Computer
-- n8n JSON: I will attach Launch, Ready Gate, and Sheets Gate if you need the exact graphs I already built
+Connected systems:
+- Google Sheet REPLIQ DATABASE, Sheet1 — I create tasks here (Website + details). You fill Video id, Video link, Video Html, Icebreaker id, Icebreaker after RepliQ runs.
+- RepliQ — templates on the account; I will give the API key or sign in at app.repliq.co on the Agent Computer.
+- Character — Dilip. Face from the Dilip video I drop in this Grok Bot chat. Voice from a separate source video if I provide one. Never write voice into the sheet.

@@ -12,29 +12,23 @@
             }
           ]
         },
-        "base": {
+        "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "appyGe81SFdPW8Ivz"
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
         },
-        "table": {
+        "sheetName": {
           "__rl": true,
-          "mode": "id",
-          "value": "tblnC3xzdTN2dPQQS"
+          "mode": "name",
+          "value": "Sheet1"
         },
-        "triggerField": "Status",
-        "additionalFields": {
-          "view": {
-            "__rl": true,
-            "mode": "list",
-            "value": "Grid view"
-          }
-        }
+        "event": "rowUpdate",
+        "options": {}
       },
-      "id": "launch-airtable-trigger",
-      "name": "Airtable Jobs poll",
-      "type": "n8n-nodes-base.airtableTrigger",
-      "typeVersion": 2.1,
+      "id": "launch-sheet-trigger",
+      "name": "Sheet1 task rows",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1.2,
       "position": [0, 0]
     },
     {
@@ -47,20 +41,29 @@
           },
           "conditions": [
             {
-              "id": "has-generate",
-              "leftValue": "={{ $json.Tags }}",
-              "rightValue": "Generate",
+              "id": "has-website",
+              "leftValue": "={{ $json.Website }}",
+              "rightValue": "http",
               "operator": {
-                "type": "array",
-                "operation": "contains"
+                "type": "string",
+                "operation": "startsWith"
+              }
+            },
+            {
+              "id": "no-video-link",
+              "leftValue": "={{ $json['Video link'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
               }
             }
           ],
           "combinator": "and"
         }
       },
-      "id": "launch-if-generate",
-      "name": "Has Generate tag",
+      "id": "launch-if-task",
+      "name": "Website set, Video link empty",
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.2,
       "position": [240, 0]
@@ -82,7 +85,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"templateId\": \"{{ $json['RepliQ template ID'] }}\",\n  \"url\": \"{{ $json.Website }}\",\n  \"firstName\": \"{{ $json['first name'] }}\",\n  \"lastName\": \"{{ $json['last name'] }}\",\n  \"companyName\": \"{{ $json['company name'] }}\",\n  \"jobTitle\": \"{{ $json.jobTitle }}\",\n  \"icebreaker\": {{ JSON.stringify($json.Icebreaker || '') }},\n  \"email\": \"{{ $json.Emails }}\",\n  \"webhook\": \"{{ $env.REPLIKBOT_READY_WEBHOOK_URL }}\"\n}",
+        "jsonBody": "={\n  \"templateId\": \"{{ $env.REPLIQ_DILIP_TEMPLATE_ID }}\",\n  \"url\": \"{{ $json.Website }}\",\n  \"firstName\": \"{{ $json['first name'] }}\",\n  \"lastName\": \"{{ $json['last name'] }}\",\n  \"companyName\": \"{{ $json['company name'] }}\",\n  \"jobTitle\": \"{{ $json['Linkedin Title'] }}\",\n  \"email\": \"{{ $json.Emails }}\",\n  \"webhook\": \"{{ $env.REPLIKBOT_READY_WEBHOOK_URL }}\"\n}",
         "options": {}
       },
       "id": "launch-repliq",
@@ -90,51 +93,54 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [480, 0],
-      "notes": "Header auth credential: Authorization = Bearer REPLIQ_API_KEY. Map templateId from the matching Original Videos row before this node if the Jobs row only stores Original video name."
+      "notes": "Header auth: Authorization Bearer REPLIQ_API_KEY. Do not send icebreaker — RepliQ generates the hook. Dilip template = website background + lower-left face bubble. Do not send voice. Do not write voice to the sheet."
     },
     {
       "parameters": {
         "operation": "update",
-        "base": {
+        "documentId": {
           "__rl": true,
           "mode": "id",
-          "value": "appyGe81SFdPW8Ivz"
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
         },
-        "table": {
+        "sheetName": {
           "__rl": true,
-          "mode": "id",
-          "value": "tblnC3xzdTN2dPQQS"
+          "mode": "name",
+          "value": "Sheet1"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "id": "={{ $('Has Generate tag').item.json.id }}",
-            "Status": "Pending",
+            "Linkedin Url": "={{ $('Website set, Video link empty').item.json['Linkedin Url'] }}",
             "Video id": "={{ $json.id }}",
-            "Tags": "={{ ($('Has Generate tag').item.json.Tags || []).filter(t => t !== 'Generate') }}"
-          }
+            "updates": "Pending"
+          },
+          "matchingColumns": ["Linkedin Url"]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
         }
       },
-      "id": "launch-update-job",
-      "name": "Mark job Pending",
-      "type": "n8n-nodes-base.airtable",
-      "typeVersion": 2.1,
+      "id": "launch-write-id",
+      "name": "Write Video id to same row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
       "position": [720, 0]
     }
   ],
   "connections": {
-    "Airtable Jobs poll": {
+    "Sheet1 task rows": {
       "main": [
         [
           {
-            "node": "Has Generate tag",
+            "node": "Website set, Video link empty",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Has Generate tag": {
+    "Website set, Video link empty": {
       "main": [
         [
           {
@@ -149,7 +155,7 @@
       "main": [
         [
           {
-            "node": "Mark job Pending",
+            "node": "Write Video id to same row",
             "type": "main",
             "index": 0
           }
@@ -159,10 +165,9 @@
   },
   "active": false,
   "settings": {
-    "executionOrder": "v1",
-    "callerPolicy": "workflowsFromSameOwner"
+    "executionOrder": "v1"
   },
   "meta": {
-    "description": "Gate 1: tagged Airtable Jobs rows launch a RepliQ replica video (website background + lower-left face bubble)."
+    "description": "Gate 1: Sheet1 rows with Website and empty Video link launch RepliQ. Icebreaker is not sent. Voice is not written to the sheet."
   }
 }
