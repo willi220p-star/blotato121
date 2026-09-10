@@ -1,0 +1,173 @@
+{
+  "name": "ReplikBot — 1 Launch",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 2,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "event": "rowUpdate",
+        "options": {}
+      },
+      "id": "launch-sheet-trigger",
+      "name": "Sheet1 task rows",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-website",
+              "leftValue": "={{ $json.Website }}",
+              "rightValue": "http",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            },
+            {
+              "id": "no-video-link",
+              "leftValue": "={{ $json['Video link'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "launch-if-task",
+      "name": "Website set, Video link empty",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.repliq.co/v2/launchTemplate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"templateId\": \"{{ $env.REPLIQ_DILIP_TEMPLATE_ID }}\",\n  \"url\": \"{{ $json.Website }}\",\n  \"firstName\": \"{{ $json['first name'] }}\",\n  \"lastName\": \"{{ $json['last name'] }}\",\n  \"companyName\": \"{{ $json['company name'] }}\",\n  \"jobTitle\": \"{{ $json['Linkedin Title'] }}\",\n  \"email\": \"{{ $json.Emails }}\",\n  \"webhook\": \"{{ $env.REPLIKBOT_READY_WEBHOOK_URL }}\"\n}",
+        "options": {}
+      },
+      "id": "launch-repliq",
+      "name": "RepliQ launchTemplate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 0],
+      "notes": "Header auth: Authorization Bearer REPLIQ_API_KEY. Do not send icebreaker — RepliQ generates the hook. Dilip template = website background + lower-left face bubble. Do not send voice. Do not write voice to the sheet."
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Linkedin Url": "={{ $('Website set, Video link empty').item.json['Linkedin Url'] }}",
+            "Video id": "={{ $json.id }}",
+            "updates": "Pending"
+          },
+          "matchingColumns": ["Linkedin Url"]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "launch-write-id",
+      "name": "Write Video id to same row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [720, 0]
+    }
+  ],
+  "connections": {
+    "Sheet1 task rows": {
+      "main": [
+        [
+          {
+            "node": "Website set, Video link empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website set, Video link empty": {
+      "main": [
+        [
+          {
+            "node": "RepliQ launchTemplate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RepliQ launchTemplate": {
+      "main": [
+        [
+          {
+            "node": "Write Video id to same row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Gate 1: Sheet1 rows with Website and empty Video link launch RepliQ. Icebreaker is not sent. Voice is not written to the sheet."
+  }
+}

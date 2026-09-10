@@ -1,0 +1,133 @@
+{
+  "name": "ReplikBot — 3 Sheets Gate",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 2,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "options": {}
+      },
+      "id": "sheets-poll",
+      "name": "Poll Sheet1",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-video-id",
+              "leftValue": "={{ $json['Video id'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "missing-link",
+              "leftValue": "={{ $json['Video link'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "sheets-if-pending",
+      "name": "Has Video id, missing Video link",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "link-ok",
+              "leftValue": "={{ $json['Video link'] }}",
+              "rightValue": "https://",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            },
+            {
+              "id": "icebreaker-missing",
+              "leftValue": "={{ $json.Icebreaker }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "sheets-if-need-icebreaker",
+      "name": "Link present, Icebreaker empty",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [240, 200]
+    }
+  ],
+  "connections": {
+    "Poll Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Has Video id, missing Video link",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Link present, Icebreaker empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Gate 3 backup: catch Sheet1 rows that still need Video link or Icebreaker filled. Voice is never a sheet field. Ready Gate webhook is the primary writer."
+  }
+}
