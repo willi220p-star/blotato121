@@ -1,0 +1,168 @@
+{
+  "name": "ReplikBot — 1 Launch",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 2,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appyGe81SFdPW8Ivz"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblnC3xzdTN2dPQQS"
+        },
+        "triggerField": "Status",
+        "additionalFields": {
+          "view": {
+            "__rl": true,
+            "mode": "list",
+            "value": "Grid view"
+          }
+        }
+      },
+      "id": "launch-airtable-trigger",
+      "name": "Airtable Jobs poll",
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 2.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-generate",
+              "leftValue": "={{ $json.Tags }}",
+              "rightValue": "Generate",
+              "operator": {
+                "type": "array",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "launch-if-generate",
+      "name": "Has Generate tag",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.repliq.co/v2/launchTemplate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"templateId\": \"{{ $json['RepliQ template ID'] }}\",\n  \"url\": \"{{ $json.Website }}\",\n  \"firstName\": \"{{ $json['first name'] }}\",\n  \"lastName\": \"{{ $json['last name'] }}\",\n  \"companyName\": \"{{ $json['company name'] }}\",\n  \"jobTitle\": \"{{ $json.jobTitle }}\",\n  \"icebreaker\": {{ JSON.stringify($json.Icebreaker || '') }},\n  \"email\": \"{{ $json.Emails }}\",\n  \"webhook\": \"{{ $env.REPLIKBOT_READY_WEBHOOK_URL }}\"\n}",
+        "options": {}
+      },
+      "id": "launch-repliq",
+      "name": "RepliQ launchTemplate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 0],
+      "notes": "Header auth credential: Authorization = Bearer REPLIQ_API_KEY. Map templateId from the matching Original Videos row before this node if the Jobs row only stores Original video name."
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appyGe81SFdPW8Ivz"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblnC3xzdTN2dPQQS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Has Generate tag').item.json.id }}",
+            "Status": "Pending",
+            "Video id": "={{ $json.id }}",
+            "Tags": "={{ ($('Has Generate tag').item.json.Tags || []).filter(t => t !== 'Generate') }}"
+          }
+        }
+      },
+      "id": "launch-update-job",
+      "name": "Mark job Pending",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [720, 0]
+    }
+  ],
+  "connections": {
+    "Airtable Jobs poll": {
+      "main": [
+        [
+          {
+            "node": "Has Generate tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Generate tag": {
+      "main": [
+        [
+          {
+            "node": "RepliQ launchTemplate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RepliQ launchTemplate": {
+      "main": [
+        [
+          {
+            "node": "Mark job Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "meta": {
+    "description": "Gate 1: tagged Airtable Jobs rows launch a RepliQ replica video (website background + lower-left face bubble)."
+  }
+}

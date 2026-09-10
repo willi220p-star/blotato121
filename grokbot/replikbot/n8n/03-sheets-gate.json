@@ -1,0 +1,182 @@
+{
+  "name": "ReplikBot — 3 Sheets Gate",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 2,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appyGe81SFdPW8Ivz"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblnC3xzdTN2dPQQS"
+        }
+      },
+      "id": "sheets-airtable-trigger",
+      "name": "Airtable Ready jobs",
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 2.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "status-ready",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Ready",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "has-link",
+              "leftValue": "={{ $json['Video link'] }}",
+              "rightValue": "https://",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "sheets-if-ready",
+      "name": "Status Ready with link",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Linkedin Url": "={{ $json['Linkedin Url'] }}",
+            "Emails": "={{ $json.Emails }}",
+            "Website": "={{ $json.Website }}",
+            "first name": "={{ $json['first name'] }}",
+            "last name": "={{ $json['last name'] }}",
+            "company name": "={{ $json['company name'] }}",
+            "Video id": "={{ $json['Video id'] }}",
+            "Video link": "={{ $json['Video link'] }}",
+            "Video Html": "={{ $json['Video Html'] }}",
+            "Icebreaker id": "={{ $json['Icebreaker id'] }}",
+            "Icebreaker": "={{ $json.Icebreaker }}"
+          },
+          "matchingColumns": ["Linkedin Url"]
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "useAppend": true
+        }
+      },
+      "id": "sheets-upsert",
+      "name": "Upsert REPLIQ DATABASE",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [500, 0]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appyGe81SFdPW8Ivz"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblnC3xzdTN2dPQQS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Status Ready with link').item.json.id }}",
+            "Status": "Written to Sheet",
+            "Tags": "={{ [ ...new Set([ ...($('Status Ready with link').item.json.Tags || []).filter(t => t !== 'Generate' && t !== 'Failed'), 'Done' ]) ] }}",
+            "Sheet row key": "={{ $('Status Ready with link').item.json['Linkedin Url'] || $('Status Ready with link').item.json.Emails }}"
+          }
+        }
+      },
+      "id": "sheets-mark-written",
+      "name": "Mark Written to Sheet",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [740, 0]
+    }
+  ],
+  "connections": {
+    "Airtable Ready jobs": {
+      "main": [
+        [
+          {
+            "node": "Status Ready with link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status Ready with link": {
+      "main": [
+        [
+          {
+            "node": "Upsert REPLIQ DATABASE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert REPLIQ DATABASE": {
+      "main": [
+        [
+          {
+            "node": "Mark Written to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Gate 3: only Ready jobs with a video URL are written to REPLIQ DATABASE Sheet1."
+  }
+}
