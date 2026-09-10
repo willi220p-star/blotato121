@@ -1,8 +1,8 @@
 # ReplikBot
 
-Paste `GROKBOT_CREATE_PROMPT.md` into Grok Bot (`New` → `Create new agent`). That file is the full create-prompt.
+Paste `GROKBOT_CREATE_PROMPT.md` into the **already created** ReplikBot chat. That file updates this Bot. Do not create a new agent.
 
-Do **not** add a 10-minute routine. The bot only runs when you message it.
+Do **not** keep a 10-minute routine. The bot only runs when you message it.
 
 ## What changed
 

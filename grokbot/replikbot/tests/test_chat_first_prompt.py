@@ -21,6 +21,8 @@ REQUIRED_PHRASES = [
     "qualify grade",
     "1 to 10",
     "7 through 10",
+    "You are already ReplikBot",
+    "Do not create a new Bot",
     "Do not create a timed routine",
     "Do not poll the sheet",
     "small intro",
@@ -33,6 +35,7 @@ REQUIRED_PHRASES = [
 FORBIDDEN_PHRASES = [
     "Every 10 minutes, run the RepliQ Pipeline",
     "I create the task in that sheet",
+    "Create a new Bot",
 ]
 
 def _plain(text: str) -> str:
