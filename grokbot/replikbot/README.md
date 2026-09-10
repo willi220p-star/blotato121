@@ -2,16 +2,31 @@
 
 Paste `GROKBOT_CREATE_PROMPT.md` into Grok Bot (`New` → `Create new agent`). That file is the full create-prompt.
 
-## What it automates
+Do **not** add a 10-minute routine. The bot only runs when you message it.
 
-I add a row to Google Sheet **REPLIQ DATABASE** (Website + lead details) → ReplikBot picks the Dilip RepliQ template (site background + lower-left face bubble) → RepliQ generates the icebreaker/hook → the same row gets Video link, Video Html, and Icebreaker.
+## What changed
 
-Face comes from Dilip’s video attached in Grok Bot, not from a voice-reference clip. Voice may be extracted from a separate source video and is never written to the sheet.
+You no longer create the job by editing [REPLIQ DATABASE](https://docs.google.com/spreadsheets/d/1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI/edit) first.
+
+In ReplikBot chat you answer:
+
+1. Website link (background for the rest of the video)
+2. Website name
+3. First name
+4. Surname
+5. RepliQ template name (the one you already built with a small intro clip and a large talking-head)
+
+Then the bot:
+
+1. Scores the website **1–10** and writes `qualify grade`
+2. **Skips RepliQ** if the score is below 7
+3. If 7–10, launches that named template (`url` = the website). First few seconds = the template’s small intro video; the rest uses the website as the background
+4. Writes Video link + Icebreaker back to Sheet1 and pastes the link in chat
 
 ## Sheet
 
-[REPLIQ DATABASE](https://docs.google.com/spreadsheets/d/1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI/edit) · tab Sheet1
+[REPLIQ DATABASE](https://docs.google.com/spreadsheets/d/1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI/edit) · tab Sheet1 is the log, not the intake form.
 
-n8n graphs (optional): `n8n/01-launch.json`, `n8n/02-ready-gate.json`, `n8n/03-sheets-gate.json`
+Optional n8n graphs: `n8n/01-launch.json` (chat/webhook, not a sheet poll), `n8n/02-ready-gate.json` (RepliQ webhook), `n8n/03-sheets-gate.json` (manual check webhook — no 2-minute poll).
 
 Store the RepliQ key as `REPLIQ_API_KEY` via Grok Bot’s secure secret flow — never in the prompt.

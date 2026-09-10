@@ -147,6 +147,6 @@
     "executionOrder": "v1"
   },
   "meta": {
-    "description": "Gate 2: RepliQ webhook. On YES, write Video link and Icebreaker into Sheet1. Never write voice."
+    "description": "Gate 2: RepliQ webhook when a chat-launched video is ready. On YES, write Video link and Icebreaker into Sheet1. Never write voice. Not a timer."
   }
 }

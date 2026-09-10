@@ -3,15 +3,22 @@
   "nodes": [
     {
       "parameters": {
-        "pollTimes": {
-          "item": [
-            {
-              "mode": "everyX",
-              "value": 2,
-              "unit": "minutes"
-            }
-          ]
-        },
+        "httpMethod": "POST",
+        "path": "replikbot-check",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "sheets-check-webhook",
+      "name": "Manual check webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "replikbot-check",
+      "notes": "Only when ReplikBot asks to check one pending Video id. No 2-minute poll. No 10-minute timer. Body: videoId."
+    },
+    {
+      "parameters": {
+        "operation": "read",
         "documentId": {
           "__rl": true,
           "mode": "id",
@@ -22,13 +29,21 @@
           "mode": "name",
           "value": "Sheet1"
         },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Video id",
+              "lookupValue": "={{ $json.body.videoId || $json.videoId }}"
+            }
+          ]
+        },
         "options": {}
       },
-      "id": "sheets-poll",
-      "name": "Poll Sheet1",
-      "type": "n8n-nodes-base.googleSheetsTrigger",
-      "typeVersion": 1.2,
-      "position": [0, 0]
+      "id": "sheets-read-row",
+      "name": "Read Sheet1 row by Video id",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [240, 0]
     },
     {
       "parameters": {
@@ -65,57 +80,26 @@
       "name": "Has Video id, missing Video link",
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.2,
-      "position": [240, 0]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "link-ok",
-              "leftValue": "={{ $json['Video link'] }}",
-              "rightValue": "https://",
-              "operator": {
-                "type": "string",
-                "operation": "startsWith"
-              }
-            },
-            {
-              "id": "icebreaker-missing",
-              "leftValue": "={{ $json.Icebreaker }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "empty"
-              }
-            }
-          ],
-          "combinator": "and"
-        }
-      },
-      "id": "sheets-if-need-icebreaker",
-      "name": "Link present, Icebreaker empty",
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.2,
-      "position": [240, 200]
+      "position": [480, 0]
     }
   ],
   "connections": {
-    "Poll Sheet1": {
+    "Manual check webhook": {
+      "main": [
+        [
+          {
+            "node": "Read Sheet1 row by Video id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Sheet1 row by Video id": {
       "main": [
         [
           {
             "node": "Has Video id, missing Video link",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Link present, Icebreaker empty",
             "type": "main",
             "index": 0
           }
@@ -128,6 +112,6 @@
     "executionOrder": "v1"
   },
   "meta": {
-    "description": "Gate 3 backup: catch Sheet1 rows that still need Video link or Icebreaker filled. Voice is never a sheet field. Ready Gate webhook is the primary writer."
+    "description": "Gate 3: on-demand check for one Video id when the user asks ReplikBot. Ready Gate webhook is the primary writer. Voice is never a sheet field."
   }
 }

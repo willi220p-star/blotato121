@@ -3,33 +3,18 @@
   "nodes": [
     {
       "parameters": {
-        "pollTimes": {
-          "item": [
-            {
-              "mode": "everyX",
-              "value": 2,
-              "unit": "minutes"
-            }
-          ]
-        },
-        "documentId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
-        },
-        "sheetName": {
-          "__rl": true,
-          "mode": "name",
-          "value": "Sheet1"
-        },
-        "event": "rowUpdate",
+        "httpMethod": "POST",
+        "path": "replikbot-launch",
+        "responseMode": "onReceived",
         "options": {}
       },
-      "id": "launch-sheet-trigger",
-      "name": "Sheet1 task rows",
-      "type": "n8n-nodes-base.googleSheetsTrigger",
-      "typeVersion": 1.2,
-      "position": [0, 0]
+      "id": "launch-chat-webhook",
+      "name": "Chat launch webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "replikbot-launch",
+      "notes": "Triggered by ReplikBot after chat intake. Body: website, websiteName, firstName, lastName, templateId, templateName, qualifyGrade, email, linkedinUrl, jobTitle. No sheet poll. No 10-minute timer."
     },
     {
       "parameters": {
@@ -42,7 +27,7 @@
           "conditions": [
             {
               "id": "has-website",
-              "leftValue": "={{ $json.Website }}",
+              "leftValue": "={{ $json.body.website || $json.website }}",
               "rightValue": "http",
               "operator": {
                 "type": "string",
@@ -50,21 +35,21 @@
               }
             },
             {
-              "id": "no-video-link",
-              "leftValue": "={{ $json['Video link'] }}",
-              "rightValue": "",
+              "id": "grade-in-range",
+              "leftValue": "={{ Number($json.body.qualifyGrade || $json.qualifyGrade || 0) }}",
+              "rightValue": 7,
               "operator": {
-                "type": "string",
-                "operation": "empty"
+                "type": "number",
+                "operation": "gte"
               }
             }
           ],
           "combinator": "and"
         }
       },
-      "id": "launch-if-task",
-      "name": "Website set, Video link empty",
-      "type": "n8n-nodes-base.filter",
+      "id": "launch-if-quality",
+      "name": "Website set, qualify grade >= 7",
+      "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [240, 0]
     },
@@ -85,19 +70,19 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"templateId\": \"{{ $env.REPLIQ_DILIP_TEMPLATE_ID }}\",\n  \"url\": \"{{ $json.Website }}\",\n  \"firstName\": \"{{ $json['first name'] }}\",\n  \"lastName\": \"{{ $json['last name'] }}\",\n  \"companyName\": \"{{ $json['company name'] }}\",\n  \"jobTitle\": \"{{ $json['Linkedin Title'] }}\",\n  \"email\": \"{{ $json.Emails }}\",\n  \"webhook\": \"{{ $env.REPLIKBOT_READY_WEBHOOK_URL }}\"\n}",
+        "jsonBody": "={\n  \"templateId\": \"{{ $json.body.templateId || $json.templateId }}\",\n  \"url\": \"{{ $json.body.website || $json.website }}\",\n  \"firstName\": \"{{ $json.body.firstName || $json.firstName }}\",\n  \"lastName\": \"{{ $json.body.lastName || $json.lastName }}\",\n  \"companyName\": \"{{ $json.body.websiteName || $json.websiteName }}\",\n  \"jobTitle\": \"{{ $json.body.jobTitle || $json.jobTitle || '' }}\",\n  \"email\": \"{{ $json.body.email || $json.email || '' }}\",\n  \"webhook\": \"{{ $env.REPLIKBOT_READY_WEBHOOK_URL }}\"\n}",
         "options": {}
       },
       "id": "launch-repliq",
       "name": "RepliQ launchTemplate",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [480, 0],
-      "notes": "Header auth: Authorization Bearer REPLIQ_API_KEY. Do not send icebreaker — RepliQ generates the hook. Dilip template = website background + lower-left face bubble. Do not send voice. Do not write voice to the sheet."
+      "position": [520, -100],
+      "notes": "Header auth: Authorization Bearer REPLIQ_API_KEY. templateId comes from chat (matched by template name). url is the website background. Template already has small intro + large overlay videos. Do not send icebreaker. Do not write voice."
     },
     {
       "parameters": {
-        "operation": "update",
+        "operation": "append",
         "documentId": {
           "__rl": true,
           "mode": "id",
@@ -111,40 +96,94 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Linkedin Url": "={{ $('Website set, Video link empty').item.json['Linkedin Url'] }}",
+            "Linkedin Url": "={{ $('Chat launch webhook').item.json.body.linkedinUrl || $('Chat launch webhook').item.json.linkedinUrl || '' }}",
+            "Linkedin Title": "={{ $('Chat launch webhook').item.json.body.jobTitle || $('Chat launch webhook').item.json.jobTitle || '' }}",
+            "Emails": "={{ $('Chat launch webhook').item.json.body.email || $('Chat launch webhook').item.json.email || '' }}",
+            "Website": "={{ $('Chat launch webhook').item.json.body.website || $('Chat launch webhook').item.json.website }}",
+            "first name": "={{ $('Chat launch webhook').item.json.body.firstName || $('Chat launch webhook').item.json.firstName }}",
+            "last name": "={{ $('Chat launch webhook').item.json.body.lastName || $('Chat launch webhook').item.json.lastName }}",
+            "company name": "={{ $('Chat launch webhook').item.json.body.websiteName || $('Chat launch webhook').item.json.websiteName }}",
+            "qualify grade": "={{ $('Chat launch webhook').item.json.body.qualifyGrade || $('Chat launch webhook').item.json.qualifyGrade }}",
+            "qualification potential": "={{ $('Chat launch webhook').item.json.body.qualifyReason || $('Chat launch webhook').item.json.qualifyReason || '' }}",
             "Video id": "={{ $json.id }}",
-            "updates": "Pending"
+            "updates": "={{ 'Pending | template: ' + ($('Chat launch webhook').item.json.body.templateName || $('Chat launch webhook').item.json.templateName || '') }}"
           },
-          "matchingColumns": ["Linkedin Url"]
+          "matchingColumns": []
         },
         "options": {
           "cellFormat": "USER_ENTERED"
         }
       },
       "id": "launch-write-id",
-      "name": "Write Video id to same row",
+      "name": "Append Sheet1 after launch",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [720, 0]
+      "position": [760, -100]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1lnmnTMi6pLVSIaFH73YWg8qdTZPCA95S5LspaNVQzPI"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Linkedin Url": "={{ $json.body.linkedinUrl || $json.linkedinUrl || '' }}",
+            "Linkedin Title": "={{ $json.body.jobTitle || $json.jobTitle || '' }}",
+            "Emails": "={{ $json.body.email || $json.email || '' }}",
+            "Website": "={{ $json.body.website || $json.website }}",
+            "first name": "={{ $json.body.firstName || $json.firstName }}",
+            "last name": "={{ $json.body.lastName || $json.lastName }}",
+            "company name": "={{ $json.body.websiteName || $json.websiteName }}",
+            "qualify grade": "={{ $json.body.qualifyGrade || $json.qualifyGrade }}",
+            "qualification potential": "={{ $json.body.qualifyReason || $json.qualifyReason || '' }}",
+            "updates": "={{ 'Skipped: qualify grade ' + ($json.body.qualifyGrade || $json.qualifyGrade) + ' (below 7)' }}"
+          },
+          "matchingColumns": []
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "launch-write-skip",
+      "name": "Append Sheet1 skip (grade below 7)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [520, 140]
     }
   ],
   "connections": {
-    "Sheet1 task rows": {
+    "Chat launch webhook": {
       "main": [
         [
           {
-            "node": "Website set, Video link empty",
+            "node": "Website set, qualify grade >= 7",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Website set, Video link empty": {
+    "Website set, qualify grade >= 7": {
       "main": [
         [
           {
             "node": "RepliQ launchTemplate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append Sheet1 skip (grade below 7)",
             "type": "main",
             "index": 0
           }
@@ -155,7 +194,7 @@
       "main": [
         [
           {
-            "node": "Write Video id to same row",
+            "node": "Append Sheet1 after launch",
             "type": "main",
             "index": 0
           }
@@ -168,6 +207,6 @@
     "executionOrder": "v1"
   },
   "meta": {
-    "description": "Gate 1: Sheet1 rows with Website and empty Video link launch RepliQ. Icebreaker is not sent. Voice is not written to the sheet."
+    "description": "Gate 1: webhook from ReplikBot chat. Quality-grade must be 7–10 or the row is logged and RepliQ is skipped. Template id comes from chat. No sheet polling."
   }
 }
