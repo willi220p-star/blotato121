@@ -65,10 +65,10 @@ export interface MonthTotals {
 }
 
 export const PERSON_COLORS = [
-  '#1b4d3e',
-  '#7a2e4a',
-  '#1d4e6b',
-  '#4a3f72',
-  '#3d5a1f',
-  '#0f766e',
+  '#0071e3',
+  '#ff375f',
+  '#30d158',
+  '#bf5af2',
+  '#ff9f0a',
+  '#64d2ff',
 ]

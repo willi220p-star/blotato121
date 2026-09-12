@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
+import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react'
+import { HeroArt, PersonMark } from './HeroArt'
+import { MonthPicker } from './MonthPicker'
 import {
   copyMonthForward,
   lastMonths,
@@ -11,6 +13,8 @@ import {
   spendingByCategory,
   uid,
 } from './money'
+import { buildGapReport, closingMonthKey, hasSentGapMail, markSentGapMail } from './gapMail'
+import { sendGapMail } from './notifyGap'
 import { sampleState } from './sampleData'
 import { exportState, importState, loadState, saveState } from './storage'
 import { PERSON_COLORS, type AppState, type Person } from './types'
@@ -24,9 +28,33 @@ export default function App() {
   const [view, setView] = useState<View>('together')
   const [personId, setPersonId] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
+  const mailAttempt = useRef('')
 
   useEffect(() => {
     saveState(state)
+  }, [state])
+
+  useEffect(() => {
+    const onMove = (event: PointerEvent) => {
+      document.documentElement.style.setProperty('--mx', `${event.clientX}px`)
+      document.documentElement.style.setProperty('--my', `${event.clientY}px`)
+    }
+    window.addEventListener('pointermove', onMove)
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [])
+
+  useEffect(() => {
+    const closing = closingMonthKey()
+    if (!closing || hasSentGapMail(closing) || mailAttempt.current === closing) return
+    const report = buildGapReport(state, closing)
+    if (!report) return
+    mailAttempt.current = closing
+    void sendGapMail(report).then((result) => {
+      if (!result.ok) return
+      markSentGapMail(closing)
+      setNotice(`${monthLabel(closing)} closed short. A note went to both of you.`)
+      window.setTimeout(() => setNotice(''), 5000)
+    })
   }, [state])
 
   function flash(message: string) {
@@ -39,132 +67,118 @@ export default function App() {
 
   return (
     <div className="scene">
-      <div className="orb" />
-      <div className="orb-2" />
-      <div className="orb-3" />
-      <div className="app">
       <header className="hero">
-        <div>
-          <p className="eyebrow">Savings and spend tracker</p>
-          <h1>Welcome to the saving world</h1>
-          <p className="welcome">
-            {state.settings.householdName}: earnings, spends, estimated savings, what actually
-            landed in the bank, and investments. Each person has their own glowing dashboard.
-            Together is the joint total.
-          </p>
+        <div className="hero-copy">
+          <p className="eyebrow">SaveWorld</p>
+          <h1>Welcome to the saving world.</h1>
+          <p className="welcome">Your money, their money, and the truth at the end of the month.</p>
         </div>
-        <div className="globe" aria-hidden="true" />
+        <HeroArt />
       </header>
-        <nav>
-          <button className={view === 'together' ? 'nav on' : 'nav'} onClick={() => setView('together')}>
-            Together
-          </button>
-          {state.people.map((person) => (
+
+      <div className="app">
+        <div className="topbar">
+          <div className="wordmark">{state.settings.householdName}</div>
+          <nav>
+            <button className={view === 'together' ? 'nav on' : 'nav'} onClick={() => setView('together')}>
+              Together
+            </button>
+            {state.people.map((person) => (
+              <button
+                key={person.id}
+                className={view === 'person' && personId === person.id ? 'nav on' : 'nav'}
+                onClick={() => {
+                  setPersonId(person.id)
+                  setView('person')
+                }}
+              >
+                {person.name}
+              </button>
+            ))}
+            <button className={view === 'people' ? 'nav on' : 'nav'} onClick={() => setView('people')}>
+              People
+            </button>
+            <button className={view === 'history' ? 'nav on' : 'nav'} onClick={() => setView('history')}>
+              24 months
+            </button>
+          </nav>
+        </div>
+
+        {notice ? <div className="notice">{notice}</div> : null}
+
+        <div className="month-bar">
+          <MonthPicker value={month} months={months} onChange={setMonth} />
+          <div className="actions">
             <button
-              key={person.id}
-              className={view === 'person' && personId === person.id ? 'nav on' : 'nav'}
               onClick={() => {
-                setPersonId(person.id)
-                setView('person')
+                setState(copyMonthForward(state, month))
+                setMonth(shiftMonth(month, 1))
+                flash('Copied this month into the next one.')
               }}
             >
-              {person.name}
+              Copy forward
             </button>
-          ))}
-          <button className={view === 'people' ? 'nav on' : 'nav'} onClick={() => setView('people')}>
-            People
-          </button>
-          <button className={view === 'history' ? 'nav on' : 'nav'} onClick={() => setView('history')}>
-            24 months
-          </button>
-        </nav>
-
-      {notice ? <div className="notice">{notice}</div> : null}
-
-      <div className="month-bar">
-        <div className="row">
-          <button onClick={() => setMonth(shiftMonth(month, -1))}>Previous</button>
-          <strong>{monthLabel(month)}</strong>
-          <button onClick={() => setMonth(shiftMonth(month, 1))}>Next</button>
-          <select value={month} onChange={(e) => setMonth(e.target.value)}>
-            {months.map((key) => (
-              <option key={key} value={key}>
-                {monthLabel(key)}
-              </option>
-            ))}
-          </select>
+            <button
+              onClick={() => {
+                const blob = new Blob([exportState(state)], { type: 'application/json' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = 'saveworld.json'
+                a.click()
+                URL.revokeObjectURL(url)
+              }}
+            >
+              Export
+            </button>
+            <label className="file">
+              Import
+              <input
+                type="file"
+                accept="application/json"
+                hidden
+                onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  if (!file) return
+                  try {
+                    setState(importState(await file.text()))
+                    flash('Imported SaveWorld file.')
+                  } catch (error) {
+                    flash(error instanceof Error ? error.message : 'Import failed.')
+                  }
+                }}
+              />
+            </label>
+          </div>
         </div>
-        <div className="actions">
-          <button
-            onClick={() => {
-              setState(copyMonthForward(state, month))
-              setMonth(shiftMonth(month, 1))
-              flash('Copied incomes, spends, and investments into the next month.')
-            }}
-          >
-            Copy month forward
-          </button>
-          <button
-            onClick={() => {
-              const blob = new Blob([exportState(state)], { type: 'application/json' })
-              const url = URL.createObjectURL(blob)
-              const a = document.createElement('a')
-              a.href = url
-              a.download = 'saveworld.json'
-              a.click()
-              URL.revokeObjectURL(url)
-            }}
-          >
-            Export
-          </button>
-          <label className="file">
-            Import
-            <input
-              type="file"
-              accept="application/json"
-              hidden
-              onChange={async (e) => {
-                const file = e.target.files?.[0]
-                if (!file) return
-                try {
-                  setState(importState(await file.text()))
-                  flash('Imported SaveWorld file.')
-                } catch (error) {
-                  flash(error instanceof Error ? error.message : 'Import failed.')
-                }
+
+        <div key={`${view}-${personId}-${month}`} className="stage">
+          {view === 'together' ? (
+            <TogetherView
+              state={state}
+              month={month}
+              onOpenPerson={(id) => {
+                setPersonId(id)
+                setView('person')
+              }}
+              onSample={() => {
+                setState(sampleState(state))
+                flash('Sample household loaded. It stays on this browser.')
               }}
             />
-          </label>
+          ) : null}
+
+          {view === 'person' && activePerson ? (
+            <PersonView state={state} setState={setState} person={activePerson} month={month} />
+          ) : null}
+
+          {view === 'people' ? (
+            <PeopleView state={state} setState={setState} flash={flash} />
+          ) : null}
+
+          {view === 'history' ? <HistoryView state={state} months={months} /> : null}
         </div>
       </div>
-
-      <div key={`${view}-${personId}-${month}`} className="stage">
-        {view === 'together' ? (
-          <TogetherView
-            state={state}
-            month={month}
-            onOpenPerson={(id) => {
-              setPersonId(id)
-              setView('person')
-            }}
-            onSample={() => {
-              setState(sampleState(state))
-              flash('Sample household loaded. Edit anything — this stays on this browser.')
-            }}
-          />
-        ) : null}
-
-        {view === 'person' && activePerson ? (
-          <PersonView state={state} setState={setState} person={activePerson} month={month} />
-        ) : null}
-
-        {view === 'people' ? (
-          <PeopleView state={state} setState={setState} flash={flash} />
-        ) : null}
-
-        {view === 'history' ? <HistoryView state={state} months={months} /> : null}
-      </div>
-    </div>
     </div>
   )
 }
@@ -184,30 +198,28 @@ function TogetherView({
   const currency = state.settings.currency
   return (
     <section className="panel">
-      <h2>Together this month</h2>
-      <p className="lede">
-        Joint earnings, spends, estimated savings, actual bank savings, and the gap. Open a person
-        to add their numbers — the same layout, their own figures.
-      </p>
+      <h2>Together</h2>
+      <p className="lede">Earnings. Spend. The estimate. What actually stayed. The gap.</p>
       <TotalsGrid totals={joint} currency={currency} />
       {state.people.length === 0 ? (
-        <p className="empty">
-          No people yet. Open People to add yourself and your partner, or load a sample household.
-        </p>
+        <p className="empty">Add people, or load a sample household.</p>
       ) : null}
       <ul className="cards">
         {state.people.map((person) => {
           const totals = monthTotals(state, month, person.id)
           return (
             <li key={person.id}>
-              <div>
-                <strong style={{ color: person.color }}>{person.name}</strong>
-                <span>
-                  Est. {money(totals.estimatedSavings, currency)} · Actual{' '}
-                  {money(totals.actualSavings, currency)} · Gap {money(totals.difference, currency)}
-                </span>
+              <div className="person-line">
+                <PersonMark color={person.color} />
+                <div>
+                  <strong>{person.name}</strong>
+                  <span>
+                    Est. {money(totals.estimatedSavings, currency)} · Actual{' '}
+                    {money(totals.actualSavings, currency)} · Gap {money(totals.difference, currency)}
+                  </span>
+                </div>
               </div>
-              <button onClick={() => onOpenPerson(person.id)}>Open dashboard</button>
+              <button onClick={() => onOpenPerson(person.id)}>Open</button>
             </li>
           )
         })}
@@ -215,7 +227,9 @@ function TogetherView({
       <CategoryBars state={state} month={month} currency={currency} />
       <InvestmentList state={state} month={month} currency={currency} />
       <div className="actions">
-        <button onClick={onSample}>Load sample household</button>
+        <button className="ghost" onClick={onSample}>
+          Load sample household
+        </button>
       </div>
     </section>
   )
@@ -238,23 +252,20 @@ function PersonView({
 
   return (
     <section className="panel">
-      <h2 style={{ color: person.color }}>{person.name}</h2>
+      <h2>{person.name}</h2>
       <p className="lede">
-        Same tracker as Together, just {person.name}’s money. Estimated savings is earnings minus
-        spends. Actual savings is what you type from the bank. Gap is actual minus estimated.
+        Estimated savings is earnings minus spends. Actual is what the bank kept. Gap is actual minus
+        estimated.
       </p>
       <TotalsGrid totals={totals} currency={currency} />
 
-      <h3>Income sources</h3>
+      <h3>Income</h3>
       <AddRow
         placeholder="Day job"
         onAdd={(source, amount) =>
           setState({
             ...state,
-            incomes: [
-              ...state.incomes,
-              { id: uid('in'), personId: person.id, month, source, amount },
-            ],
+            incomes: [...state.incomes, { id: uid('in'), personId: person.id, month, source, amount }],
           })
         }
       />
@@ -278,7 +289,7 @@ function PersonView({
           ))}
       </ul>
 
-      <h3>Monthly spends</h3>
+      <h3>Spends</h3>
       <AddExpense state={state} setState={setState} personId={person.id} month={month} />
       <ul className="mini">
         {state.expenses
@@ -302,7 +313,7 @@ function PersonView({
       </ul>
       <CategoryBars state={state} month={month} personId={person.id} currency={currency} />
 
-      <h3>Investments this month</h3>
+      <h3>Investments</h3>
       <AddRow
         placeholder="Index fund"
         onAdd={(name, amount) =>
@@ -317,9 +328,9 @@ function PersonView({
       />
       <InvestmentList state={state} month={month} personId={person.id} currency={currency} />
 
-      <h3>Actual savings from the bank</h3>
+      <h3>Actual savings</h3>
       <label>
-        Amount that actually stayed this month
+        What stayed in the bank
         <input
           type="number"
           min={0}
@@ -355,10 +366,8 @@ function PeopleView({
 
   return (
     <section className="panel">
-      <h2>People and household</h2>
-      <p className="lede">
-        Add everyone who should have a dashboard. Together always sums every person you add.
-      </p>
+      <h2>People</h2>
+      <p className="lede">Everyone gets a dashboard. Together always sums them.</p>
       <div className="grid two">
         <label>
           Household name
@@ -370,7 +379,7 @@ function PeopleView({
           />
         </label>
         <label>
-          Currency symbol
+          Currency
           <input
             value={state.settings.currency}
             onChange={(e) =>
@@ -409,7 +418,10 @@ function PeopleView({
       <ul className="cards">
         {state.people.map((person) => (
           <li key={person.id}>
-            <strong style={{ color: person.color }}>{person.name}</strong>
+            <div className="person-line">
+              <PersonMark color={person.color} />
+              <strong>{person.name}</strong>
+            </div>
             <button className="text" onClick={() => setState(removePersonRows(state, person.id))}>
               Remove
             </button>
@@ -466,8 +478,8 @@ function HistoryView({ state, months }: { state: AppState; months: string[] }) {
   const currency = state.settings.currency
   return (
     <section className="panel">
-      <h2>Two years of months</h2>
-      <p className="lede">Joint totals for the last 24 months, newest at the bottom.</p>
+      <h2>Two years</h2>
+      <p className="lede">Joint totals. Newest at the bottom.</p>
       <div className="table-wrap">
         <table className="history">
           <thead>
@@ -515,37 +527,37 @@ function TotalsGrid({
   return (
     <div className="stats">
       <article className="stat">
-        <span>Monthly earnings</span>
+        <span>Earnings</span>
         <strong>
           <CountUp value={totals.earnings} currency={currency} />
         </strong>
       </article>
       <article className="stat">
-        <span>Monthly spend</span>
+        <span>Spend</span>
         <strong>
           <CountUp value={totals.spending} currency={currency} />
         </strong>
       </article>
       <article className="stat">
-        <span>Estimated savings</span>
+        <span>Estimated</span>
         <strong>
           <CountUp value={totals.estimatedSavings} currency={currency} />
         </strong>
       </article>
       <article className="stat">
-        <span>Actual savings</span>
+        <span>Actual</span>
         <strong>
           <CountUp value={totals.actualSavings} currency={currency} />
         </strong>
       </article>
       <article className={totals.difference < 0 ? 'stat minus' : 'stat plus'}>
-        <span>Gap (actual − estimated)</span>
+        <span>Gap</span>
         <strong>
           <CountUp value={totals.difference} currency={currency} />
         </strong>
       </article>
       <article className="stat">
-        <span>Invested this month</span>
+        <span>Invested</span>
         <strong>
           <CountUp value={totals.investments} currency={currency} />
         </strong>
@@ -599,7 +611,7 @@ function InvestmentList({
   const rows = state.investments.filter(
     (row) => row.month === month && (!personId || row.personId === personId),
   )
-  if (!rows.length) return <p className="empty">No investments recorded this month.</p>
+  if (!rows.length) return <p className="empty">No investments this month.</p>
   return (
     <ul className="mini">
       {rows.map((row) => {

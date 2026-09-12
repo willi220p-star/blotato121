@@ -10,8 +10,9 @@ Household savings and spend tracker. Each person has their own dashboard. Togeth
 - Investments
 - 24 months of history
 - Copy a month forward, export / import JSON
+- At month end, if the gap is negative, both of you get a shortfall note
 
-Data stays in this browser (`localStorage`).
+Data stays in this browser (`localStorage`). A month-end shortfall mail goes to `regmisushant94@gmail.com` and `ishadhakal67@gmail.com` only when a bank actual is entered and the gap is behind. It does not mail on every visit.
 
 ## Run
 
