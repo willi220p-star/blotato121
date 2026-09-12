@@ -85,8 +85,8 @@ export default function App() {
             {LINES[line]}
           </p>
           <p className="welcome-body">
-            Click the characters. They walk, they show the earth, the coin, the plant. They tell
-            you what the month is for. Stay and watch them meet. Leave, and the numbers still wait.
+            Click them. They walk the stage, show the earth, the coin, the plant, and say what the
+            month is for.
           </p>
         </div>
         <LivingStage shortfall={jointNow.difference < 0} />
