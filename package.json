@@ -1,0 +1,7 @@
+{
+  "name": "tabletime-deploy",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix tabletime install && npm --prefix tabletime run build"
+  }
+}
