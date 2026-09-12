@@ -79,10 +79,27 @@ h3 {
   color: #3d4a44;
 }
 
-.grid.two {
+.grid.two,
+.room-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+}
+
+.room-form {
+  grid-template-columns: minmax(180px, 1.4fr) minmax(140px, 1fr) auto;
+  align-items: end;
+  margin: 16px 0 8px;
+}
+
+.field-error,
+.empty {
+  color: #9f1239;
+  margin: 8px 0 0;
+}
+
+.empty {
+  color: #3d4a44;
 }
 
 label {
@@ -178,6 +195,8 @@ fieldset {
 
 .suggest {
   margin: 16px 0;
+  max-height: 280px;
+  overflow: auto;
 }
 
 .suggest-card em {
@@ -269,6 +288,7 @@ fieldset {
 @media (max-width: 800px) {
   .topbar,
   .grid.two,
+  .room-form,
   .split {
     display: block;
   }

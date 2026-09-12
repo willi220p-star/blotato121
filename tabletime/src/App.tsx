@@ -83,11 +83,9 @@ export default function App() {
         .filter((row) => row.remaining > 0),
     )
     setOpenSuggestions((prev) => {
-      const nextState = { ...state, placements }
-      return {
-        ...prev,
-        [suggestion.professorId]: suggestSlots(nextState, suggestion.professorId),
-      }
+      const next = { ...prev }
+      delete next[suggestion.professorId]
+      return next
     })
     flash('Slot confirmed and added to the timetable.')
   }
@@ -272,27 +270,68 @@ function RoomsView({
 }) {
   const [name, setName] = useState('')
   const [block, setBlock] = useState('Block A')
+  const [error, setError] = useState('')
 
   function addRoom() {
-    if (!name.trim()) return
-    setState({
-      ...state,
-      rooms: [...state.rooms, { id: uid('rm'), name: name.trim(), block: block.trim() || 'Campus' }],
-    })
+    const roomName = name.trim()
+    if (!roomName) {
+      setError('Type a room name first, for example Room 101.')
+      return
+    }
+    setState((current) => ({
+      ...current,
+      rooms: [
+        ...current.rooms,
+        { id: uid('rm'), name: roomName, block: block.trim() || 'Campus' },
+      ],
+    }))
     setName('')
+    setError('')
   }
 
   return (
     <section className="panel">
       <h2>Campus rooms</h2>
       <p className="lede">Add the 10–15 teaching rooms. Preferred rooms on a professor will be tried first.</p>
-      <div className="row">
-        <input placeholder="Room 204" value={name} onChange={(e) => setName(e.target.value)} />
-        <input placeholder="Block B" value={block} onChange={(e) => setBlock(e.target.value)} />
-        <button className="primary" onClick={addRoom}>
+      <form
+        className="room-form"
+        onSubmit={(event) => {
+          event.preventDefault()
+          addRoom()
+        }}
+      >
+        <label>
+          Room name
+          <input
+            name="roomName"
+            placeholder="Room 101"
+            value={name}
+            autoComplete="off"
+            aria-invalid={error ? true : undefined}
+            onChange={(e) => {
+              setName(e.target.value)
+              if (error) setError('')
+            }}
+          />
+        </label>
+        <label>
+          Block
+          <input
+            name="block"
+            placeholder="Block A"
+            value={block}
+            autoComplete="off"
+            onChange={(e) => setBlock(e.target.value)}
+          />
+        </label>
+        <button className="primary" type="submit">
           Add room
         </button>
-      </div>
+      </form>
+      {error ? <p className="field-error">{error}</p> : null}
+      {state.rooms.length === 0 ? (
+        <p className="empty">No rooms yet. Type a name, then press Enter or click Add room.</p>
+      ) : null}
       <ul className="cards">
         {state.rooms.map((room) => (
           <li key={room.id}>
@@ -301,7 +340,13 @@ function RoomsView({
             </strong>
             <button
               className="text"
-              onClick={() => setState({ ...state, rooms: state.rooms.filter((r) => r.id !== room.id) })}
+              type="button"
+              onClick={() =>
+                setState((current) => ({
+                  ...current,
+                  rooms: current.rooms.filter((r) => r.id !== room.id),
+                }))
+              }
             >
               Remove
             </button>
@@ -309,7 +354,7 @@ function RoomsView({
         ))}
       </ul>
       <div className="actions">
-        <button className="primary" onClick={onContinue}>
+        <button className="primary" type="button" onClick={onContinue}>
           Continue to professors
         </button>
       </div>
