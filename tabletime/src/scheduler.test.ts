@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   applySuggestion,
   buildTimetable,
+  canApplySuggestion,
   findConflicts,
+  layoutDayColumns,
   rangesOverlap,
   suggestSlots,
 } from './scheduler'
+import { sampleState } from './sampleData'
 import type { AppState, Professor, Room } from './types'
 
 const rooms: Room[] = [
@@ -136,5 +139,65 @@ describe('conflicts and suggestions', () => {
     const placed = applySuggestion(suggestions[0])
     expect(placed.start < placed.end).toBe(true)
     expect(placed.professorId).toBe('p1')
+  })
+
+  it('refuses a suggestion that would overlap the same professor', () => {
+    const current = state(
+      [
+        professor({
+          id: 'p1',
+          name: 'Ada',
+          availability: [{ id: 'a1', day: 'Monday', start: '09:00', end: '15:00' }],
+        }),
+      ],
+      [{ id: 'x', professorId: 'p1', roomId: 'r1', day: 'Monday', start: '09:00', end: '12:00' }],
+    )
+    expect(
+      canApplySuggestion(current, {
+        id: 'sg',
+        professorId: 'p1',
+        roomId: 'r2',
+        day: 'Monday',
+        start: '10:00',
+        end: '13:00',
+        reason: 'overlap',
+        score: 1,
+      }),
+    ).toBe(false)
+  })
+})
+
+describe('sample college', () => {
+  it('builds 13 classes with no clashes or duplicate professor-day starts', () => {
+    const college = sampleState({
+      settings: {
+        orgName: 'Test',
+        slotHours: 3,
+        dayStart: '08:00',
+        dayEnd: '18:00',
+        stepMinutes: 60,
+        activeDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      },
+      rooms: [],
+      professors: [],
+      placements: [],
+    })
+    const result = buildTimetable(college)
+    expect(result.placements).toHaveLength(13)
+    expect(result.unplaced).toHaveLength(0)
+    expect(findConflicts(result.placements, college.professors, college.rooms)).toHaveLength(0)
+    const keys = result.placements.map((p) => `${p.professorId}-${p.day}-${p.start}`)
+    expect(new Set(keys).size).toBe(keys.length)
+  })
+})
+
+describe('layoutDayColumns', () => {
+  it('puts two same-time rooms in separate columns', () => {
+    const layout = layoutDayColumns([
+      { id: 'a', professorId: 'p1', roomId: 'r1', day: 'Monday', start: '09:00', end: '12:00' },
+      { id: 'b', professorId: 'p2', roomId: 'r2', day: 'Monday', start: '09:00', end: '12:00' },
+    ])
+    expect(layout.get('a')?.cols).toBe(2)
+    expect(layout.get('a')?.col).not.toBe(layout.get('b')?.col)
   })
 })

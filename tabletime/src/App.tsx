@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from
 import {
   applySuggestion,
   buildTimetable,
+  canApplySuggestion,
   findConflicts,
+  layoutDayColumns,
   suggestSlots,
   toMinutes,
   uid,
@@ -63,6 +65,14 @@ export default function App() {
   }
 
   function confirmSuggestion(suggestion: Suggestion) {
+    if (!canApplySuggestion(state, suggestion)) {
+      flash('That slot now overlaps a professor or room. Pick another free slot.')
+      setOpenSuggestions((prev) => ({
+        ...prev,
+        [suggestion.professorId]: suggestSlots(state, suggestion.professorId),
+      }))
+      return
+    }
     const placement = applySuggestion(suggestion)
     const placements = [...state.placements, placement]
     setState((s) => ({ ...s, placements }))
@@ -479,7 +489,7 @@ function TimetableView({
   onSuggest: (professorId: string) => void
   onImport: (json: string) => void
 }) {
-  const hours = hourLabels(state.settings.dayStart, state.settings.dayEnd)
+  const leftoverCount = unplaced.reduce((sum, row) => sum + row.remaining, 0)
   const conflictIds = new Set(conflicts.flatMap((c) => c.placementIds))
 
   return (
@@ -488,9 +498,16 @@ function TimetableView({
         <div>
           <h2>Weekly timetable</h2>
           <p className="lede">
-            Each block is one {state.settings.slotHours}-hour class. If a person or room is double-booked,
-            it turns red and TableTime lists other free {state.settings.slotHours}-hour slots you can
-            confirm.
+            Each block is one {state.settings.slotHours}-hour class and is drawn for its full duration.
+            If a person or room is double-booked, it turns red and TableTime lists other free{' '}
+            {state.settings.slotHours}-hour slots you can confirm.
+          </p>
+          <p className="stats" aria-live="polite">
+            <strong>{state.placements.length}</strong> scheduled
+            <span>·</span>
+            <strong>{leftoverCount}</strong> leftover
+            <span>·</span>
+            <strong>{conflicts.length}</strong> overlap{conflicts.length === 1 ? '' : 's'}
           </p>
         </div>
         <div className="actions">
@@ -591,71 +608,106 @@ function TimetableView({
         </aside>
       ) : null}
 
-      <div className="table-wrap">
-        <table className="grid-table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              {state.settings.activeDays.map((day) => (
-                <th key={day}>{day}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
+      <WeekCalendar
+        state={state}
+        conflictIds={conflictIds}
+        onRemove={(id) =>
+          setState({
+            ...state,
+            placements: state.placements.filter((x) => x.id !== id),
+          })
+        }
+        onSuggest={onSuggest}
+      />
+    </section>
+  )
+}
+
+function WeekCalendar({
+  state,
+  conflictIds,
+  onRemove,
+  onSuggest,
+}: {
+  state: AppState
+  conflictIds: Set<string>
+  onRemove: (id: string) => void
+  onSuggest: (professorId: string) => void
+}) {
+  const startM = toMinutes(state.settings.dayStart)
+  const endM = toMinutes(state.settings.dayEnd)
+  const hours = hourLabels(state.settings.dayStart, state.settings.dayEnd)
+  const pxPerHour = 72
+  const height = Math.max(((endM - startM) / 60) * pxPerHour, pxPerHour)
+
+  return (
+    <div className="week-wrap">
+      <div className="week" style={{ ['--week-height' as string]: `${height}px` }}>
+        <div className="week-times">
+          <div className="week-head">Time</div>
+          <div className="week-lane">
             {hours.map((hour) => (
-              <tr key={hour}>
-                <th>{hour}</th>
-                {state.settings.activeDays.map((day) => {
-                  const hourStart = toMinutes(hour)
-                  const items = state.placements.filter((p) => {
-                    const start = toMinutes(p.start)
-                    return p.day === day && start >= hourStart && start < hourStart + 60
-                  })
+              <div key={hour} className="week-hour">
+                {hour}
+              </div>
+            ))}
+          </div>
+        </div>
+        {state.settings.activeDays.map((day) => {
+          const items = state.placements.filter((p) => p.day === day)
+          const layout = layoutDayColumns(items)
+          return (
+            <div key={day} className="week-day">
+              <div className="week-head">{day}</div>
+              <div className="week-lane">
+                {hours.map((hour) => (
+                  <div key={hour} className="week-gridline" />
+                ))}
+                {items.map((p) => {
+                  const professor = state.professors.find((x) => x.id === p.professorId)
+                  const room = state.rooms.find((x) => x.id === p.roomId)
+                  const top = ((toMinutes(p.start) - startM) / 60) * pxPerHour
+                  const blockHeight = ((toMinutes(p.end) - toMinutes(p.start)) / 60) * pxPerHour
+                  const { col, cols } = layout.get(p.id) ?? { col: 0, cols: 1 }
+                  const width = `calc((100% - 8px) / ${cols})`
+                  const left = `calc(4px + ${col} * (100% - 8px) / ${cols})`
                   return (
-                    <td key={day}>
-                      {items.map((p) => {
-                        const professor = state.professors.find((x) => x.id === p.professorId)
-                        const room = state.rooms.find((x) => x.id === p.roomId)
-                        return (
-                          <article
-                            key={p.id}
-                            className={conflictIds.has(p.id) ? 'block clash' : 'block'}
-                            style={{ borderColor: professor?.color }}
-                          >
-                            <strong>{professor?.name}</strong>
-                            <span>
-                              {p.start}–{p.end}
-                            </span>
-                            <span>
-                              {room?.block} · {room?.name}
-                            </span>
-                            {conflictIds.has(p.id) ? <b className="clash-tag">Overlap</b> : null}
-                            <button
-                              className="text"
-                              onClick={() =>
-                                setState({
-                                  ...state,
-                                  placements: state.placements.filter((x) => x.id !== p.id),
-                                })
-                              }
-                            >
-                              Remove
-                            </button>
-                            <button className="text" onClick={() => onSuggest(p.professorId)}>
-                              Other slots
-                            </button>
-                          </article>
-                        )
-                      })}
-                    </td>
+                    <article
+                      key={p.id}
+                      className={conflictIds.has(p.id) ? 'block clash' : 'block'}
+                      style={{
+                        borderColor: professor?.color,
+                        top,
+                        height: Math.max(blockHeight - 4, 44),
+                        left,
+                        width,
+                      }}
+                    >
+                      <strong>{professor?.name}</strong>
+                      <span>
+                        {p.start}–{p.end}
+                      </span>
+                      <span>
+                        {room?.block} · {room?.name}
+                      </span>
+                      {conflictIds.has(p.id) ? <b className="clash-tag">Overlap</b> : null}
+                      <div className="block-actions">
+                        <button className="text" onClick={() => onRemove(p.id)}>
+                          Remove
+                        </button>
+                        <button className="text" onClick={() => onSuggest(p.professorId)}>
+                          Other slots
+                        </button>
+                      </div>
+                    </article>
                   )
                 })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              </div>
+            </div>
+          )
+        })}
       </div>
-    </section>
+    </div>
   )
 }
 

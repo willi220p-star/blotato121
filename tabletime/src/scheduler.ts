@@ -211,3 +211,43 @@ export function applySuggestion(suggestion: Suggestion): Placement {
     end: suggestion.end,
   }
 }
+
+export function canApplySuggestion(state: AppState, suggestion: Suggestion): boolean {
+  return isFree(
+    state.placements,
+    suggestion.professorId,
+    suggestion.roomId,
+    suggestion.day,
+    suggestion.start,
+    suggestion.end,
+  ).ok
+}
+
+export function layoutDayColumns(placements: Placement[]): Map<string, { col: number; cols: number }> {
+  const sorted = [...placements].sort((a, b) => {
+    const startDiff = toMinutes(a.start) - toMinutes(b.start)
+    if (startDiff !== 0) return startDiff
+    return a.id.localeCompare(b.id)
+  })
+  const colEnd: number[] = []
+  const colOf = new Map<string, number>()
+
+  for (const placement of sorted) {
+    const start = toMinutes(placement.start)
+    let col = colEnd.findIndex((end) => end <= start)
+    if (col === -1) {
+      col = colEnd.length
+      colEnd.push(toMinutes(placement.end))
+    } else {
+      colEnd[col] = toMinutes(placement.end)
+    }
+    colOf.set(placement.id, col)
+  }
+
+  const cols = Math.max(colEnd.length, 1)
+  const layout = new Map<string, { col: number; cols: number }>()
+  for (const placement of placements) {
+    layout.set(placement.id, { col: colOf.get(placement.id) ?? 0, cols })
+  }
+  return layout
+}
