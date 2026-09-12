@@ -10,13 +10,12 @@
 
 .hero {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: clamp(20px, 5vw, 64px);
-  align-items: center;
-  min-height: min(82dvh, 720px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 3vw, 28px);
+  min-height: min(92dvh, 860px);
   margin: 0 0 28px;
-  padding: clamp(20px, 4vw, 48px) clamp(18px, 5vw, 72px) clamp(36px, 5vw, 64px);
+  padding: clamp(20px, 4vw, 48px) clamp(18px, 5vw, 72px) 0;
   color: #f5f5f7;
   background:
     radial-gradient(520px 320px at var(--mx) var(--my), rgba(0, 113, 227, 0.28), transparent 42%),
@@ -35,10 +34,10 @@
   mix-blend-mode: overlay;
 }
 
-.hero-copy,
-.hero-art {
+.hero-copy {
   position: relative;
   z-index: 1;
+  max-width: 720px;
 }
 
 .hero .brand {
@@ -97,8 +96,9 @@ h1 {
 .stage-world {
   position: relative;
   isolation: isolate;
-  min-height: min(58dvh, 540px);
-  width: 100%;
+  min-height: min(46dvh, 420px);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
 }
 
 .stage-glow {
@@ -156,14 +156,22 @@ h1 {
   transform: translateX(calc((var(--mxn, 0.5) - 0.5) * -22px));
 }
 
-.act-show .walker.you { left: 4%; }
-.act-show .walker.partner { right: 2%; }
-.act-meet .walker.you { left: 26%; }
-.act-meet .walker.partner { right: 20%; }
-.act-coin .walker.you { left: 48%; }
-.act-coin .walker.partner { right: 6%; }
-.act-plant .walker.you { left: 8%; }
-.act-plant .walker.partner { right: 28%; }
+.act-show .walker.you { left: 8%; }
+.act-show .walker.partner { right: 10%; }
+.act-meet .walker.you { left: 34%; }
+.act-meet .walker.partner { right: 34%; }
+.act-coin .walker.you { left: 58%; }
+.act-coin .walker.partner { right: 12%; }
+.act-plant .walker.you { left: 14%; }
+.act-plant .walker.partner { right: 42%; }
+
+.act-meet .walker.you .say {
+  bottom: 102%;
+}
+
+.act-meet .walker.partner .say {
+  bottom: 78%;
+}
 
 .hop .walker {
   animation: hop 0.42s ease;
@@ -832,7 +840,6 @@ select option {
 }
 
 @media (max-width: 900px) {
-  .hero,
   .grid.two,
   .stats,
   .moments {
@@ -853,7 +860,6 @@ select option {
 }
 
 @media (max-width: 720px) {
-  .hero,
   .grid.two,
   .stats,
   .month-bar,
