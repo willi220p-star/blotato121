@@ -488,8 +488,9 @@ function TimetableView({
         <div>
           <h2>Weekly timetable</h2>
           <p className="lede">
-            Each block is one {state.settings.slotHours}-hour class. Overlaps are marked. Confirm a
-            suggestion to lock the next free slot.
+            Each block is one {state.settings.slotHours}-hour class. If a person or room is double-booked,
+            it turns red and TableTime lists other free {state.settings.slotHours}-hour slots you can
+            confirm.
           </p>
         </div>
         <div className="actions">
@@ -534,21 +535,19 @@ function TimetableView({
         </aside>
       ) : null}
 
-      {unplaced.length ? (
+      {Object.values(suggestions).some((list) => list.length) ? (
         <aside className="suggest">
-          <h3>Could not place every class</h3>
-          {unplaced.map((row) => {
-            const professor = state.professors.find((p) => p.id === row.professorId)
-            const options = suggestions[row.professorId] ?? []
-            return (
-              <div key={row.professorId} className="suggest-card">
+          <h3>Other free slots</h3>
+          {state.professors
+            .filter((p) => (suggestions[p.id] ?? []).length)
+            .map((professor) => (
+              <div key={`alt-${professor.id}`} className="suggest-card">
                 <p>
-                  <strong>{professor?.name}</strong> still needs {row.remaining} slot
-                  {row.remaining === 1 ? '' : 's'}.
+                  <strong>{professor.name}</strong> can also take these{' '}
+                  {state.settings.slotHours}-hour slots.
                 </p>
-                <button onClick={() => onSuggest(row.professorId)}>Show other {state.settings.slotHours}h slots</button>
                 <ul>
-                  {options.map((s) => {
+                  {(suggestions[professor.id] ?? []).map((s) => {
                     const room = state.rooms.find((r) => r.id === s.roomId)
                     return (
                       <li key={s.id}>
@@ -563,6 +562,29 @@ function TimetableView({
                     )
                   })}
                 </ul>
+              </div>
+            ))}
+        </aside>
+      ) : null}
+
+      {unplaced.length ? (
+        <aside className="suggest">
+          <h3>Could not place every class</h3>
+          {unplaced.map((row) => {
+            const professor = state.professors.find((p) => p.id === row.professorId)
+            const options = suggestions[row.professorId] ?? []
+            return (
+              <div key={row.professorId} className="suggest-card">
+                <p>
+                  <strong>{professor?.name}</strong> still needs {row.remaining} slot
+                  {row.remaining === 1 ? '' : 's'}.
+                  {options.length === 0
+                    ? ` No other ${state.settings.slotHours}-hour window fits their availability without a clash.`
+                    : ''}
+                </p>
+                <button onClick={() => onSuggest(row.professorId)}>
+                  Show other {state.settings.slotHours}h slots
+                </button>
               </div>
             )
           })}
@@ -607,6 +629,7 @@ function TimetableView({
                             <span>
                               {room?.block} · {room?.name}
                             </span>
+                            {conflictIds.has(p.id) ? <b className="clash-tag">Overlap</b> : null}
                             <button
                               className="text"
                               onClick={() =>
@@ -617,6 +640,9 @@ function TimetableView({
                               }
                             >
                               Remove
+                            </button>
+                            <button className="text" onClick={() => onSuggest(p.professorId)}>
+                              Other slots
                             </button>
                           </article>
                         )

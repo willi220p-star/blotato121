@@ -77,13 +77,13 @@ export interface AppState {
 
 export const PROFESSOR_COLORS = [
   '#1f5c4d',
-  '#8a3b12',
   '#2b4c7e',
   '#6b2d5b',
   '#3d5a1f',
-  '#7a4a16',
   '#1d4e6b',
-  '#5c2e2e',
-  '#2f5d50',
+  '#0f766e',
   '#4a3f72',
+  '#166534',
+  '#1e3a5f',
+  '#5b2c6f',
 ]
