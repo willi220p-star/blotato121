@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react'
-import { HeroArt, Logo, PersonMark } from './HeroArt'
+import { LivingStage, Logo, PersonMark } from './HeroArt'
 import { MonthPicker } from './MonthPicker'
 import {
   copyMonthForward,
@@ -17,8 +17,16 @@ import { buildGapReport, closingMonthKey, hasSentGapMail, markSentGapMail } from
 import { sendGapMail } from './notifyGap'
 import { sampleState } from './sampleData'
 import { exportState, importState, loadState, saveState } from './storage'
+import { greetingFor, tiltFromPointer, usePointerField, useScrolled } from './motion'
 import { PERSON_COLORS, type AppState, type Person } from './types'
 import './App.css'
+
+const LINES = [
+  'A household is two stories that have to become one number.',
+  'You earn. They earn. Rent takes its share. Food takes another.',
+  'What is left is the estimate. What the bank kept is the truth.',
+  'The gap is the only honest sentence at the end of the month.',
+]
 
 type View = 'together' | 'person' | 'people' | 'history'
 
@@ -28,19 +36,19 @@ export default function App() {
   const [view, setView] = useState<View>('together')
   const [personId, setPersonId] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
+  const [line, setLine] = useState(0)
   const mailAttempt = useRef('')
+  const scrolled = useScrolled()
+  usePointerField()
+  const jointNow = monthTotals(state, month)
 
   useEffect(() => {
     saveState(state)
   }, [state])
 
   useEffect(() => {
-    const onMove = (event: PointerEvent) => {
-      document.documentElement.style.setProperty('--mx', `${event.clientX}px`)
-      document.documentElement.style.setProperty('--my', `${event.clientY}px`)
-    }
-    window.addEventListener('pointermove', onMove)
-    return () => window.removeEventListener('pointermove', onMove)
+    const id = window.setInterval(() => setLine((value) => (value + 1) % LINES.length), 3800)
+    return () => window.clearInterval(id)
   }, [])
 
   useEffect(() => {
@@ -70,15 +78,40 @@ export default function App() {
       <header className="hero">
         <div className="hero-copy">
           <Logo tone="dark" />
-          <p className="eyebrow">Household savings</p>
+          <p className="eyebrow">{greetingFor()} · {state.settings.householdName}</p>
           <h1>Welcome to the saving world.</h1>
-          <p className="welcome">Your money, their money, and the truth at the end of the month.</p>
+          <p className="welcome">Your money. Their money. One quiet score at the end of the month.</p>
+          <p className="welcome-line" key={line}>
+            {LINES[line]}
+          </p>
+          <p className="welcome-body">
+            Click the characters. They walk, they show the earth, the coin, the plant. They tell
+            you what the month is for. Stay and watch them meet. Leave, and the numbers still wait.
+          </p>
         </div>
-        <HeroArt />
+        <LivingStage shortfall={jointNow.difference < 0} />
       </header>
 
+      <div className="moments">
+        <article>
+          <strong>01</strong>
+          <h3>They walk</h3>
+          <p>Two people, one stage. They drift, meet, and show you the month.</p>
+        </article>
+        <article>
+          <strong>02</strong>
+          <h3>They speak</h3>
+          <p>Short lines. No lecture. Just the truth the bank already knows.</p>
+        </article>
+        <article>
+          <strong>03</strong>
+          <h3>They keep</h3>
+          <p>Estimated versus actual. If the gap goes red, both of you hear it.</p>
+        </article>
+      </div>
+
       <div className="app">
-        <div className="topbar">
+        <div className={scrolled ? 'topbar compact' : 'topbar'}>
           <button type="button" className="brand-button" onClick={() => setView('together')}>
             <Logo />
             <span className="brand-house">{state.settings.householdName}</span>
@@ -203,7 +236,11 @@ function TogetherView({
   return (
     <section className="panel">
       <h2>Together</h2>
-      <p className="lede">Earnings. Spend. The estimate. What actually stayed. The gap.</p>
+      <p className="lede">
+        This is the joint page. Every person’s earnings and spends sit in one room. The estimate is
+        what should have stayed. The actual is what did. The gap is the difference — minus if you
+        kept less than you thought.
+      </p>
       <TotalsGrid totals={joint} currency={currency} />
       {state.people.length === 0 ? (
         <p className="empty">Add people, or load a sample household.</p>
@@ -258,8 +295,9 @@ function PersonView({
     <section className="panel">
       <h2>{person.name}</h2>
       <p className="lede">
-        Estimated savings is earnings minus spends. Actual is what the bank kept. Gap is actual minus
-        estimated.
+        {person.name}’s own dashboard. Add each source of income. Add each spend. Type the number
+        the bank actually kept. Estimated savings is earnings minus spends. The gap is actual minus
+        estimated — a quiet verdict, not a speech.
       </p>
       <TotalsGrid totals={totals} currency={currency} />
 
@@ -371,7 +409,10 @@ function PeopleView({
   return (
     <section className="panel">
       <h2>People</h2>
-      <p className="lede">Everyone gets a dashboard. Together always sums them.</p>
+      <p className="lede">
+        Add everyone who should have a face on this stage. Together always sums them. Categories
+        are the names you give to spending, so the month can speak in parts.
+      </p>
       <div className="grid two">
         <label>
           Household name
@@ -483,7 +524,10 @@ function HistoryView({ state, months }: { state: AppState; months: string[] }) {
   return (
     <section className="panel">
       <h2>Two years</h2>
-      <p className="lede">Joint totals. Newest at the bottom.</p>
+      <p className="lede">
+        Twenty-four months in a row. Newest at the bottom. Red in the gap column is a month that
+        did not keep what it promised.
+      </p>
       <div className="table-wrap">
         <table className="history">
           <thead>
@@ -528,44 +572,33 @@ function TotalsGrid({
   totals: ReturnType<typeof monthTotals>
   currency: string
 }) {
+  const cards = [
+    { label: 'Earnings', value: totals.earnings, tone: '' },
+    { label: 'Spend', value: totals.spending, tone: '' },
+    { label: 'Estimated', value: totals.estimatedSavings, tone: '' },
+    { label: 'Actual', value: totals.actualSavings, tone: '' },
+    { label: 'Gap', value: totals.difference, tone: totals.difference < 0 ? 'minus' : 'plus' },
+    { label: 'Invested', value: totals.investments, tone: '' },
+  ]
   return (
     <div className="stats">
-      <article className="stat">
-        <span>Earnings</span>
-        <strong>
-          <CountUp value={totals.earnings} currency={currency} />
-        </strong>
-      </article>
-      <article className="stat">
-        <span>Spend</span>
-        <strong>
-          <CountUp value={totals.spending} currency={currency} />
-        </strong>
-      </article>
-      <article className="stat">
-        <span>Estimated</span>
-        <strong>
-          <CountUp value={totals.estimatedSavings} currency={currency} />
-        </strong>
-      </article>
-      <article className="stat">
-        <span>Actual</span>
-        <strong>
-          <CountUp value={totals.actualSavings} currency={currency} />
-        </strong>
-      </article>
-      <article className={totals.difference < 0 ? 'stat minus' : 'stat plus'}>
-        <span>Gap</span>
-        <strong>
-          <CountUp value={totals.difference} currency={currency} />
-        </strong>
-      </article>
-      <article className="stat">
-        <span>Invested</span>
-        <strong>
-          <CountUp value={totals.investments} currency={currency} />
-        </strong>
-      </article>
+      {cards.map((card) => (
+        <article
+          key={card.label}
+          className={card.tone ? `stat ${card.tone}` : 'stat'}
+          onPointerMove={(event) => {
+            event.currentTarget.style.transform = tiltFromPointer(event)
+          }}
+          onPointerLeave={(event) => {
+            event.currentTarget.style.transform = ''
+          }}
+        >
+          <span>{card.label}</span>
+          <strong>
+            <CountUp value={card.value} currency={currency} />
+          </strong>
+        </article>
+      ))}
     </div>
   )
 }

@@ -17,12 +17,12 @@
   min-height: min(82dvh, 720px);
   margin: 0 0 28px;
   padding: clamp(20px, 4vw, 48px) clamp(18px, 5vw, 72px) clamp(36px, 5vw, 64px);
-  overflow-x: hidden;
   color: #f5f5f7;
   background:
     radial-gradient(520px 320px at var(--mx) var(--my), rgba(0, 113, 227, 0.28), transparent 42%),
     radial-gradient(420px 260px at 80% 20%, rgba(255, 55, 95, 0.16), transparent 45%),
-    #000;
+    radial-gradient(280px 420px at 78% 52%, rgba(120, 130, 150, 0.38), transparent 62%),
+    #07070a;
 }
 
 .hero::after {
@@ -70,37 +70,245 @@ h1 {
   line-height: 1.35;
 }
 
-.hero-art {
-  display: grid;
-  place-items: center;
-  min-height: 0;
+.welcome-line {
+  margin: 16px 0 0;
+  max-width: 36ch;
+  color: #f5f5f7;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.4;
+  animation: line-in 0.55s ease;
 }
 
-.hero-glow {
-  position: absolute;
-  inset: 18% 12%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 113, 227, 0.35), transparent 62%);
-  filter: blur(20px);
+.welcome-body {
+  margin: 14px 0 0;
+  max-width: 42ch;
+  color: #8e8e93;
+  font-size: 0.98rem;
+  line-height: 1.5;
 }
 
-.hero-character {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: min(100%, clamp(160px, 26vw, 300px));
-  height: auto;
-  max-height: min(56dvh, 500px);
-  object-fit: contain;
-  object-position: center bottom;
-  animation: floaty 6.4s ease-in-out infinite;
-  filter: drop-shadow(0 28px 40px rgba(0, 0, 0, 0.45));
-}
-
-@keyframes floaty {
-  50% {
-    transform: translateY(-10px);
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
+}
+
+.stage-world {
+  position: relative;
+  isolation: isolate;
+  min-height: min(58dvh, 540px);
+  width: 100%;
+}
+
+.stage-glow {
+  position: absolute;
+  inset: 10% 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.32), transparent 64%);
+  filter: blur(24px);
+}
+
+.stage-floor {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 6%;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.22), transparent 72%);
+  filter: blur(4px);
+}
+
+.walker {
+  position: absolute;
+  bottom: 8%;
+  z-index: 2;
+  width: auto;
+  padding: 0;
+  background: none;
+  text-align: left;
+  transition:
+    left 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+    right 1.15s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.walker:hover {
+  background: none;
+}
+
+.walker img {
+  display: block;
+  width: clamp(118px, 20vw, 210px);
+  height: auto;
+  filter: drop-shadow(0 24px 28px rgba(0, 0, 0, 0.5));
+  animation: breathe 5.6s ease-in-out infinite;
+}
+
+.walker.you {
+  left: 6%;
+  transform: translateX(calc((var(--mxn, 0.5) - 0.5) * 28px));
+}
+
+.walker.partner {
+  right: 4%;
+  transform: translateX(calc((var(--mxn, 0.5) - 0.5) * -22px));
+}
+
+.act-show .walker.you { left: 4%; }
+.act-show .walker.partner { right: 2%; }
+.act-meet .walker.you { left: 26%; }
+.act-meet .walker.partner { right: 20%; }
+.act-coin .walker.you { left: 48%; }
+.act-coin .walker.partner { right: 6%; }
+.act-plant .walker.you { left: 8%; }
+.act-plant .walker.partner { right: 28%; }
+
+.hop .walker {
+  animation: hop 0.42s ease;
+}
+
+.say {
+  position: absolute;
+  left: 50%;
+  bottom: 92%;
+  width: max-content;
+  max-width: 16rem;
+  padding: 10px 14px;
+  border-radius: 16px 16px 16px 4px;
+  background: #fff;
+  color: #1d1d1f;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  transform: translateX(-50%);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  animation: line-in 0.4s ease;
+}
+
+.walker.partner .say {
+  border-radius: 16px 16px 4px 16px;
+}
+
+.prop {
+  position: absolute;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  opacity: 0.25;
+  transition:
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.6s ease,
+    top 0.8s ease,
+    left 0.8s ease;
+}
+
+.prop:hover,
+.prop:focus-visible {
+  opacity: 1;
+  background: none;
+  transform: scale(1.15);
+}
+
+.prop span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.prop.earth {
+  top: 14%;
+  left: 18%;
+}
+
+.prop.earth span {
+  background: radial-gradient(circle at 35% 30%, #7ad3ff, #0071e3 60%, #013366);
+}
+
+.prop.coin {
+  top: 22%;
+  right: 16%;
+  left: auto;
+}
+
+.prop.coin span {
+  background: radial-gradient(circle at 35% 30%, #ffe08a, #ffd60a 55%, #b8860b);
+}
+
+.prop.sprout {
+  top: 38%;
+  left: 48%;
+}
+
+.prop.sprout span {
+  background: radial-gradient(circle at 35% 30%, #86f0a3, #30d158 60%, #0b6b2c);
+}
+
+.act-show .prop.earth,
+.act-coin .prop.coin,
+.act-plant .prop.sprout,
+.act-meet .prop.earth {
+  opacity: 1;
+  transform: scale(1.35) translateY(-10px);
+}
+
+.stage-world.short .prop.coin span {
+  background: radial-gradient(circle at 35% 30%, #ffb3b0, #ff3b30 60%, #7a1010);
+}
+
+@keyframes breathe {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes hop {
+  40% {
+    transform: translateY(-18px);
+  }
+}
+
+.moments {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1120px;
+  margin: -8px auto 28px;
+  padding: 0 22px;
+}
+
+.moments article {
+  padding: 22px 22px 20px;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.04);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+}
+
+.moments article:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.08);
+}
+
+.moments strong {
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.moments h3 {
+  margin: 8px 0 6px;
+}
+
+.moments p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .brand,
@@ -124,10 +332,16 @@ h1 {
   aspect-ratio: 1;
   flex: none;
   object-fit: contain;
+  transition: transform 0.35s ease;
 }
 
 .hero .brand-mark {
   width: clamp(44px, 9vw, 72px);
+  transform: rotate(calc((var(--mxn, 0.5) - 0.5) * 16deg));
+}
+
+.brand-button:hover .brand-mark {
+  transform: rotate(10deg) scale(1.06);
 }
 
 .brand-name {
@@ -163,6 +377,16 @@ h1 {
   background: rgba(255, 255, 255, 0.78);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
   backdrop-filter: saturate(180%) blur(20px);
+  transition:
+    padding 0.35s ease,
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.topbar.compact {
+  padding: 6px 8px;
+  transform: scale(0.98);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 @media (min-width: 900px) {
@@ -406,6 +630,7 @@ h3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin: 22px 0;
+  perspective: 900px;
 }
 
 .stat {
@@ -414,7 +639,19 @@ h3 {
   padding: 18px 18px 16px;
   border-radius: 22px;
   background: #f5f5f7;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease;
   animation: rise 0.7s ease both;
+}
+
+.stat.minus {
+  animation: pulse-gap 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-gap {
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 59, 48, 0.08);
+  }
 }
 
 .stat:nth-child(1) { animation-delay: 0.04s; }
@@ -597,7 +834,8 @@ select option {
 @media (max-width: 900px) {
   .hero,
   .grid.two,
-  .stats {
+  .stats,
+  .moments {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -607,6 +845,10 @@ select option {
 
   h1 {
     font-size: clamp(2.6rem, 12vw, 4.4rem);
+  }
+
+  .moments article:last-child {
+    grid-column: 1 / -1;
   }
 }
 
@@ -628,13 +870,33 @@ select option {
     margin-top: 8px;
   }
 
-  .hero-art {
-    margin-top: 4px;
+  .stage-world {
+    min-height: 320px;
+    margin-top: 8px;
   }
 
-  .hero-character {
-    width: min(52vw, 220px);
-    max-height: 38dvh;
+  .walker img {
+    width: min(38vw, 150px);
+  }
+
+  .say {
+    max-width: 11rem;
+    font-size: 0.78rem;
+  }
+
+  .moments {
+    grid-template-columns: 1fr;
+    margin-top: 8px;
+  }
+
+  .act-meet .walker.you,
+  .act-coin .walker.you {
+    left: 8%;
+  }
+
+  .act-meet .walker.partner,
+  .act-plant .walker.partner {
+    right: 4%;
   }
 
   .brand-name {
@@ -678,7 +940,9 @@ select option {
   .month-step,
   .text,
   .brand-button,
-  .month-cell {
+  .month-cell,
+  .walker,
+  .prop {
     width: auto;
     text-align: left;
   }
