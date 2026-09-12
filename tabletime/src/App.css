@@ -1,5 +1,5 @@
 .app {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 28px 20px 64px;
 }
@@ -195,60 +195,40 @@ fieldset {
   margin: 12px 0 0;
 }
 
-.week-wrap {
+.table-wrap {
   overflow: auto;
   margin-top: 16px;
 }
 
-.week {
-  display: flex;
-  min-width: 960px;
-  align-items: stretch;
+.grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 920px;
 }
 
-.week-times {
-  flex: 0 0 64px;
+.grid-table th,
+.grid-table td {
+  border: 1px solid #ddd4c4;
+  vertical-align: top;
+  padding: 8px;
+  min-width: 132px;
 }
 
-.week-day {
-  flex: 1 1 160px;
-  min-width: 150px;
+.grid-table tbody th {
+  background: #f3eee3;
+  text-align: left;
+  min-width: 110px;
 }
 
-.week-head {
+.grid-table tbody th span {
+  display: block;
+  font-weight: 400;
+  color: #4a564f;
+}
+
+.grid-table thead th {
   background: #1f5c4d;
   color: #f4efe4;
-  padding: 8px 6px;
-  text-align: center;
-  font-weight: 600;
-}
-
-.week-lane {
-  position: relative;
-  height: var(--week-height);
-  border: 1px solid #ddd4c4;
-  border-top: 0;
-  background: #fffcf6;
-}
-
-.week-hour,
-.week-gridline {
-  height: 72px;
-  border-bottom: 1px solid #eee4d4;
-}
-
-.week-hour {
-  font-size: 0.78rem;
-  color: #5c6b63;
-  padding: 2px 4px 0 0;
-  text-align: right;
-}
-
-.week-lane .block {
-  position: absolute;
-  margin: 0;
-  overflow: auto;
-  z-index: 1;
 }
 
 .block {
