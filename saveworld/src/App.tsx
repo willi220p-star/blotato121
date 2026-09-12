@@ -17,16 +17,9 @@ import { buildGapReport, closingMonthKey, hasSentGapMail, markSentGapMail } from
 import { sendGapMail } from './notifyGap'
 import { sampleState } from './sampleData'
 import { exportState, importState, loadState, saveState } from './storage'
-import { greetingFor, tiltFromPointer, usePointerField, useScrolled } from './motion'
+import { tiltFromPointer, usePointerField, useScrolled } from './motion'
 import { PERSON_COLORS, type AppState, type Person } from './types'
 import './App.css'
-
-const LINES = [
-  'A household is two stories that have to become one number.',
-  'You earn. They earn. Rent takes its share. Food takes another.',
-  'What is left is the estimate. What the bank kept is the truth.',
-  'The gap is the only honest sentence at the end of the month.',
-]
 
 type View = 'together' | 'person' | 'people' | 'history'
 
@@ -36,7 +29,6 @@ export default function App() {
   const [view, setView] = useState<View>('together')
   const [personId, setPersonId] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
-  const [line, setLine] = useState(0)
   const mailAttempt = useRef('')
   const scrolled = useScrolled()
   usePointerField()
@@ -45,11 +37,6 @@ export default function App() {
   useEffect(() => {
     saveState(state)
   }, [state])
-
-  useEffect(() => {
-    const id = window.setInterval(() => setLine((value) => (value + 1) % LINES.length), 3800)
-    return () => window.clearInterval(id)
-  }, [])
 
   useEffect(() => {
     const closing = closingMonthKey()
@@ -78,37 +65,9 @@ export default function App() {
       <header className="hero">
         <div className="hero-copy">
           <Logo tone="dark" />
-          <p className="eyebrow">{greetingFor()} · {state.settings.householdName}</p>
-          <h1>Welcome to the saving world.</h1>
-          <p className="welcome">Your money. Their money. One quiet score at the end of the month.</p>
-          <p className="welcome-line" key={line}>
-            {LINES[line]}
-          </p>
-          <p className="welcome-body">
-            Click them. They walk the stage, show the earth, the coin, the plant, and say what the
-            month is for.
-          </p>
         </div>
         <LivingStage shortfall={jointNow.difference < 0} />
       </header>
-
-      <div className="moments">
-        <article>
-          <strong>01</strong>
-          <h3>They walk</h3>
-          <p>Two people, one stage. They drift, meet, and show you the month.</p>
-        </article>
-        <article>
-          <strong>02</strong>
-          <h3>They speak</h3>
-          <p>Short lines. No lecture. Just the truth the bank already knows.</p>
-        </article>
-        <article>
-          <strong>03</strong>
-          <h3>They keep</h3>
-          <p>Estimated versus actual. If the gap goes red, both of you hear it.</p>
-        </article>
-      </div>
 
       <div className="app">
         <div className={scrolled ? 'topbar compact' : 'topbar'}>

@@ -35,9 +35,10 @@
 }
 
 .hero-copy {
-  position: relative;
-  z-index: 1;
-  max-width: 720px;
+  position: absolute;
+  top: clamp(16px, 3vw, 28px);
+  left: clamp(16px, 4vw, 40px);
+  z-index: 5;
 }
 
 .hero .brand {
@@ -96,9 +97,117 @@ h1 {
 .stage-world {
   position: relative;
   isolation: isolate;
-  min-height: min(40dvh, 380px);
+  min-height: min(88dvh, 760px);
   width: 100vw;
   margin-left: calc(50% - 50vw);
+  cursor: pointer;
+}
+
+.story-top {
+  position: absolute;
+  top: clamp(56px, 8vw, 84px);
+  left: 50%;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(420px, calc(100% - 32px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.chapter {
+  margin: 0;
+  color: #f5f5f7;
+  font-size: clamp(0.72rem, 1.6vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  animation: line-in 0.45s ease;
+}
+
+.drops {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.drop {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f5f5f7;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(22px) saturate(160%);
+  opacity: 0;
+  animation: drop-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.drop-who {
+  grid-column: 1;
+  color: #a1a1a6;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.drop-text {
+  grid-column: 1 / -1;
+  font-size: clamp(0.95rem, 2.2vw, 1.12rem);
+  letter-spacing: -0.02em;
+}
+
+.drop.from-you {
+  border-color: rgba(10, 132, 255, 0.35);
+}
+
+.drop.from-partner {
+  border-color: rgba(255, 55, 95, 0.28);
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.story-dots {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.dot.on {
+  width: 22px;
+  background: #fff;
 }
 
 .stage-glow {
@@ -140,7 +249,7 @@ h1 {
 
 .walker img {
   display: block;
-  width: clamp(118px, 20vw, 210px);
+  width: clamp(140px, 24vw, 250px);
   height: auto;
   filter: drop-shadow(0 24px 28px rgba(0, 0, 0, 0.5));
   animation: breathe 5.6s ease-in-out infinite;
@@ -156,22 +265,16 @@ h1 {
   transform: translateX(calc((var(--mxn, 0.5) - 0.5) * -22px));
 }
 
-.act-show .walker.you { left: 8%; }
-.act-show .walker.partner { right: 10%; }
-.act-meet .walker.you { left: 34%; }
-.act-meet .walker.partner { right: 34%; }
-.act-coin .walker.you { left: 58%; }
-.act-coin .walker.partner { right: 12%; }
-.act-plant .walker.you { left: 14%; }
-.act-plant .walker.partner { right: 42%; }
-
-.act-meet .walker.you .say {
-  bottom: 102%;
-}
-
-.act-meet .walker.partner .say {
-  bottom: 78%;
-}
+.act-phones .walker.you { left: 8%; }
+.act-phones .walker.partner { right: 8%; }
+.act-shop .walker.you { left: 22%; }
+.act-shop .walker.partner { right: 18%; }
+.act-spend .walker.you { left: 16%; }
+.act-spend .walker.partner { right: 10%; }
+.act-talk .walker.you { left: 26%; }
+.act-talk .walker.partner { right: 22%; }
+.act-return .walker.you { left: 20%; }
+.act-return .walker.partner { right: 18%; }
 
 .hop .walker {
   animation: hop 0.42s ease;
@@ -877,32 +980,30 @@ select option {
   }
 
   .stage-world {
-    min-height: 320px;
-    margin-top: 8px;
+    min-height: 86dvh;
   }
 
   .walker img {
-    width: min(38vw, 150px);
+    width: min(40vw, 160px);
   }
 
-  .say {
-    max-width: 11rem;
-    font-size: 0.78rem;
+  .story-top {
+    top: 72px;
   }
 
-  .moments {
-    grid-template-columns: 1fr;
-    margin-top: 8px;
+  .drop-text {
+    font-size: 0.92rem;
   }
 
-  .act-meet .walker.you,
-  .act-coin .walker.you {
-    left: 8%;
+  .act-shop .walker.you,
+  .act-talk .walker.you,
+  .act-spend .walker.you {
+    left: 4%;
   }
 
-  .act-meet .walker.partner,
-  .act-plant .walker.partner {
-    right: 4%;
+  .act-shop .walker.partner,
+  .act-talk .walker.partner {
+    right: 2%;
   }
 
   .brand-name {
@@ -948,7 +1049,8 @@ select option {
   .brand-button,
   .month-cell,
   .walker,
-  .prop {
+  .prop,
+  .dot {
     width: auto;
     text-align: left;
   }

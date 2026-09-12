@@ -1,27 +1,90 @@
 import { useEffect, useState } from 'react'
 
-const BEATS = [
+type Side = 'you' | 'partner'
+
+interface Drop {
+  from: Side
+  title: string
+  text: string
+}
+
+interface Beat {
+  id: string
+  chapter: string
+  you: string
+  partner: string
+  youAlt: string
+  partnerAlt: string
+  drops: Drop[]
+}
+
+const STORY: Beat[] = [
   {
-    act: 'show',
-    you: 'This is the world we are keeping.',
-    partner: 'Quiet. Held. Still ours.',
+    id: 'phones',
+    chapter: 'On the phone',
+    you: '/you-phone.png',
+    partner: '/partner-eat.png',
+    youAlt: 'Him texting',
+    partnerAlt: 'Her eating and texting',
+    drops: [
+      { from: 'you', title: 'Him', text: 'table at 8?' },
+      { from: 'partner', title: 'Her', text: 'already eating. come.' },
+      { from: 'you', title: 'Him', text: 'ok. add wine.' },
+    ],
   },
   {
-    act: 'meet',
-    you: 'Your number. Their number.',
-    partner: 'Then one number. Together.',
+    id: 'shop',
+    chapter: 'Then shopping',
+    you: '/you-shop.png',
+    partner: '/partner-shop.png',
+    youAlt: 'Him with shopping bags',
+    partnerAlt: 'Her shopping with a bag and phone',
+    drops: [
+      { from: 'partner', title: 'Her', text: 'these. and these.' },
+      { from: 'you', title: 'Him', text: 'same. two bags.' },
+      { from: 'partner', title: 'Card', text: 'store · $148' },
+    ],
   },
   {
-    act: 'coin',
-    you: 'Earn. Spend. See what stayed.',
-    partner: 'If the gap turns red, we both know.',
+    id: 'spend',
+    chapter: 'Too much',
+    you: '/you-shock.png',
+    partner: '/partner-shop.png',
+    youAlt: 'Him seeing the spend',
+    partnerAlt: 'Her still with the bags',
+    drops: [
+      { from: 'you', title: 'Bank', text: 'dinner $86 · wine $42' },
+      { from: 'partner', title: 'Bank', text: 'food $28 · bags $148' },
+      { from: 'you', title: 'Him', text: 'wait. $304 this week.' },
+    ],
   },
   {
-    act: 'plant',
-    you: 'Leave something in the ground.',
-    partner: 'A month is a seed, not a score.',
+    id: 'talk',
+    chapter: 'The talk',
+    you: '/you-shock.png',
+    partner: '/partner-talk.png',
+    youAlt: 'Him listening',
+    partnerAlt: 'Her saying they have to save',
+    drops: [
+      { from: 'partner', title: 'Her', text: 'we keep saying we will save.' },
+      { from: 'you', title: 'Him', text: 'then we go out. then we shop.' },
+      { from: 'partner', title: 'Her', text: 'so we write it. both of us.' },
+    ],
   },
-] as const
+  {
+    id: 'return',
+    chapter: 'They come back',
+    you: '/character.png',
+    partner: '/partner.png',
+    youAlt: 'Him holding the earth and a coin',
+    partnerAlt: 'Her holding a coin and a plant',
+    drops: [
+      { from: 'you', title: 'Him', text: 'your number. mine.' },
+      { from: 'partner', title: 'Her', text: 'what stayed. we keep it.' },
+      { from: 'you', title: 'SaveWorld', text: 'welcome to the saving world.' },
+    ],
+  },
+]
 
 export function Logo({
   wordmark = true,
@@ -40,44 +103,66 @@ export function Logo({
 
 export function LivingStage({ shortfall }: { shortfall: boolean }) {
   const [beat, setBeat] = useState(0)
-  const [hop, setHop] = useState(false)
-  const current = BEATS[beat]
+  const current = STORY[beat]
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      setBeat((value) => (value + 1) % BEATS.length)
-    }, 4200)
+      setBeat((value) => (value + 1) % STORY.length)
+    }, 7000)
     return () => window.clearInterval(id)
   }, [])
 
-  function advance() {
-    setHop(true)
-    window.setTimeout(() => setHop(false), 420)
-    setBeat((value) => (value + 1) % BEATS.length)
+  function go(index: number) {
+    setBeat((index + STORY.length) % STORY.length)
   }
 
   return (
-    <div className={`stage-world act-${current.act}${hop ? ' hop' : ''}${shortfall ? ' short' : ''}`}>
+    <div
+      className={`stage-world act-${current.id}${shortfall && current.id === 'spend' ? ' short' : ''}`}
+    >
       <div className="stage-glow" />
       <div className="stage-floor" />
-      <button type="button" className="prop earth" aria-label="Show the earth" onClick={advance}>
-        <span />
+
+      <div className="story-top">
+        <p className="chapter" key={current.chapter}>
+          {current.chapter}
+        </p>
+        <div className="drops" key={current.id}>
+          {current.drops.map((drop, index) => (
+            <article
+              key={`${current.id}-${drop.text}`}
+              className={`drop from-${drop.from}`}
+              style={{ animationDelay: `${0.15 + index * 0.7}s` }}
+            >
+              <span className="drop-who">{drop.title}</span>
+              <span className="drop-text">{drop.text}</span>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <button type="button" className="walker you" onClick={() => go(beat + 1)}>
+        <img src={current.you} alt={current.youAlt} />
       </button>
-      <button type="button" className="prop coin" aria-label="Show the coin" onClick={advance}>
-        <span />
-      </button>
-      <button type="button" className="prop sprout" aria-label="Show the plant" onClick={advance}>
-        <span />
+      <button type="button" className="walker partner" onClick={() => go(beat + 1)}>
+        <img src={current.partner} alt={current.partnerAlt} />
       </button>
 
-      <button type="button" className="walker you" onClick={advance}>
-        <img src="/character.png" alt="Saver holding the earth and a coin" />
-        <span className="say">{shortfall && beat === 2 ? 'The gap went red. We both get the note.' : current.you}</span>
-      </button>
-      <button type="button" className="walker partner" onClick={advance}>
-        <img src="/partner.png" alt="Partner holding a coin and a plant" />
-        <span className="say">{current.partner}</span>
-      </button>
+      <ol className="story-dots">
+        {STORY.map((scene, index) => (
+          <li key={scene.id}>
+            <button
+              type="button"
+              className={index === beat ? 'dot on' : 'dot'}
+              aria-label={scene.chapter}
+              onClick={(event) => {
+                event.stopPropagation()
+                go(index)
+              }}
+            />
+          </li>
+        ))}
+      </ol>
     </div>
   )
 }
