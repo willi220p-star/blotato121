@@ -11,12 +11,12 @@
 .hero {
   position: relative;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(24px, 5vw, 64px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(20px, 5vw, 64px);
   align-items: center;
-  min-height: min(88dvh, 760px);
-  margin: 0 -22px 28px;
-  padding: 28px 22px 48px;
+  min-height: min(82dvh, 720px);
+  margin: 0 0 28px;
+  padding: clamp(20px, 4vw, 48px) clamp(18px, 5vw, 72px) clamp(28px, 5vw, 56px);
   overflow: hidden;
   color: #f5f5f7;
   background:
@@ -41,8 +41,12 @@
   z-index: 1;
 }
 
+.hero .brand {
+  margin-bottom: 22px;
+}
+
 .eyebrow {
-  margin: 0 0 14px;
+  margin: 18px 0 14px;
   color: #a1a1a6;
   font-size: 0.78rem;
   font-weight: 600;
@@ -67,49 +71,29 @@ h1 {
 }
 
 .hero-art {
-  min-height: 320px;
+  display: grid;
+  place-items: center;
+  min-height: 0;
 }
 
 .hero-glow {
   position: absolute;
-  inset: 12% 10%;
+  inset: 18% 12%;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(0, 113, 227, 0.35), transparent 62%);
   filter: blur(20px);
 }
 
-.hero-svg {
+.hero-character {
+  position: relative;
+  z-index: 1;
   display: block;
-  width: min(100%, 520px);
-  margin: 0 auto;
-  overflow: visible;
-}
-
-.float-slow {
-  animation: floaty 8s ease-in-out infinite;
-  transform-origin: 258px 168px;
-}
-
-.float-a {
+  width: min(100%, clamp(200px, 36vw, 400px));
+  height: auto;
+  max-height: min(64dvh, 620px);
+  object-fit: contain;
   animation: floaty 6.4s ease-in-out infinite;
-}
-
-.float-b {
-  animation: floaty 7.2s ease-in-out infinite 0.6s;
-}
-
-.coin {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: coin 5.4s ease-in-out infinite;
-}
-
-.coin-2 {
-  animation-delay: 0.8s;
-}
-
-.coin-3 {
-  animation-delay: 1.4s;
+  filter: drop-shadow(0 28px 40px rgba(0, 0, 0, 0.45));
 }
 
 @keyframes floaty {
@@ -118,10 +102,48 @@ h1 {
   }
 }
 
-@keyframes coin {
-  50% {
-    transform: translateY(-14px) rotate(12deg);
-  }
+.brand,
+.brand-button {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(8px, 1.6vw, 12px);
+  min-width: 0;
+}
+
+.brand-button {
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  text-align: left;
+}
+
+.brand-mark {
+  display: block;
+  width: clamp(28px, 7vw, 40px);
+  height: auto;
+  aspect-ratio: 1;
+  flex: none;
+  object-fit: contain;
+}
+
+.hero .brand-mark {
+  width: clamp(44px, 9vw, 72px);
+}
+
+.brand-name {
+  color: inherit;
+  font-size: clamp(0.98rem, 2.4vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.hero .brand-name {
+  font-size: clamp(1.15rem, 3vw, 1.55rem);
+}
+
+.brand-house {
+  display: none;
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .topbar {
@@ -142,11 +164,11 @@ h1 {
   backdrop-filter: saturate(180%) blur(20px);
 }
 
-.wordmark {
-  padding: 0 12px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
+@media (min-width: 900px) {
+  .brand-house {
+    display: inline;
+    padding-left: 4px;
+  }
 }
 
 nav {
@@ -580,7 +602,6 @@ select option {
 
   .hero {
     min-height: auto;
-    padding-top: 18px;
   }
 
   h1 {
@@ -607,7 +628,20 @@ select option {
   }
 
   .hero-art {
-    margin-top: 8px;
+    margin-top: 4px;
+  }
+
+  .hero-character {
+    width: min(52vw, 220px);
+    max-height: 38dvh;
+  }
+
+  .brand-name {
+    font-size: 1rem;
+  }
+
+  .hero .brand-name {
+    font-size: 1.2rem;
   }
 
   .month-picker {
@@ -641,8 +675,11 @@ select option {
   }
 
   .month-step,
-  .text {
+  .text,
+  .brand-button,
+  .month-cell {
     width: auto;
+    text-align: left;
   }
 
   .month-trigger {

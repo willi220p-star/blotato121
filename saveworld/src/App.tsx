@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react'
-import { HeroArt, PersonMark } from './HeroArt'
+import { HeroArt, Logo, PersonMark } from './HeroArt'
 import { MonthPicker } from './MonthPicker'
 import {
   copyMonthForward,
@@ -69,7 +69,8 @@ export default function App() {
     <div className="scene">
       <header className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">SaveWorld</p>
+          <Logo tone="dark" />
+          <p className="eyebrow">Household savings</p>
           <h1>Welcome to the saving world.</h1>
           <p className="welcome">Your money, their money, and the truth at the end of the month.</p>
         </div>
@@ -78,7 +79,10 @@ export default function App() {
 
       <div className="app">
         <div className="topbar">
-          <div className="wordmark">{state.settings.householdName}</div>
+          <button type="button" className="brand-button" onClick={() => setView('together')}>
+            <Logo />
+            <span className="brand-house">{state.settings.householdName}</span>
+          </button>
           <nav>
             <button className={view === 'together' ? 'nav on' : 'nav'} onClick={() => setView('together')}>
               Together
