@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "npm --prefix tabletime install",
+  "buildCommand": "npm --prefix tabletime run build",
+  "outputDirectory": "tabletime/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

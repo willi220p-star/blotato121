@@ -33,11 +33,12 @@ This is a static site. Any of these hosts work.
 
 ### Vercel (simplest)
 
-1. Push this folder to GitHub (already in `tabletime/` on the repo).
-2. Go to [vercel.com](https://vercel.com), import the GitHub repo.
-3. Set **Root Directory** to `tabletime`.
-4. Build command: `npm run build`. Output: `dist`.
-5. Deploy. You get a public HTTPS URL.
+The GitHub repo is https://github.com/willi220p-star/blotato121. TableTime is in `tabletime/` on branch `cursor/tabletime-scheduler-005c`. The `main` branch does not contain the app yet — deploying `main` is why Vercel errors.
+
+1. Import the repo at [vercel.com](https://vercel.com).
+2. Set **Production Branch** to `cursor/tabletime-scheduler-005c`.
+3. Either leave Root Directory as `.` (repo-root `vercel.json` builds this folder) or set **Root Directory** to `tabletime`.
+4. Redeploy.
 
 Or from this folder after `npm i -g vercel`:
 
