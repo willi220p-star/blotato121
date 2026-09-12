@@ -169,12 +169,13 @@ export function buildTimetable(state: AppState): {
   for (const professor of state.professors) {
     let remaining = professor.classesNeeded
     const rooms = roomOrder(state.rooms, professor.preferredRoomIds)
+    const windows = professor.availability.filter((avail) =>
+      state.settings.activeDays.includes(avail.day),
+    )
 
-    for (const avail of professor.availability) {
-      if (remaining <= 0) break
-      if (!state.settings.activeDays.includes(avail.day)) continue
+    const tryPlace = (avail: (typeof windows)[number], usedDays?: Set<Day>) => {
+      if (usedDays?.has(avail.day)) return false
       for (const start of candidateStarts(avail.start, avail.end, slotMins, step)) {
-        if (remaining <= 0) break
         const end = fromMinutes(toMinutes(start) + slotMins)
         for (const room of rooms) {
           const free = isFree(placements, professor.id, room.id, avail.day, start, end)
@@ -187,9 +188,23 @@ export function buildTimetable(state: AppState): {
             start,
             end,
           })
+          usedDays?.add(avail.day)
           remaining -= 1
-          break
+          return true
         }
+      }
+      return false
+    }
+
+    const usedDays = new Set<Day>()
+    for (const avail of windows) {
+      if (remaining <= 0) break
+      tryPlace(avail, usedDays)
+    }
+    for (const avail of windows) {
+      if (remaining <= 0) break
+      while (remaining > 0 && tryPlace(avail)) {
+        /* fill leftover hours on days already used */
       }
     }
 

@@ -89,6 +89,25 @@ describe('buildTimetable', () => {
     expect(new Set(result.placements.map((p) => p.roomId)).size).toBe(2)
   })
 
+  it('spreads classes across available days before stacking the same day', () => {
+    const result = buildTimetable(
+      state([
+        professor({
+          id: 'p1',
+          name: 'Ada',
+          classesNeeded: 3,
+          availability: [
+            { id: 'a1', day: 'Monday', start: '08:00', end: '17:00' },
+            { id: 'a2', day: 'Tuesday', start: '08:00', end: '17:00' },
+            { id: 'a3', day: 'Wednesday', start: '08:00', end: '17:00' },
+          ],
+        }),
+      ]),
+    )
+    expect(result.placements).toHaveLength(3)
+    expect(new Set(result.placements.map((p) => p.day)).size).toBe(3)
+  })
+
   it('reports leftover classes when availability is too small', () => {
     const result = buildTimetable(
       state([
