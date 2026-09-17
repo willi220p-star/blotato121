@@ -1,16 +1,15 @@
 # TableTime
 
-College timetable scheduler for IT service management. You enter professor availability, campus rooms, and class length. TableTime places the slots, flags overlaps, and offers the next free block you can confirm.
+College timetable builder. Add professors, give each a class length, drop those slots on the week, and keep overlaps visible.
 
 ## How it works
 
-1. **Slot setup** — set hours per class (for example 3 hours), campus open/close, and teaching days.
-2. **Rooms** — add 10–15 rooms across blocks.
-3. **Professors** — name, subject, how many classes they need, preferred rooms, and free windows (two days a week, three days, mornings only, and so on).
-4. **Create timetable** — the scheduler walks each professor’s windows in order, prefers their rooms, and never double-books a person or a room.
-5. **Overlaps and suggestions** — leftover classes get ranked alternative 3-hour (or whatever you set) slots. Confirm one and it is written onto the week grid.
+1. **People** — professor name, department, subjects. No availability windows.
+2. **Class slots** — pick the person, then a length (15 minutes through 10 hours, in 15-minute steps). Set day or date and from–to. The slot is saved under that name.
+3. **Week** — drag a slot onto a day and hour. Two classes on the same hour sit side by side. The same professor twice, or two professors at once, both show as overlaps.
+4. **Import** — CSV from Excel, Markdown tables, or JSON. Excel workbooks should be saved as CSV UTF-8 first.
 
-Data stays in the browser (`localStorage`). Use Export / Import on the timetable page to move a file between machines.
+Data stays in the browser (`localStorage`). Export JSON from the week page to move a file between machines.
 
 ## Run locally
 
@@ -27,39 +26,6 @@ npm test
 npm run build
 ```
 
-## Deploy as a real working app
+## Deploy
 
-This is a static site. Any of these hosts work.
-
-### Vercel (simplest)
-
-The GitHub repo is https://github.com/willi220p-star/blotato121. TableTime is in `tabletime/` on branch `cursor/tabletime-scheduler-005c`. The `main` branch does not contain the app yet — deploying `main` is why Vercel errors.
-
-1. Import the repo at [vercel.com](https://vercel.com).
-2. Set **Production Branch** to `cursor/tabletime-scheduler-005c`.
-3. Either leave Root Directory as `.` (repo-root `vercel.json` builds this folder) or set **Root Directory** to `tabletime`.
-4. Redeploy.
-
-Or from this folder after `npm i -g vercel`:
-
-```bash
-cd tabletime
-npx vercel
-```
-
-### Netlify
-
-- Build command: `npm run build`
-- Publish directory: `dist`
-- Base directory: `tabletime`
-
-### GitHub Pages
-
-```bash
-cd tabletime
-npm run build
-```
-
-Upload the `dist` folder, or use the GitHub Pages action with `tabletime` as the app root. If the site is not at the domain root, set Vite `base` in `vite.config.ts`.
-
-No server or database is required. For a later shared campus install, keep this UI and put the same JSON behind a small API (Supabase, Firebase, or your college server).
+This is a static Vite app. On Vercel, build from the repo root (`vercel.json` already points at `tabletime/`) or set Root Directory to `tabletime`.

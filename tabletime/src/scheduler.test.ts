@@ -1,222 +1,138 @@
 import { describe, expect, it } from 'vitest'
-import {
-  applySuggestion,
-  buildTimetable,
-  canApplySuggestion,
-  findConflicts,
-  layoutDayColumns,
-  rangesOverlap,
-  suggestSlots,
-} from './scheduler'
+import { importAny, parseCsv, parseMarkdown } from './importFile'
+import { durationLabel, findConflicts, fromMinutes, layoutDayColumns, moveSlot, slotEnd, slotsOverlap, snapTime, weekdayFromDate } from './scheduler'
 import { sampleState } from './sampleData'
-import type { AppState, Professor, Room } from './types'
+import type { AppState, ClassSlot, Professor } from './types'
 
-const rooms: Room[] = [
-  { id: 'r1', name: '101', block: 'A' },
-  { id: 'r2', name: '102', block: 'A' },
-]
+const ada: Professor = {
+  id: 'p1',
+  name: 'Ada',
+  department: 'IT',
+  subjects: ['Networks'],
+  color: '#111',
+}
+const ben: Professor = {
+  id: 'p2',
+  name: 'Ben',
+  department: 'IT',
+  subjects: ['Databases'],
+  color: '#222',
+}
 
-function professor(partial: Partial<Professor> & Pick<Professor, 'id' | 'name'>): Professor {
+function slot(partial: Partial<ClassSlot> & Pick<ClassSlot, 'id' | 'professorId'>): ClassSlot {
   return {
     subject: 'IT',
-    classesNeeded: 1,
-    preferredRoomIds: ['r1'],
-    availability: [],
-    color: '#1f5c4d',
+    day: 'Tuesday',
+    start: '08:00',
+    durationMinutes: 60,
+    room: '',
     ...partial,
   }
 }
 
-function state(professors: Professor[], placements: AppState['placements'] = []): AppState {
-  return {
-    settings: {
-      orgName: 'Test',
-      slotHours: 3,
-      dayStart: '08:00',
-      dayEnd: '18:00',
-      stepMinutes: 60,
-      activeDays: ['Monday', 'Tuesday', 'Wednesday'],
-    },
-    rooms,
-    professors,
-    placements,
-  }
-}
-
-describe('rangesOverlap', () => {
-  it('detects crossing hours', () => {
-    expect(rangesOverlap('09:00', '12:00', '11:00', '14:00')).toBe(true)
-    expect(rangesOverlap('09:00', '12:00', '12:00', '15:00')).toBe(false)
+describe('durations', () => {
+  it('builds an end time from hours and quarter hours', () => {
+    expect(slotEnd({ start: '08:00', durationMinutes: 15 })).toBe('08:15')
+    expect(slotEnd({ start: '08:00', durationMinutes: 90 })).toBe('09:30')
+    expect(slotEnd({ start: '08:00', durationMinutes: 180 })).toBe('11:00')
+    expect(durationLabel(105)).toBe('1h 45m')
+    expect(fromMinutes(75)).toBe('01:15')
+    expect(snapTime('09:07')).toBe('09:00')
+    expect(snapTime('09:08')).toBe('09:15')
+    expect(weekdayFromDate('2026-09-15')).toBe('Tuesday')
   })
 })
 
-describe('buildTimetable', () => {
-  it('places a 3-hour class inside availability', () => {
-    const result = buildTimetable(
-      state([
-        professor({
-          id: 'p1',
-          name: 'Ada',
-          classesNeeded: 1,
-          availability: [{ id: 'a1', day: 'Monday', start: '09:00', end: '15:00' }],
-        }),
-      ]),
-    )
-    expect(result.placements).toHaveLength(1)
-    expect(result.placements[0].start).toBe('09:00')
-    expect(result.placements[0].end).toBe('12:00')
-    expect(result.unplaced).toHaveLength(0)
-  })
-
-  it('does not double-book a room', () => {
-    const result = buildTimetable(
-      state([
-        professor({
-          id: 'p1',
-          name: 'Ada',
-          preferredRoomIds: ['r1'],
-          availability: [{ id: 'a1', day: 'Monday', start: '09:00', end: '12:00' }],
-        }),
-        professor({
-          id: 'p2',
-          name: 'Ben',
-          preferredRoomIds: ['r1'],
-          availability: [{ id: 'a2', day: 'Monday', start: '09:00', end: '12:00' }],
-        }),
-      ]),
-    )
-    expect(result.placements).toHaveLength(2)
-    expect(new Set(result.placements.map((p) => p.roomId)).size).toBe(2)
-  })
-
-  it('spreads classes across available days before stacking the same day', () => {
-    const result = buildTimetable(
-      state([
-        professor({
-          id: 'p1',
-          name: 'Ada',
-          classesNeeded: 3,
-          availability: [
-            { id: 'a1', day: 'Monday', start: '08:00', end: '17:00' },
-            { id: 'a2', day: 'Tuesday', start: '08:00', end: '17:00' },
-            { id: 'a3', day: 'Wednesday', start: '08:00', end: '17:00' },
-          ],
-        }),
-      ]),
-    )
-    expect(result.placements).toHaveLength(3)
-    expect(new Set(result.placements.map((p) => p.day)).size).toBe(3)
-  })
-
-  it('reports leftover classes when availability is too small', () => {
-    const result = buildTimetable(
-      state([
-        professor({
-          id: 'p1',
-          name: 'Ada',
-          classesNeeded: 2,
-          availability: [{ id: 'a1', day: 'Monday', start: '09:00', end: '12:00' }],
-        }),
-      ]),
-    )
-    expect(result.placements).toHaveLength(1)
-    expect(result.unplaced).toEqual([{ professorId: 'p1', remaining: 1 }])
-  })
-})
-
-describe('conflicts and suggestions', () => {
-  it('flags two classes for the same professor at the same time', () => {
+describe('overlaps', () => {
+  it('flags the same professor twice at the same time', () => {
     const conflicts = findConflicts(
       [
-        { id: 'x', professorId: 'p1', roomId: 'r1', day: 'Monday', start: '09:00', end: '12:00' },
-        { id: 'y', professorId: 'p1', roomId: 'r2', day: 'Monday', start: '10:00', end: '13:00' },
+        slot({ id: 'a', professorId: 'p1', day: 'Tuesday', start: '08:00', durationMinutes: 60 }),
+        slot({ id: 'b', professorId: 'p1', day: 'Tuesday', start: '08:00', durationMinutes: 120 }),
       ],
-      [professor({ id: 'p1', name: 'Ada' })],
-      rooms,
+      [ada],
     )
     expect(conflicts.some((c) => c.kind === 'professor')).toBe(true)
   })
 
-  it('suggests another 3-hour window and applySuggestion keeps it', () => {
-    const current = state(
-      [
-        professor({
-          id: 'p1',
-          name: 'Ada',
-          classesNeeded: 2,
-          availability: [
-            { id: 'a1', day: 'Monday', start: '09:00', end: '12:00' },
-            { id: 'a2', day: 'Tuesday', start: '09:00', end: '15:00' },
-          ],
-        }),
-      ],
-      [{ id: 'x', professorId: 'p1', roomId: 'r1', day: 'Monday', start: '09:00', end: '12:00' }],
+  it('flags two professors sharing Tuesday 08:00–09:00', () => {
+    const a = slot({ id: 'a', professorId: 'p1', day: 'Tuesday', start: '08:00', durationMinutes: 60 })
+    const b = slot({ id: 'b', professorId: 'p2', day: 'Tuesday', start: '08:00', durationMinutes: 60 })
+    expect(slotsOverlap(a, b)).toBe(true)
+    const conflicts = findConflicts([a, b], [ada, ben])
+    expect(conflicts.some((c) => c.kind === 'time')).toBe(true)
+    expect(conflicts[0].message).toContain('Ada')
+    expect(conflicts[0].message).toContain('Ben')
+    const layout = layoutDayColumns([a, b])
+    expect(layout.get('a')?.cols).toBe(2)
+    expect(layout.get('a')?.col).not.toBe(layout.get('b')?.col)
+  })
+})
+
+describe('drag', () => {
+  it('moves a saved slot onto another day and start', () => {
+    const state: AppState = {
+      settings: {
+        orgName: 'Test',
+        dayStart: '08:00',
+        dayEnd: '18:00',
+        activeDays: ['Monday', 'Tuesday'],
+      },
+      professors: [ada],
+      slots: [slot({ id: 'a', professorId: 'p1', day: 'Monday', start: '09:00', durationMinutes: 120 })],
+    }
+    const next = moveSlot(state, 'a', 'Tuesday', '08:00')
+    expect(next.slots[0].day).toBe('Tuesday')
+    expect(next.slots[0].start).toBe('08:00')
+  })
+})
+
+describe('file import', () => {
+  it('reads a csv with professor, subject, day and duration', () => {
+    const rows = parseCsv(
+      'Professor,Department,Subject,Day,Start,Duration\nDr. Mehta,IT,Networks,Tuesday,08:00,2 hours\n',
     )
-    const suggestions = suggestSlots(current, 'p1', 3)
-    expect(suggestions.length).toBeGreaterThan(0)
-    expect(suggestions[0].day).toBe('Tuesday')
-    const placed = applySuggestion(suggestions[0])
-    expect(placed.start < placed.end).toBe(true)
-    expect(placed.professorId).toBe('p1')
+    expect(rows).toHaveLength(1)
+    expect(rows[0].name).toBe('Dr. Mehta')
+    expect(rows[0].day).toBe('Tuesday')
+    expect(rows[0].start).toBe('08:00')
+    expect(rows[0].durationMinutes).toBe(120)
   })
 
-  it('refuses a suggestion that would overlap the same professor', () => {
-    const current = state(
-      [
-        professor({
-          id: 'p1',
-          name: 'Ada',
-          availability: [{ id: 'a1', day: 'Monday', start: '09:00', end: '15:00' }],
-        }),
-      ],
-      [{ id: 'x', professorId: 'p1', roomId: 'r1', day: 'Monday', start: '09:00', end: '12:00' }],
-    )
-    expect(
-      canApplySuggestion(current, {
-        id: 'sg',
-        professorId: 'p1',
-        roomId: 'r2',
-        day: 'Monday',
-        start: '10:00',
-        end: '13:00',
-        reason: 'overlap',
-        score: 1,
-      }),
-    ).toBe(false)
+  it('reads a markdown table', () => {
+    const rows = parseMarkdown(`
+| Professor | Subject | Day | Start | Duration |
+| --- | --- | --- | --- | --- |
+| Prof. Iyer | Databases | Monday | 09:00 | 1 hour 30 minutes |
+`)
+    expect(rows[0].name).toBe('Prof. Iyer')
+    expect(rows[0].durationMinutes).toBe(90)
+  })
+
+  it('rejects excel workbooks until they are saved as csv', () => {
+    expect(() =>
+      importAny(
+        { settings: { orgName: 'Test', dayStart: '08:00', dayEnd: '18:00', activeDays: ['Monday'] }, professors: [], slots: [] },
+        'staff.xlsx',
+        'binary-junk',
+      ),
+    ).toThrow(/CSV/)
   })
 })
 
 describe('sample college', () => {
-  it('builds 13 classes with no clashes or duplicate professor-day starts', () => {
+  it('includes a Monday overlap for Mehta and Iyer', () => {
     const college = sampleState({
       settings: {
         orgName: 'Test',
-        slotHours: 3,
         dayStart: '08:00',
         dayEnd: '18:00',
-        stepMinutes: 60,
         activeDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       },
-      rooms: [],
       professors: [],
-      placements: [],
+      slots: [],
     })
-    const result = buildTimetable(college)
-    expect(result.placements).toHaveLength(13)
-    expect(result.unplaced).toHaveLength(0)
-    expect(findConflicts(result.placements, college.professors, college.rooms)).toHaveLength(0)
-    const keys = result.placements.map((p) => `${p.professorId}-${p.day}-${p.start}`)
-    expect(new Set(keys).size).toBe(keys.length)
-  })
-})
-
-describe('layoutDayColumns', () => {
-  it('puts two same-time rooms in separate columns', () => {
-    const layout = layoutDayColumns([
-      { id: 'a', professorId: 'p1', roomId: 'r1', day: 'Monday', start: '09:00', end: '12:00' },
-      { id: 'b', professorId: 'p2', roomId: 'r2', day: 'Monday', start: '09:00', end: '12:00' },
-    ])
-    expect(layout.get('a')?.cols).toBe(2)
-    expect(layout.get('a')?.col).not.toBe(layout.get('b')?.col)
+    const conflicts = findConflicts(college.slots, college.professors)
+    expect(conflicts.some((c) => c.kind === 'time' && c.message.includes('Monday'))).toBe(true)
   })
 })

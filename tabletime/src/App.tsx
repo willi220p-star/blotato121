@@ -1,564 +1,613 @@
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
+import { EmptyPoster, Monogram, StageBackdrop } from './HeroArt'
+import { importAny, sampleCsv } from './importFile'
+import { sampleState } from './sampleData'
 import {
-  applySuggestion,
-  buildTimetable,
-  canApplySuggestion,
+  durationLabel,
   findConflicts,
-  suggestSlots,
+  fromMinutes,
+  hoursInRange,
+  layoutDayColumns,
+  moveSlot,
+  slotEnd,
+  snapTime,
   toMinutes,
   uid,
+  weekdayFromDate,
 } from './scheduler'
-import { sampleState } from './sampleData'
-import { exportState, importState, loadState, saveState } from './storage'
-import { DAYS, PROFESSOR_COLORS, type AppState, type Day, type Professor, type Suggestion } from './types'
+import { exportState, loadState, saveState } from './storage'
+import {
+  DAYS,
+  DURATION_OPTIONS,
+  PROFESSOR_COLORS,
+  type AppState,
+  type ClassSlot,
+  type Day,
+  type Professor,
+} from './types'
 import './App.css'
 
-type Tab = 'setup' | 'rooms' | 'professors' | 'timetable'
+type Tab = 'people' | 'classes' | 'week'
+
+const PX_PER_HOUR = 72
 
 export default function App() {
   const [state, setState] = useState<AppState>(() => loadState())
-  const [tab, setTab] = useState<Tab>('setup')
+  const [tab, setTab] = useState<Tab>('people')
   const [notice, setNotice] = useState('')
-  const [unplaced, setUnplaced] = useState<{ professorId: string; remaining: number }[]>([])
-  const [openSuggestions, setOpenSuggestions] = useState<Record<string, Suggestion[]>>({})
+  const [selectedProfessorId, setSelectedProfessorId] = useState('')
 
   useEffect(() => {
     saveState(state)
   }, [state])
 
+  const activeProfessorId =
+    state.professors.some((p) => p.id === selectedProfessorId)
+      ? selectedProfessorId
+      : (state.professors[0]?.id ?? '')
+
   const conflicts = useMemo(
-    () => findConflicts(state.placements, state.professors, state.rooms),
-    [state.placements, state.professors, state.rooms],
+    () => findConflicts(state.slots, state.professors),
+    [state.slots, state.professors],
   )
 
   function flash(message: string) {
     setNotice(message)
-    window.setTimeout(() => setNotice(''), 4000)
+    window.setTimeout(() => setNotice(''), 4200)
   }
 
-  function generate() {
-    if (state.rooms.length === 0) {
-      flash('Add rooms first.')
-      setTab('rooms')
+  async function ingestFile(file: File) {
+    try {
+      if (/\.xlsx?$/i.test(file.name)) {
+        throw new Error('Save the Excel sheet as CSV (File → Save As → CSV UTF-8) and import that file.')
+      }
+      const next = importAny(state, file.name, await file.text())
+      setState(next)
+      if (next.professors[0]) setSelectedProfessorId(next.professors[0].id)
+      flash(`Imported ${next.professors.length} professor${next.professors.length === 1 ? '' : 's'} and ${next.slots.length} class slot${next.slots.length === 1 ? '' : 's'}.`)
+      if (next.slots.length) setTab('week')
+    } catch (error) {
+      flash(error instanceof Error ? error.message : 'Import failed.')
+    }
+  }
+
+  function createTimetable() {
+    if (!state.professors.length) {
+      flash('Add a professor first.')
+      setTab('people')
       return
     }
-    if (state.professors.length === 0) {
-      flash('Add professors first.')
-      setTab('professors')
+    if (!state.slots.length) {
+      flash('Add at least one class slot, then create the week.')
+      setTab('classes')
       return
     }
-    const result = buildTimetable(state)
-    setState((s) => ({ ...s, placements: result.placements }))
-    setUnplaced(result.unplaced)
-    const next: Record<string, Suggestion[]> = {}
-    for (const item of result.unplaced) {
-      next[item.professorId] = suggestSlots({ ...state, placements: result.placements }, item.professorId)
-    }
-    setOpenSuggestions(next)
-    setTab('timetable')
+    setTab('week')
     flash(
-      result.unplaced.length
-        ? `Timetable built. ${result.unplaced.length} professor(s) still need a slot — see suggestions.`
-        : `Timetable built with ${result.placements.length} class${result.placements.length === 1 ? '' : 'es'}.`,
+      conflicts.length
+        ? `Week laid out. ${conflicts.length} overlap${conflicts.length === 1 ? '' : 's'} marked on the grid.`
+        : `Week laid out with ${state.slots.length} class${state.slots.length === 1 ? '' : 'es'}.`,
     )
-  }
-
-  function confirmSuggestion(suggestion: Suggestion) {
-    if (!canApplySuggestion(state, suggestion)) {
-      flash('That slot now overlaps a professor or room. Pick another free slot.')
-      setOpenSuggestions((prev) => ({
-        ...prev,
-        [suggestion.professorId]: suggestSlots(state, suggestion.professorId),
-      }))
-      return
-    }
-    const placement = applySuggestion(suggestion)
-    const placements = [...state.placements, placement]
-    setState((s) => ({ ...s, placements }))
-    setUnplaced((rows) =>
-      rows
-        .map((row) =>
-          row.professorId === suggestion.professorId ? { ...row, remaining: row.remaining - 1 } : row,
-        )
-        .filter((row) => row.remaining > 0),
-    )
-    setOpenSuggestions((prev) => {
-      const next = { ...prev }
-      delete next[suggestion.professorId]
-      return next
-    })
-    flash('Slot confirmed and added to the timetable.')
-  }
-
-  function refreshSuggestions(professorId: string) {
-    setOpenSuggestions((prev) => ({
-      ...prev,
-      [professorId]: suggestSlots(state, professorId),
-    }))
   }
 
   return (
     <div className="app">
-      <header className="topbar">
-        <div>
-          <p className="eyebrow">IT service management</p>
+      <div className="stage">
+        <StageBackdrop />
+        <header className="hero">
+          <p className="eyebrow">Campus week builder</p>
           <h1>TableTime</h1>
-          <p className="org">{state.settings.orgName}</p>
-        </div>
-        <nav>
-          {(
-            [
-              ['setup', '1. Slot setup'],
-              ['rooms', '2. Rooms'],
-              ['professors', '3. Professors'],
-              ['timetable', '4. Timetable'],
-            ] as const
-          ).map(([id, label]) => (
-            <button key={id} className={tab === id ? 'nav on' : 'nav'} onClick={() => setTab(id)}>
-              {label}
+          <p className="lede">
+            Add people. Give each one a class length. Drop those slots on the week. Overlaps stay
+            visible — same professor twice, or two professors at the same hour.
+          </p>
+          <div className="hero-actions">
+            <button className="primary" onClick={createTimetable}>
+              Create timetable
             </button>
-          ))}
-        </nav>
-      </header>
+            <button
+              onClick={() => {
+                const next = sampleState(state)
+                setState(next)
+                setSelectedProfessorId(next.professors[0]?.id ?? '')
+                setTab('week')
+                flash('Sample college loaded. Monday 09:00 already overlaps.')
+              }}
+            >
+              Load sample
+            </button>
+            <FileDrop onFile={ingestFile} />
+          </div>
+        </header>
+      </div>
+
+      <nav className="tabs" aria-label="TableTime steps">
+        {(
+          [
+            ['people', '1. People'],
+            ['classes', '2. Class slots'],
+            ['week', '3. Week'],
+          ] as const
+        ).map(([id, label]) => (
+          <button key={id} className={tab === id ? 'nav on' : 'nav'} onClick={() => setTab(id)}>
+            {label}
+          </button>
+        ))}
+        <span className="org-pill">{state.settings.orgName}</span>
+      </nav>
 
       {notice ? <div className="notice">{notice}</div> : null}
 
-      {tab === 'setup' ? (
-        <SetupView
+      {tab === 'people' ? (
+        <PeopleView
           state={state}
           setState={setState}
-          onContinue={() => setTab('rooms')}
-          onSample={() => {
-            setState(sampleState(state))
-            setUnplaced([])
-            setOpenSuggestions({})
-            flash('Sample college loaded. Generate the timetable when you are ready.')
+          onContinue={(id) => {
+            setSelectedProfessorId(id)
+            setTab('classes')
           }}
         />
       ) : null}
-      {tab === 'rooms' ? (
-        <RoomsView state={state} setState={setState} onContinue={() => setTab('professors')} />
+      {tab === 'classes' ? (
+        <ClassesView
+          state={state}
+          setState={setState}
+          selectedProfessorId={activeProfessorId}
+          setSelectedProfessorId={setSelectedProfessorId}
+          onCreate={createTimetable}
+        />
       ) : null}
-      {tab === 'professors' ? (
-        <ProfessorsView state={state} setState={setState} onGenerate={generate} />
-      ) : null}
-      {tab === 'timetable' ? (
-        <TimetableView
+      {tab === 'week' ? (
+        <WeekView
           state={state}
           setState={setState}
           conflicts={conflicts}
-          unplaced={unplaced}
-          suggestions={openSuggestions}
-          onGenerate={generate}
-          onConfirm={confirmSuggestion}
-          onSuggest={refreshSuggestions}
-          onImport={(json) => {
-            try {
-              setState(importState(json))
-              setUnplaced([])
-              setOpenSuggestions({})
-              flash('Imported timetable file.')
-            } catch (error) {
-              flash(error instanceof Error ? error.message : 'Import failed.')
-            }
-          }}
+          onImport={ingestFile}
         />
       ) : null}
     </div>
   )
 }
 
-function SetupView({
-  state,
-  setState,
-  onContinue,
-  onSample,
-}: {
-  state: AppState
-  setState: Dispatch<SetStateAction<AppState>>
-  onContinue: () => void
-  onSample: () => void
-}) {
-  const s = state.settings
+function FileDrop({ onFile }: { onFile: (file: File) => void }) {
   return (
-    <section className="panel">
-      <h2>First page — slot length and campus hours</h2>
-      <p className="lede">
-        Set how long each class is. TableTime then cuts every professor’s availability into those
-        blocks. Example: 3 hours means a professor free 09:00–15:00 can take 09:00–12:00 and
-        12:00–15:00.
-      </p>
-      <div className="grid two">
-        <label>
-          Organization
-          <input
-            value={s.orgName}
-            onChange={(e) => setState({ ...state, settings: { ...s, orgName: e.target.value } })}
-          />
-        </label>
-        <label>
-          Hours per class slot
-          <input
-            type="number"
-            min={1}
-            max={8}
-            step={0.5}
-            value={s.slotHours}
-            onChange={(e) =>
-              setState({ ...state, settings: { ...s, slotHours: Number(e.target.value) || 1 } })
-            }
-          />
-        </label>
-        <label>
-          Campus opens
-          <input
-            type="time"
-            value={s.dayStart}
-            onChange={(e) => setState({ ...state, settings: { ...s, dayStart: e.target.value } })}
-          />
-        </label>
-        <label>
-          Campus closes
-          <input
-            type="time"
-            value={s.dayEnd}
-            onChange={(e) => setState({ ...state, settings: { ...s, dayEnd: e.target.value } })}
-          />
-        </label>
-      </div>
-      <fieldset>
-        <legend>Teaching days</legend>
-        <div className="chips">
-          {DAYS.map((day) => {
-            const on = s.activeDays.includes(day)
-            return (
-              <button
-                key={day}
-                type="button"
-                className={on ? 'chip on' : 'chip'}
-                onClick={() => {
-                  const activeDays = on
-                    ? s.activeDays.filter((d) => d !== day)
-                    : [...s.activeDays, day]
-                  setState({ ...state, settings: { ...s, activeDays } })
-                }}
-              >
-                {day.slice(0, 3)}
-              </button>
-            )
-          })}
-        </div>
-      </fieldset>
-      <div className="actions">
-        <button className="primary" onClick={onContinue}>
-          Continue to rooms
-        </button>
-        <button onClick={onSample}>Load sample college</button>
-      </div>
-    </section>
+    <label className="file">
+      Import file
+      <input
+        type="file"
+        hidden
+        accept=".csv,.md,.json,.txt,.tsv,text/csv,text/markdown,application/json,.xlsx,.xls"
+        onChange={(event) => {
+          const file = event.target.files?.[0]
+          if (file) onFile(file)
+          event.target.value = ''
+        }}
+      />
+    </label>
   )
 }
 
-function RoomsView({
+function PeopleView({
   state,
   setState,
   onContinue,
 }: {
   state: AppState
   setState: Dispatch<SetStateAction<AppState>>
-  onContinue: () => void
+  onContinue: (professorId: string) => void
 }) {
-  const [name, setName] = useState('')
-  const [block, setBlock] = useState('Block A')
+  const [draft, setDraft] = useState<Professor>(() => emptyProfessor(state.professors.length))
+  const [subjectsText, setSubjectsText] = useState('')
   const [error, setError] = useState('')
 
-  function addRoom() {
-    const roomName = name.trim()
-    if (!roomName) {
-      setError('Type a room name first, for example Room 101.')
+  function save() {
+    if (!draft.name.trim()) {
+      setError('Type the professor’s name.')
       return
     }
-    setState((current) => ({
-      ...current,
-      rooms: [
-        ...current.rooms,
-        { id: uid('rm'), name: roomName, block: block.trim() || 'Campus' },
-      ],
-    }))
-    setName('')
+    const subjects = splitSubjects(subjectsText)
+    const saved: Professor = {
+      ...draft,
+      name: draft.name.trim(),
+      department: draft.department.trim() || 'General',
+      subjects,
+    }
+    const exists = state.professors.some((p) => p.id === saved.id)
+    setState({
+      ...state,
+      professors: exists
+        ? state.professors.map((p) => (p.id === saved.id ? saved : p))
+        : [...state.professors, saved],
+    })
+    setDraft(emptyProfessor(state.professors.length + (exists ? 0 : 1)))
+    setSubjectsText('')
     setError('')
+    onContinue(saved.id)
   }
 
   return (
     <section className="panel">
-      <h2>Campus rooms</h2>
-      <p className="lede">Add the 10–15 teaching rooms. Preferred rooms on a professor will be tried first.</p>
+      <div className="split">
+        <div>
+          <h2>Professors</h2>
+          <p className="lede">Name, department, and the subjects they teach. Timing comes next.</p>
+        </div>
+        <label className="org-field">
+          College name
+          <input
+            value={state.settings.orgName}
+            onChange={(e) =>
+              setState({ ...state, settings: { ...state.settings, orgName: e.target.value } })
+            }
+          />
+        </label>
+      </div>
+
       <form
-        className="room-form"
+        className="people-form"
         onSubmit={(event) => {
           event.preventDefault()
-          addRoom()
+          save()
         }}
       >
         <label>
-          Room name
+          Professor name
           <input
-            name="roomName"
-            placeholder="Room 101"
-            value={name}
-            autoComplete="off"
-            aria-invalid={error ? true : undefined}
+            value={draft.name}
+            placeholder="Dr. Mehta"
+            autoComplete="name"
             onChange={(e) => {
-              setName(e.target.value)
+              setDraft({ ...draft, name: e.target.value })
               if (error) setError('')
             }}
           />
         </label>
         <label>
-          Block
+          Department
           <input
-            name="block"
-            placeholder="Block A"
-            value={block}
-            autoComplete="off"
-            onChange={(e) => setBlock(e.target.value)}
+            value={draft.department}
+            placeholder="IT"
+            onChange={(e) => setDraft({ ...draft, department: e.target.value })}
           />
         </label>
-        <button className="primary" type="submit">
-          Add room
-        </button>
+        <label className="span-2">
+          Subjects
+          <input
+            value={subjectsText}
+            placeholder="Networks, Databases"
+            onChange={(e) => setSubjectsText(e.target.value)}
+          />
+        </label>
+        <div className="actions span-2">
+          <button className="primary" type="submit">
+            Save professor
+          </button>
+        </div>
+        {error ? <p className="field-error span-2">{error}</p> : null}
       </form>
-      {error ? <p className="field-error">{error}</p> : null}
-      {state.rooms.length === 0 ? (
-        <p className="empty">No rooms yet. Type a name, then press Enter or click Add room.</p>
-      ) : null}
-      <ul className="cards">
-        {state.rooms.map((room) => (
-          <li key={room.id}>
-            <strong>
-              {room.block} · {room.name}
-            </strong>
-            <button
-              className="text"
-              type="button"
-              onClick={() =>
-                setState((current) => ({
-                  ...current,
-                  rooms: current.rooms.filter((r) => r.id !== room.id),
-                }))
-              }
-            >
-              Remove
-            </button>
-          </li>
-        ))}
+
+      {state.professors.length === 0 ? <EmptyPoster /> : null}
+
+      <ul className="people-grid">
+        {state.professors.map((professor) => {
+          const count = state.slots.filter((s) => s.professorId === professor.id).length
+          return (
+            <li key={professor.id} className="person-card" style={{ ['--ink' as string]: professor.color }}>
+              <Monogram name={professor.name} color={professor.color} />
+              <div>
+                <strong>{professor.name}</strong>
+                <span>
+                  {professor.department}
+                  {professor.subjects.length ? ` · ${professor.subjects.join(', ')}` : ''}
+                </span>
+                <em>
+                  {count} class slot{count === 1 ? '' : 's'}
+                </em>
+              </div>
+              <div className="row tight">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDraft(professor)
+                    setSubjectsText(professor.subjects.join(', '))
+                  }}
+                >
+                  Edit
+                </button>
+                <button className="text" type="button" onClick={() => onContinue(professor.id)}>
+                  Add slots
+                </button>
+                <button
+                  className="text"
+                  type="button"
+                  onClick={() =>
+                    setState({
+                      ...state,
+                      professors: state.professors.filter((p) => p.id !== professor.id),
+                      slots: state.slots.filter((s) => s.professorId !== professor.id),
+                    })
+                  }
+                >
+                  Remove
+                </button>
+              </div>
+            </li>
+          )
+        })}
       </ul>
-      <div className="actions">
-        <button className="primary" type="button" onClick={onContinue}>
-          Continue to professors
-        </button>
-      </div>
     </section>
   )
 }
 
-function ProfessorsView({
+function ClassesView({
   state,
   setState,
-  onGenerate,
+  selectedProfessorId,
+  setSelectedProfessorId,
+  onCreate,
 }: {
   state: AppState
   setState: Dispatch<SetStateAction<AppState>>
-  onGenerate: () => void
+  selectedProfessorId: string
+  setSelectedProfessorId: (id: string) => void
+  onCreate: () => void
 }) {
-  const [draft, setDraft] = useState<Professor>(() => emptyProfessor(state.professors.length))
+  const professor = state.professors.find((p) => p.id === selectedProfessorId) ?? state.professors[0]
+  const [subject, setSubject] = useState(professor?.subjects[0] ?? '')
   const [day, setDay] = useState<Day>('Monday')
+  const [date, setDate] = useState('')
   const [start, setStart] = useState('09:00')
-  const [end, setEnd] = useState('15:00')
+  const [durationMinutes, setDurationMinutes] = useState(120)
+  const [room, setRoom] = useState('')
+  const [error, setError] = useState('')
 
-  function saveProfessor() {
-    if (!draft.name.trim()) return
-    const existing = state.professors.some((p) => p.id === draft.id)
+  const end = fromMinutes(toMinutes(start) + durationMinutes)
+
+  function setEnd(value: string) {
+    const minutes = toMinutes(value) - toMinutes(start)
+    if (minutes >= 15) setDurationMinutes(minutes)
+  }
+
+  function saveSlot() {
+    if (!professor) {
+      setError('Save a professor on the People page first.')
+      return
+    }
+    if (!subject.trim()) {
+      setError('Name the subject for this class.')
+      return
+    }
+    const slot: ClassSlot = {
+      id: uid('sl'),
+      professorId: professor.id,
+      subject: subject.trim(),
+      day,
+      start: snapTime(start),
+      durationMinutes,
+      room: room.trim(),
+    }
+    const subjects = professor.subjects.includes(slot.subject)
+      ? professor.subjects
+      : [...professor.subjects, slot.subject]
     setState({
       ...state,
-      professors: existing
-        ? state.professors.map((p) => (p.id === draft.id ? draft : p))
-        : [...state.professors, draft],
+      professors: state.professors.map((p) => (p.id === professor.id ? { ...p, subjects } : p)),
+      slots: [...state.slots, slot],
     })
-    setDraft(emptyProfessor(state.professors.length + 1))
+    setRoom('')
+    setError('')
+  }
+
+  if (!state.professors.length) {
+    return (
+      <section className="panel">
+        <h2>Class slots</h2>
+        <p className="lede">Add a professor first, then pick how long they teach.</p>
+        <EmptyPoster />
+      </section>
+    )
   }
 
   return (
     <section className="panel">
-      <h2>Professors and availability</h2>
+      <h2>Class slots</h2>
       <p className="lede">
-        Some staff teach two days, some three. Add every free window. Classes needed is how many{' '}
-        {state.settings.slotHours}-hour slots TableTime should place.
+        Choose the person, then the length — 15 minutes up to 10 hours. Set the day (or a date) and
+        from–to. The slot is saved under that name, ready to drag onto the week.
       </p>
-      <div className="grid two">
-        <label>
-          Name
-          <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
-        </label>
+
+      <div className="prof-pills">
+        {state.professors.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            className={p.id === professor?.id ? 'pill on' : 'pill'}
+            style={{ ['--ink' as string]: p.color }}
+            onClick={() => {
+              setSelectedProfessorId(p.id)
+              setSubject(p.subjects[0] ?? '')
+            }}
+          >
+            <Monogram name={p.name} color={p.color} />
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      <form
+        className="slot-form"
+        onSubmit={(event) => {
+          event.preventDefault()
+          saveSlot()
+        }}
+      >
         <label>
           Subject
           <input
-            value={draft.subject}
-            onChange={(e) => setDraft({ ...draft, subject: e.target.value })}
+            list="subject-list"
+            value={subject}
+            placeholder="Networks"
+            onChange={(e) => setSubject(e.target.value)}
           />
+          <datalist id="subject-list">
+            {(professor?.subjects ?? []).map((item) => (
+              <option key={item} value={item} />
+            ))}
+          </datalist>
         </label>
         <label>
-          Classes needed
-          <input
-            type="number"
-            min={1}
-            max={20}
-            value={draft.classesNeeded}
-            onChange={(e) => setDraft({ ...draft, classesNeeded: Number(e.target.value) || 1 })}
-          />
-        </label>
-        <label>
-          Preferred rooms
-          <select
-            multiple
-            value={draft.preferredRoomIds}
-            onChange={(e) =>
-              setDraft({
-                ...draft,
-                preferredRoomIds: Array.from(e.target.selectedOptions).map((o) => o.value),
-              })
-            }
-          >
-            {state.rooms.map((room) => (
-              <option key={room.id} value={room.id}>
-                {room.block} · {room.name}
-              </option>
+          Day
+          <select value={day} onChange={(e) => setDay(e.target.value as Day)}>
+            {DAYS.map((item) => (
+              <option key={item}>{item}</option>
             ))}
           </select>
         </label>
-      </div>
-      <div className="row">
-        <select value={day} onChange={(e) => setDay(e.target.value as Day)}>
-          {DAYS.map((d) => (
-            <option key={d}>{d}</option>
-          ))}
-        </select>
-        <input type="time" value={start} onChange={(e) => setStart(e.target.value)} />
-        <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} />
-        <button
-          onClick={() =>
-            setDraft({
-              ...draft,
-              availability: [...draft.availability, { id: uid('av'), day, start, end }],
-            })
-          }
-        >
-          Add availability
-        </button>
-      </div>
-      <ul className="mini">
-        {draft.availability.map((a) => (
-          <li key={a.id}>
-            {a.day} {a.start}–{a.end}
-            <button
-              className="text"
-              onClick={() =>
-                setDraft({
-                  ...draft,
-                  availability: draft.availability.filter((x) => x.id !== a.id),
-                })
-              }
-            >
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div className="actions">
-        <button className="primary" onClick={saveProfessor}>
-          Save professor
-        </button>
-        <button onClick={onGenerate}>Create timetable</button>
-      </div>
-      <ul className="cards">
-        {state.professors.map((p) => (
-          <li key={p.id}>
-            <div>
-              <strong style={{ color: p.color }}>{p.name}</strong>
-              <span>
-                {p.subject} · {p.classesNeeded} class{p.classesNeeded === 1 ? '' : 'es'} ·{' '}
-                {p.availability.length} window{p.availability.length === 1 ? '' : 's'}
-              </span>
-            </div>
-            <div className="row tight">
-              <button onClick={() => setDraft(p)}>Edit</button>
+        <label>
+          Date (optional)
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value)
+              const nextDay = weekdayFromDate(e.target.value)
+              if (nextDay) setDay(nextDay)
+            }}
+          />
+        </label>
+        <label>
+          From
+          <input type="time" value={start} onChange={(e) => setStart(e.target.value)} />
+        </label>
+        <label>
+          To
+          <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} />
+        </label>
+        <label>
+          Room (optional)
+          <input value={room} placeholder="101" onChange={(e) => setRoom(e.target.value)} />
+        </label>
+        <fieldset className="durations">
+          <legend>How long is the class?</legend>
+          <div className="chips">
+            {DURATION_OPTIONS.map((option) => (
               <button
-                className="text"
-                onClick={() =>
-                  setState({
-                    ...state,
-                    professors: state.professors.filter((x) => x.id !== p.id),
-                    placements: state.placements.filter((x) => x.professorId !== p.id),
-                  })
-                }
+                key={option.minutes}
+                type="button"
+                className={durationMinutes === option.minutes ? 'chip on' : 'chip'}
+                onClick={() => setDurationMinutes(option.minutes)}
               >
-                Remove
+                {option.label}
               </button>
-            </div>
-          </li>
-        ))}
+            ))}
+          </div>
+        </fieldset>
+        <div className="actions">
+          <button className="primary" type="submit">
+            Save slot under {professor?.name ?? 'professor'}
+          </button>
+          <button type="button" onClick={onCreate}>
+            Create timetable
+          </button>
+        </div>
+        {error ? <p className="field-error">{error}</p> : null}
+      </form>
+
+      <ul className="slot-groups">
+        {state.professors.map((p) => {
+          const slots = state.slots.filter((s) => s.professorId === p.id)
+          return (
+            <li key={p.id} className="slot-group">
+              <header>
+                <Monogram name={p.name} color={p.color} />
+                <div>
+                  <strong>{p.name}</strong>
+                  <span>{p.department}</span>
+                </div>
+              </header>
+              {slots.length === 0 ? (
+                <p className="empty">No slots yet for {p.name}.</p>
+              ) : (
+                <ul>
+                  {slots.map((slot) => (
+                    <li
+                      key={slot.id}
+                      className="slot-chip"
+                      draggable
+                      onDragStart={(event) => {
+                        lastDragId = slot.id
+                        event.dataTransfer.setData('text/plain', slot.id)
+                      }}
+                    >
+                      <b>{slot.subject}</b>
+                      <span>
+                        {slot.day} {slot.start}–{slotEnd(slot)} · {durationLabel(slot.durationMinutes)}
+                        {slot.room ? ` · ${slot.room}` : ''}
+                      </span>
+                      <button
+                        className="text"
+                        type="button"
+                        onClick={() =>
+                          setState({ ...state, slots: state.slots.filter((s) => s.id !== slot.id) })
+                        }
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          )
+        })}
       </ul>
     </section>
   )
 }
 
-function TimetableView({
+function WeekView({
   state,
   setState,
   conflicts,
-  unplaced,
-  suggestions,
-  onGenerate,
-  onConfirm,
-  onSuggest,
   onImport,
 }: {
   state: AppState
   setState: Dispatch<SetStateAction<AppState>>
   conflicts: ReturnType<typeof findConflicts>
-  unplaced: { professorId: string; remaining: number }[]
-  suggestions: Record<string, Suggestion[]>
-  onGenerate: () => void
-  onConfirm: (s: Suggestion) => void
-  onSuggest: (professorId: string) => void
-  onImport: (json: string) => void
+  onImport: (file: File) => void
 }) {
-  const leftoverCount = unplaced.reduce((sum, row) => sum + row.remaining, 0)
-  const conflictIds = new Set(conflicts.flatMap((c) => c.placementIds))
+  const conflictIds = new Set(conflicts.flatMap((c) => c.slotIds))
+  const hours = hoursInRange(state.settings.dayStart, state.settings.dayEnd)
+  const days = state.settings.activeDays.length ? state.settings.activeDays : [...DAYS]
+
+  function onDrop(day: Day, clientY: number, column: HTMLElement) {
+    const id = lastDragId
+    if (!id) return
+    const rect = column.getBoundingClientRect()
+    const minutesFromTop = ((clientY - rect.top) / PX_PER_HOUR) * 60
+    const start = snapTime(fromMinutes(toMinutes(state.settings.dayStart) + minutesFromTop))
+    setState((current) => moveSlot(current, id, day, start))
+  }
 
   return (
     <section className="panel wide">
       <div className="split">
         <div>
-          <h2>Weekly timetable</h2>
+          <h2>Week board</h2>
           <p className="lede">
-            Rows are rooms, columns are days. Each card is one {state.settings.slotHours}-hour class.
-            If a person or room is double-booked, it turns red and TableTime lists other free{' '}
-            {state.settings.slotHours}-hour slots you can confirm.
+            Drag a saved slot onto a day and hour. Two classes on the same hour sit side by side and
+            glow as an overlap.
           </p>
-          <p className="stats" aria-live="polite">
-            <strong>{state.placements.length}</strong> scheduled
-            <span>·</span>
-            <strong>{leftoverCount}</strong> leftover
+          <p className="stats">
+            <strong>{state.slots.length}</strong> classes
             <span>·</span>
             <strong>{conflicts.length}</strong> overlap{conflicts.length === 1 ? '' : 's'}
           </p>
         </div>
         <div className="actions">
-          <button className="primary" onClick={onGenerate}>
-            Rebuild timetable
-          </button>
+          <FileDrop onFile={onImport} />
           <button
+            type="button"
             onClick={() => {
               const blob = new Blob([exportState(state)], { type: 'application/json' })
               const url = URL.createObjectURL(blob)
@@ -569,185 +618,152 @@ function TimetableView({
               URL.revokeObjectURL(url)
             }}
           >
-            Export
+            Export JSON
           </button>
-          <label className="file">
-            Import
-            <input
-              type="file"
-              accept="application/json"
-              hidden
-              onChange={async (e) => {
-                const file = e.target.files?.[0]
-                if (!file) return
-                onImport(await file.text())
-              }}
-            />
-          </label>
+          <button
+            type="button"
+            onClick={() => {
+              const blob = new Blob([sampleCsv()], { type: 'text/csv' })
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = 'tabletime-sample.csv'
+              a.click()
+              URL.revokeObjectURL(url)
+            }}
+          >
+            Sample CSV
+          </button>
         </div>
       </div>
 
       {conflicts.length ? (
         <aside className="alert">
-          <h3>Overlaps</h3>
+          <h3>Overlaps on this week</h3>
           {conflicts.map((c) => (
             <p key={c.id}>{c.message}</p>
           ))}
         </aside>
       ) : null}
 
-      {Object.values(suggestions).some((list) => list.length) ? (
-        <aside className="suggest">
-          <h3>Other free slots</h3>
-          {state.professors
-            .filter((p) => (suggestions[p.id] ?? []).length)
-            .map((professor) => (
-              <div key={`alt-${professor.id}`} className="suggest-card">
-                <p>
-                  <strong>{professor.name}</strong> can also take these{' '}
-                  {state.settings.slotHours}-hour slots.
-                </p>
-                <ul>
-                  {(suggestions[professor.id] ?? []).map((s) => {
-                    const room = state.rooms.find((r) => r.id === s.roomId)
+      <div className="week-shell">
+        <aside className="rail">
+          <h3>Drag from here</h3>
+          {state.professors.length === 0 ? <EmptyPoster /> : null}
+          {state.professors.map((p) => (
+            <div key={p.id} className="rail-person">
+              <header>
+                <Monogram name={p.name} color={p.color} />
+                <strong>{p.name}</strong>
+              </header>
+              {state.slots
+                .filter((s) => s.professorId === p.id)
+                .map((slot) => (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    className={conflictIds.has(slot.id) ? 'rail-slot clash' : 'rail-slot'}
+                    draggable
+                    onDragStart={() => {
+                      lastDragId = slot.id
+                    }}
+                    style={{ borderColor: p.color }}
+                  >
+                    <b>{slot.subject}</b>
+                    <span>
+                      {slot.day.slice(0, 3)} {slot.start} · {durationLabel(slot.durationMinutes)}
+                    </span>
+                  </button>
+                ))}
+            </div>
+          ))}
+        </aside>
+
+        <div className="board" role="grid" aria-label="Weekly timetable">
+          <div className="board-head">
+            <span className="time-gutter" />
+            {days.map((day) => (
+              <span key={day}>{day}</span>
+            ))}
+          </div>
+          <div className="board-body" style={{ height: hours.length * PX_PER_HOUR }}>
+            <div className="time-gutter">
+              {hours.map((hour) => (
+                <div key={hour} className="hour-label" style={{ height: PX_PER_HOUR }}>
+                  {String(hour).padStart(2, '0')}:00
+                </div>
+              ))}
+            </div>
+            {days.map((day) => {
+              const daySlots = state.slots.filter((s) => s.day === day)
+              const layout = layoutDayColumns(daySlots)
+              return (
+                <div
+                  key={day}
+                  className="day-col"
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => onDrop(day, event.clientY, event.currentTarget)}
+                >
+                  {hours.map((hour) => (
+                    <div key={hour} className="hour-line" style={{ height: PX_PER_HOUR }} />
+                  ))}
+                  {daySlots.map((slot) => {
+                    const professor = state.professors.find((p) => p.id === slot.professorId)
+                    const place = layout.get(slot.id) ?? { col: 0, cols: 1 }
+                    const top =
+                      ((toMinutes(slot.start) - toMinutes(state.settings.dayStart)) / 60) * PX_PER_HOUR
+                    const height = (slot.durationMinutes / 60) * PX_PER_HOUR
+                    const width = 100 / place.cols
                     return (
-                      <li key={s.id}>
+                      <article
+                        key={slot.id}
+                        className={conflictIds.has(slot.id) ? 'block clash' : 'block'}
+                        draggable
+                        onDragStart={() => {
+                          lastDragId = slot.id
+                        }}
+                        style={{
+                          top,
+                          height: Math.max(height, 28),
+                          left: `calc(${place.col * width}% + 4px)`,
+                          width: `calc(${width}% - 8px)`,
+                          background: professor?.color ?? '#1f4bff',
+                        }}
+                      >
+                        <strong>{professor?.name}</strong>
+                        <span>{slot.subject}</span>
                         <span>
-                          {s.day} {s.start}–{s.end} · {room?.block} {room?.name}
-                          <em> {s.reason}</em>
+                          {slot.start}–{slotEnd(slot)}
                         </span>
-                        <button className="primary" onClick={() => onConfirm(s)}>
-                          Confirm this slot
-                        </button>
-                      </li>
+                        {conflictIds.has(slot.id) ? <b className="clash-tag">Overlap</b> : null}
+                      </article>
                     )
                   })}
-                </ul>
-              </div>
-            ))}
-        </aside>
-      ) : null}
-
-      {unplaced.length ? (
-        <aside className="suggest">
-          <h3>Could not place every class</h3>
-          {unplaced.map((row) => {
-            const professor = state.professors.find((p) => p.id === row.professorId)
-            const options = suggestions[row.professorId] ?? []
-            return (
-              <div key={row.professorId} className="suggest-card">
-                <p>
-                  <strong>{professor?.name}</strong> still needs {row.remaining} slot
-                  {row.remaining === 1 ? '' : 's'}.
-                  {options.length === 0
-                    ? ` No other ${state.settings.slotHours}-hour window fits their availability without a clash.`
-                    : ''}
-                </p>
-                <button onClick={() => onSuggest(row.professorId)}>
-                  Show other {state.settings.slotHours}h slots
-                </button>
-              </div>
-            )
-          })}
-        </aside>
-      ) : null}
-
-      <RoomWeekGrid
-        state={state}
-        conflictIds={conflictIds}
-        onRemove={(id) =>
-          setState({
-            ...state,
-            placements: state.placements.filter((x) => x.id !== id),
-          })
-        }
-        onSuggest={onSuggest}
-      />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
     </section>
   )
 }
 
-function RoomWeekGrid({
-  state,
-  conflictIds,
-  onRemove,
-  onSuggest,
-}: {
-  state: AppState
-  conflictIds: Set<string>
-  onRemove: (id: string) => void
-  onSuggest: (professorId: string) => void
-}) {
-  return (
-    <div className="table-wrap">
-      <table className="grid-table">
-        <thead>
-          <tr>
-            <th>Room</th>
-            {state.settings.activeDays.map((day) => (
-              <th key={day}>{day}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {state.rooms.map((room) => (
-            <tr key={room.id}>
-              <th>
-                {room.block}
-                <span>
-                  {room.name}
-                </span>
-              </th>
-              {state.settings.activeDays.map((day) => {
-                const items = state.placements
-                  .filter((p) => p.roomId === room.id && p.day === day)
-                  .sort((a, b) => toMinutes(a.start) - toMinutes(b.start))
-                return (
-                  <td key={day}>
-                    {items.map((p) => {
-                      const professor = state.professors.find((x) => x.id === p.professorId)
-                      return (
-                        <article
-                          key={p.id}
-                          className={conflictIds.has(p.id) ? 'block clash' : 'block'}
-                          style={{ borderColor: professor?.color }}
-                        >
-                          <strong>{professor?.name}</strong>
-                          <span>
-                            {p.start}–{p.end} · {state.settings.slotHours}h
-                          </span>
-                          <span>{professor?.subject}</span>
-                          {conflictIds.has(p.id) ? <b className="clash-tag">Overlap</b> : null}
-                          <div className="block-actions">
-                            <button className="text" onClick={() => onRemove(p.id)}>
-                              Remove
-                            </button>
-                            <button className="text" onClick={() => onSuggest(p.professorId)}>
-                              Other slots
-                            </button>
-                          </div>
-                        </article>
-                      )
-                    })}
-                  </td>
-                )
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
+let lastDragId = ''
 
 function emptyProfessor(index: number): Professor {
   return {
     id: uid('pr'),
     name: '',
-    subject: '',
-    classesNeeded: 2,
-    preferredRoomIds: [],
-    availability: [],
+    department: '',
+    subjects: [],
     color: PROFESSOR_COLORS[index % PROFESSOR_COLORS.length],
   }
+}
+
+function splitSubjects(value: string): string[] {
+  return value
+    .split(/[,/|]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
 }

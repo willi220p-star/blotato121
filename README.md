@@ -1,6 +1,8 @@
 # TableTime
 
-College timetable scheduler. The working app is in [`tabletime/`](tabletime/).
+College timetable builder. The working app is in [`tabletime/`](tabletime/).
+
+Add professors, give each a class length, drag those slots onto the week. Overlaps stay visible.
 
 ## Deploy on Vercel
 

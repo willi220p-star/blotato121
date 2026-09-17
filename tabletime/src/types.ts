@@ -9,81 +9,65 @@ export const DAYS = [
 
 export type Day = (typeof DAYS)[number]
 
-export interface Availability {
-  id: string
-  day: Day
-  start: string
-  end: string
-}
-
-export interface Room {
-  id: string
-  name: string
-  block: string
-}
-
 export interface Professor {
   id: string
   name: string
-  subject: string
-  classesNeeded: number
-  preferredRoomIds: string[]
-  availability: Availability[]
+  department: string
+  subjects: string[]
   color: string
 }
 
-export interface Placement {
+export interface ClassSlot {
   id: string
   professorId: string
-  roomId: string
+  subject: string
   day: Day
   start: string
-  end: string
+  durationMinutes: number
+  room: string
 }
 
 export interface Conflict {
   id: string
-  kind: 'professor' | 'room'
-  placementIds: [string, string]
+  kind: 'professor' | 'time'
+  slotIds: [string, string]
   message: string
-}
-
-export interface Suggestion {
-  id: string
-  professorId: string
-  roomId: string
-  day: Day
-  start: string
-  end: string
-  reason: string
-  score: number
 }
 
 export interface Settings {
   orgName: string
-  slotHours: number
   dayStart: string
   dayEnd: string
-  stepMinutes: number
   activeDays: Day[]
 }
 
 export interface AppState {
   settings: Settings
-  rooms: Room[]
   professors: Professor[]
-  placements: Placement[]
+  slots: ClassSlot[]
 }
 
 export const PROFESSOR_COLORS = [
-  '#1f5c4d',
-  '#2b4c7e',
-  '#6b2d5b',
-  '#3d5a1f',
-  '#1d4e6b',
-  '#0f766e',
-  '#4a3f72',
-  '#166534',
-  '#1e3a5f',
-  '#5b2c6f',
+  '#0a84ff',
+  '#ff375f',
+  '#30d158',
+  '#bf5af2',
+  '#ff9f0a',
+  '#64d2ff',
+  '#ffd60a',
+  '#ff6482',
+]
+
+export const DURATION_OPTIONS: { label: string; minutes: number }[] = [
+  { label: '15 minutes', minutes: 15 },
+  { label: '30 minutes', minutes: 30 },
+  { label: '45 minutes', minutes: 45 },
+  { label: '1 hour', minutes: 60 },
+  { label: '1 hour 15 minutes', minutes: 75 },
+  { label: '1 hour 30 minutes', minutes: 90 },
+  { label: '1 hour 45 minutes', minutes: 105 },
+  ...Array.from({ length: 9 }, (_, i) => {
+    const hours = i + 2
+    return { label: `${hours} hours`, minutes: hours * 60 }
+  }),
 ]

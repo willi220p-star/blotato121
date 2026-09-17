@@ -1,19 +1,16 @@
-import type { AppState, Day } from './types'
+import { DAYS, type AppState, type Day } from './types'
 
-const KEY = 'tabletime-state-v1'
+const KEY = 'tabletime-state-v2'
 
 export const DEFAULT_STATE: AppState = {
   settings: {
-    orgName: 'College IT Services',
-    slotHours: 3,
+    orgName: 'College',
     dayStart: '08:00',
     dayEnd: '18:00',
-    stepMinutes: 30,
     activeDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as Day[],
   },
-  rooms: [],
   professors: [],
-  placements: [],
+  slots: [],
 }
 
 export function loadState(): AppState {
@@ -25,6 +22,8 @@ export function loadState(): AppState {
       ...DEFAULT_STATE,
       ...parsed,
       settings: { ...DEFAULT_STATE.settings, ...parsed.settings },
+      professors: parsed.professors ?? [],
+      slots: parsed.slots ?? [],
     }
   } catch {
     return structuredClone(DEFAULT_STATE)
@@ -41,13 +40,15 @@ export function exportState(state: AppState): string {
 
 export function importState(json: string): AppState {
   const parsed = JSON.parse(json) as AppState
-  if (!parsed.settings || !Array.isArray(parsed.professors) || !Array.isArray(parsed.rooms)) {
+  if (!parsed.settings || !Array.isArray(parsed.professors)) {
     throw new Error('Not a TableTime file')
   }
   return {
     ...DEFAULT_STATE,
     ...parsed,
     settings: { ...DEFAULT_STATE.settings, ...parsed.settings },
-    placements: parsed.placements ?? [],
+    slots: parsed.slots ?? [],
   }
 }
+
+export { DAYS, KEY }
