@@ -1,0 +1,29 @@
+:root {
+  font-family: Outfit, 'Segoe UI', sans-serif;
+  line-height: 1.45;
+  font-weight: 400;
+  color: #14213d;
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #ffe1c4 0%, transparent 55%),
+    radial-gradient(900px 480px at 110% 0%, #c9d4ff 0%, transparent 50%),
+    #f6efe3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #1f4bff;
+  outline-offset: 2px;
+}
