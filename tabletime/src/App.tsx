@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
+import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react'
 import { EmptyPoster, Monogram, StageBackdrop } from './HeroArt'
 import { importAny, sampleCsv } from './importFile'
 import { sampleState } from './sampleData'
@@ -535,8 +535,8 @@ function ClassesView({
                       className="slot-chip"
                       draggable
                       onDragStart={(event) => {
-                        lastDragId = slot.id
                         event.dataTransfer.setData('text/plain', slot.id)
+                        event.dataTransfer.effectAllowed = 'move'
                       }}
                     >
                       <b>{slot.subject}</b>
@@ -580,13 +580,24 @@ function WeekView({
   const hours = hoursInRange(state.settings.dayStart, state.settings.dayEnd)
   const days = state.settings.activeDays.length ? state.settings.activeDays : [...DAYS]
 
-  function onDrop(day: Day, clientY: number, column: HTMLElement) {
-    const id = lastDragId
+  const [holdingId, setHoldingId] = useState('')
+  const dragId = useRef('')
+
+  function placeSlot(day: Day, clientY: number, column: HTMLElement, slotId = dragId.current || holdingId) {
+    const id = slotId
     if (!id) return
     const rect = column.getBoundingClientRect()
     const minutesFromTop = ((clientY - rect.top) / PX_PER_HOUR) * 60
     const start = snapTime(fromMinutes(toMinutes(state.settings.dayStart) + minutesFromTop))
+    dragId.current = ''
+    setHoldingId('')
     setState((current) => moveSlot(current, id, day, start))
+  }
+
+  function beginDrag(event: { dataTransfer: DataTransfer }, slotId: string) {
+    dragId.current = slotId
+    event.dataTransfer.setData('text/plain', slotId)
+    event.dataTransfer.effectAllowed = 'move'
   }
 
   return (
@@ -595,8 +606,8 @@ function WeekView({
         <div>
           <h2>Week board</h2>
           <p className="lede">
-            Drag a saved slot onto a day and hour. Two classes on the same hour sit side by side and
-            glow as an overlap.
+            Drag a saved slot onto a day and hour, or click a slot then click a time. Two classes on
+            the same hour sit side by side and glow as an overlap.
           </p>
           <p className="stats">
             <strong>{state.slots.length}</strong> classes
@@ -659,13 +670,25 @@ function WeekView({
               {state.slots
                 .filter((s) => s.professorId === p.id)
                 .map((slot) => (
-                  <button
+                  <div
                     key={slot.id}
-                    type="button"
-                    className={conflictIds.has(slot.id) ? 'rail-slot clash' : 'rail-slot'}
+                    role="button"
+                    tabIndex={0}
+                    className={
+                      conflictIds.has(slot.id)
+                        ? 'rail-slot clash'
+                        : holdingId === slot.id
+                          ? 'rail-slot holding'
+                          : 'rail-slot'
+                    }
                     draggable
-                    onDragStart={() => {
-                      lastDragId = slot.id
+                    onDragStart={(event) => beginDrag(event, slot.id)}
+                    onClick={() => setHoldingId((current) => (current === slot.id ? '' : slot.id))}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        setHoldingId((current) => (current === slot.id ? '' : slot.id))
+                      }
                     }}
                     style={{ borderColor: p.color }}
                   >
@@ -673,7 +696,7 @@ function WeekView({
                     <span>
                       {slot.day.slice(0, 3)} {slot.start} · {durationLabel(slot.durationMinutes)}
                     </span>
-                  </button>
+                  </div>
                 ))}
             </div>
           ))}
@@ -686,7 +709,14 @@ function WeekView({
               <span key={day}>{day}</span>
             ))}
           </div>
-          <div className="board-body" style={{ height: hours.length * PX_PER_HOUR }}>
+          <div
+            className="board-body"
+            style={{ height: hours.length * PX_PER_HOUR }}
+            onDragOver={(event) => {
+              event.preventDefault()
+              event.dataTransfer.dropEffect = 'move'
+            }}
+          >
             <div className="time-gutter">
               {hours.map((hour) => (
                 <div key={hour} className="hour-label" style={{ height: PX_PER_HOUR }}>
@@ -701,8 +731,24 @@ function WeekView({
                 <div
                   key={day}
                   className="day-col"
-                  onDragOver={(event) => event.preventDefault()}
-                  onDrop={(event) => onDrop(day, event.clientY, event.currentTarget)}
+                  data-day={day}
+                  onDragOver={(event) => {
+                    event.preventDefault()
+                    event.dataTransfer.dropEffect = 'move'
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault()
+                    placeSlot(
+                      day,
+                      event.clientY,
+                      event.currentTarget,
+                      event.dataTransfer.getData('text/plain') || dragId.current || holdingId,
+                    )
+                  }}
+                  onClick={(event) => {
+                    if (!holdingId) return
+                    placeSlot(day, event.clientY, event.currentTarget, holdingId)
+                  }}
                 >
                   {hours.map((hour) => (
                     <div key={hour} className="hour-line" style={{ height: PX_PER_HOUR }} />
@@ -719,8 +765,20 @@ function WeekView({
                         key={slot.id}
                         className={conflictIds.has(slot.id) ? 'block clash' : 'block'}
                         draggable
-                        onDragStart={() => {
-                          lastDragId = slot.id
+                        onDragStart={(event) => beginDrag(event, slot.id)}
+                        onDragOver={(event) => event.preventDefault()}
+                        onDrop={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                          const column = event.currentTarget.parentElement
+                          if (column) {
+                            placeSlot(
+                              day,
+                              event.clientY,
+                              column,
+                              event.dataTransfer.getData('text/plain') || dragId.current || holdingId,
+                            )
+                          }
                         }}
                         style={{
                           top,
@@ -748,8 +806,6 @@ function WeekView({
     </section>
   )
 }
-
-let lastDragId = ''
 
 function emptyProfessor(index: number): Professor {
   return {

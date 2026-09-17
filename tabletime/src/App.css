@@ -288,6 +288,19 @@ select {
   gap: 8px;
 }
 
+.slot-group header > div,
+.rail-person header > div {
+  display: grid;
+}
+
+.slot-group header span,
+.rail-person header span {
+  display: block;
+  font-weight: 500;
+  color: #5c5348;
+  font-size: 0.9rem;
+}
+
 .slot-chip,
 .rail-slot {
   display: grid;
@@ -298,6 +311,10 @@ select {
   background: #fffdf9;
   padding: 10px 12px;
   cursor: grab;
+}
+
+.rail-slot.holding {
+  box-shadow: 0 0 0 3px #1f4bff;
 }
 
 .slot-chip .text,
@@ -401,6 +418,10 @@ select {
 .hour-label,
 .hour-line {
   border-bottom: 1px solid transparent;
+}
+
+.hour-line {
+  pointer-events: none;
 }
 
 .hour-label {
