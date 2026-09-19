@@ -16,8 +16,9 @@ export async function generateCarousel(
   handle: string,
   onProgress?: (progress: AiProgress) => void,
   signal?: AbortSignal,
+  size?: { width: number; height: number },
 ): Promise<CarouselModel> {
-  const draft = await draftCarousel(prompt, kind, slideCount, onProgress, signal)
+  const draft = await draftCarousel(prompt, kind, slideCount, onProgress, signal, size)
   return {
     kind: draft.kind,
     title: draft.title,

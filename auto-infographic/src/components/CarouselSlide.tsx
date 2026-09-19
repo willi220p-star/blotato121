@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { fitType, pointsFromText, slideMode } from '../lib/slideLayout'
 import type { CarouselSlideModel, Palette, Platform } from '../lib/types'
 
 interface Props {
@@ -40,34 +41,60 @@ export function CarouselSlide({
 }: Props) {
   const photo = sampleSrc || slide.image
   const series = header || brand || 'Studio'
-  const signoff = footer || 'Save this series'
-  const visual = slide.role === 'quote' ? 'content' : slide.role
-  const dark = visual === 'intro' || visual === 'outro' || visual === 'stat'
+  const signoff = footer || (slide.role === 'intro' ? 'Swipe →' : 'Save this series')
+  const mode = slideMode(slide.role, index)
+  const invert = mode === 'fill' && index % 2 === 0
+  const ink = invert ? palette.onAccent : palette.ink
+  const paper = invert ? palette.accent : palette.surface
+  const pad = Math.round(Math.min(platform.width, platform.height) * 0.072)
+  const copyW = platform.width - pad * 2
+  const copyH =
+    mode === 'cover'
+      ? platform.height * 0.58
+      : mode === 'split'
+        ? platform.height * 0.42
+        : platform.height * 0.62
+  const titleSize = fitType(
+    slide.title,
+    copyW,
+    slide.role === 'intro' ? copyH * 0.72 : copyH * 0.42,
+    slide.role === 'intro' ? 52 : 34,
+    slide.role === 'intro' ? 124 : 78,
+  )
+  const points = pointsFromText(slide.body, slide.points ?? [])
   const style = {
     width: platform.width,
     height: platform.height,
     transform: `scale(${scale})`,
     transformOrigin: 'top left',
-    background: visual === 'stat' ? palette.accent : visual === 'outro' ? palette.ink : palette.surface,
-    color: dark ? (visual === 'stat' ? palette.onAccent : '#fff') : palette.ink,
+    background: paper,
+    color: ink,
     ['--accent' as string]: palette.accent,
     ['--accent-2' as string]: palette.accent2,
     ['--accent-3' as string]: palette.accent3,
-    ['--muted' as string]: dark ? palette.onAccent : palette.muted,
+    ['--muted' as string]: invert ? palette.onAccent : palette.muted,
     ['--line' as string]: palette.line,
     ['--on-accent' as string]: palette.onAccent,
     ['--bg' as string]: palette.bg,
     ['--ink' as string]: palette.ink,
     ['--surface' as string]: palette.surface,
+    ['--pad' as string]: `${pad}px`,
   } as CSSProperties
 
-  const titleSize = slide.role === 'intro' ? 72 : slide.role === 'outro' ? 54 : 44
-
   return (
-    <article className={`artboard piece slide-${visual}`} style={style}>
-      {photo ? <img alt="" className="slide-photo" crossOrigin="anonymous" src={photo} /> : null}
-      <div className="slide-shade" />
-      <header className="piece-top">
+    <article className={`artboard piece slide mode-${mode} role-${slide.role}`} style={style}>
+      {photo ? (
+        <div className="slide-media">
+          <img alt="" crossOrigin="anonymous" src={photo} />
+          <div className="slide-shade" />
+        </div>
+      ) : (
+        <div className="slide-media slide-media-empty">
+          <div className="slide-shade" />
+        </div>
+      )}
+
+      <header className="slide-bar slide-bar-top">
         <span className="piece-top-left">
           <BrandMark />
           <span>{series}</span>
@@ -76,41 +103,47 @@ export function CarouselSlide({
           {index + 1}/{total}
         </span>
       </header>
-      <div className="slide-copy">
-        <div className="kicker">{slide.kicker}</div>
+
+      <div className="slide-stage">
         {slide.role === 'stat' && slide.stat ? (
-          <>
-            <div className="art-title slide-stat" style={{ fontSize: 108 }}>
-              {slide.stat}
-            </div>
-            <p className="art-sub" style={{ fontSize: 24 }}>
-              {slide.statLabel}
-            </p>
-            <p className="art-sub">{slide.body}</p>
-          </>
-        ) : (
-          <>
-            <h3 className="art-title" style={{ fontSize: titleSize, maxWidth: '16ch' }}>
+          <div className="slide-stat-block">
+            <div className="kicker">{slide.kicker || 'Proof'}</div>
+            <div className="slide-stat-num">{slide.stat}</div>
+            <p className="slide-lede">{slide.statLabel || slide.title}</p>
+            <p className="slide-body">{slide.body}</p>
+          </div>
+        ) : slide.role === 'quote' ? (
+          <div className="slide-quote-block">
+            <div className="kicker">{slide.kicker || 'Note'}</div>
+            <h3 className="slide-title" style={{ fontSize: titleSize }}>
               {slide.title}
             </h3>
-            <p
-              className="art-sub"
-              style={{
-                fontSize: slide.role === 'quote' ? 24 : 20,
-                fontStyle: slide.role === 'quote' ? 'italic' : 'normal',
-                maxWidth: '28ch',
-              }}
-            >
-              {slide.body}
-            </p>
+            <p className="slide-body slide-quote">{slide.body}</p>
+          </div>
+        ) : (
+          <>
+            <div className="kicker">{slide.kicker || (slide.role === 'intro' ? 'Cover' : String(index).padStart(2, '0'))}</div>
+            <h3 className="slide-title" style={{ fontSize: titleSize }}>
+              {slide.title}
+            </h3>
+            {slide.role === 'intro' || slide.role === 'outro' || points.length < 2 ? (
+              <p className="slide-body">{slide.body}</p>
+            ) : (
+              <ul className="slide-points">
+                {points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            )}
           </>
         )}
       </div>
-      <footer className="piece-bottom">
+
+      <footer className="slide-bar slide-bar-bottom">
         <span>
           {brand} {handle}
         </span>
-        <span>{signoff}</span>
+        <span>{slide.role === 'intro' ? 'Swipe →' : signoff}</span>
       </footer>
     </article>
   )

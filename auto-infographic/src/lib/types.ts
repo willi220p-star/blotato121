@@ -99,6 +99,7 @@ export interface CarouselSlideModel {
   kicker: string
   title: string
   body: string
+  points?: string[]
   stat?: string
   statLabel?: string
   image?: string

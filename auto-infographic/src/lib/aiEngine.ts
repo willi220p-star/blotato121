@@ -1,3 +1,4 @@
+import { coverPrompt, planRoles, pointsFromText } from './slideLayout'
 import { detectKind, parsePrompt } from './parsePrompt'
 import { briefFooter, staysOnTopic, topicSeed } from './brief'
 import type {
@@ -89,9 +90,14 @@ export function pollinationsImage(
   width: number,
   height: number,
   seed: number,
+  fill: 'frame' | 'subject' = 'subject',
 ): string {
-  const styled = `${prompt.slice(0, 240)}. Vivid saturated color photography, bold complementary colors, cinematic lighting, photorealistic, no text, no letters, no watermark, no logo`
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(styled)}?width=${width}&height=${height}&nologo=true&seed=${seed}`
+  const look =
+    fill === 'frame'
+      ? 'full-bleed edge-to-edge photograph filling the entire frame, subject large, no border, no collage, no mockup, no poster, no UI'
+      : 'Vivid saturated color photography, bold complementary colors, cinematic lighting, photorealistic'
+  const styled = `${prompt.slice(0, 200)}. ${look}, no text, no letters, no watermark, no logo`
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(styled)}?width=${width}&height=${height}&nologo=true&seed=${seed}&enhance=true`
 }
 
 export function extractJson(text: string): unknown {
@@ -321,23 +327,33 @@ function parseItems(raw: unknown, kind: Exclude<InfographicKind, 'auto'>, seedKe
   return items.length >= Math.min(min, 2) ? items : []
 }
 
-function parseSlides(raw: unknown, count: number, seedKey: string): CarouselSlideModel[] {
+function parseSlides(
+  raw: unknown,
+  count: number,
+  seedKey: string,
+  size: { width: number; height: number },
+): CarouselSlideModel[] {
   const rows = Array.isArray(raw) ? raw : []
+  const roles = planRoles(count)
   return rows.slice(0, count).map((row, index) => {
     const rec = asRecord(row)
     const title = asString(rec.title) || `Slide ${index + 1}`
     const body = asString(rec.body) || asString(rec.desc)
-    const imagePrompt = asString(rec.imagePrompt) || `${title}. ${body}`.slice(0, 180)
-    const role: SlideRole =
-      index === 0 ? 'intro' : index === count - 1 ? 'outro' : asRole(rec.role, rec.stat ? 'stat' : 'content')
+    const role = index === 0 || index === count - 1 ? roles[index] : asRole(rec.role, roles[index])
+    const points = pointsFromText(
+      body,
+      (Array.isArray(rec.points) ? rec.points : []).map((p) => asString(p)),
+    )
+    const imagePrompt = coverPrompt(asString(rec.imagePrompt) || `${title}. ${body}`.slice(0, 160), role)
     return {
       role,
-      kicker: asString(rec.kicker) || (index === 0 ? 'Brief' : String(index).padStart(2, '0')),
+      kicker: asString(rec.kicker) || (index === 0 ? 'Cover' : String(index).padStart(2, '0')),
       title: title.slice(0, 90),
       body: body.slice(0, 240),
+      points: points.length ? points : undefined,
       stat: asString(rec.stat) || undefined,
       statLabel: asString(rec.statLabel) || undefined,
-      image: pollinationsImage(imagePrompt, 1080, 1080, seedFrom(`${seedKey}:slide:${index}:${title}`)),
+      image: pollinationsImage(imagePrompt, size.width, size.height, seedFrom(`${seedKey}:slide:${index}:${title}`), 'frame'),
     } satisfies CarouselSlideModel
   })
 }
@@ -454,12 +470,14 @@ export async function draftCarousel(
   slideCount: number,
   onProgress?: (progress: AiProgress) => void,
   signal?: AbortSignal,
+  size: { width: number; height: number } = { width: 1080, height: 1080 },
 ): Promise<CarouselDraft> {
   const research = (await researchTopic(prompt, signal, onProgress)).filter((note) =>
     staysOnTopic(prompt, `${note.title} ${note.extract}`),
   )
   const resolved = kind === 'auto' ? detectCarouselKind(prompt) : kind
   const n = Math.min(10, Math.max(3, slideCount))
+  const roles = planRoles(n)
 
   onProgress?.({
     phase: 'write',
@@ -470,12 +488,12 @@ export async function draftCarousel(
   try {
     const json = asRecord(
       await completeJson(
-        'You make the exact carousel the user specified. Do not change the topic. Do not invent a different subject or brand. Use their required points and contact details. First slide is a hook on THEIR topic, last slide is their next step. Image prompts must match this topic, colorful, no text. Return JSON only.',
-        `User brief:\n${prompt}\n\nKind: ${resolved}\nExactly ${n} slides.\n\nResearch notes (use only if on-topic):\n${researchBlock(research)}\n\nJSON shape:\n{"title":"on-topic series title","subtitle":"one insight on this topic","header":"SERIES NAME","footer":"contact or next step","brand":"short brand","handle":"@handle","kind":"${resolved}","slides":[{"role":"intro|content|stat|quote|outro","kicker":"tiny label","title":"slide title on this topic","body":"2 sentences on this topic","stat":"optional","statLabel":"optional","imagePrompt":"photographic scene of THIS topic, no text"}]}`,
+        'You plan a LinkedIn-style carousel the way a professional carousel maker does. Slide 1 is a cover hook on the EXACT user topic. Middle slides are one idea each with a short title and 2-4 punchy points. Last slide is the next step / contact. Do not change the topic. Image prompts describe a full-bleed photograph of THIS topic that fills the frame, no text. Return JSON only.',
+        `User brief:\n${prompt}\n\nKind: ${resolved}\nExactly ${n} slides. Planned roles: ${roles.join(', ')}.\n\nResearch notes (use only if on-topic):\n${researchBlock(research)}\n\nJSON shape:\n{"title":"on-topic series title","subtitle":"one insight on this topic","header":"SERIES NAME","footer":"contact or next step","brand":"short brand","handle":"@handle","kind":"${resolved}","slides":[{"role":"intro|content|stat|quote|outro","kicker":"tiny label","title":"4-10 word title on this topic","body":"1-2 sentences on this topic","points":["short point","short point"],"stat":"optional","statLabel":"optional","imagePrompt":"full-bleed photographic scene of THIS topic filling the frame, no text"}]}`,
         signal,
       ),
     )
-    let slides = parseSlides(json.slides, n, prompt)
+    let slides = parseSlides(json.slides, n, prompt, size)
     if (slides.length < 3) throw new Error('Model returned too few slides')
     if (slides.length < n) {
       const extra = fallbackItems(prompt, 'list', research)
@@ -485,19 +503,27 @@ export async function draftCarousel(
           desc: parsePrompt(topicSeed(prompt)).subtitle,
         }
         const index = slides.length
+        const role = roles[index]
         slides.push({
-          role: index === n - 1 ? 'outro' : 'content',
+          role,
           kicker: String(index).padStart(2, '0'),
           title: item.label,
           body: item.desc,
-          image: item.image,
+          points: pointsFromText(item.desc),
+          image: pollinationsImage(
+            coverPrompt(`${item.label}. ${item.desc}`, role),
+            size.width,
+            size.height,
+            seedFrom(`${prompt}:pad:${index}`),
+            'frame',
+          ),
         })
       }
       slides = slides.slice(0, n)
       slides[0] = { ...slides[0], role: 'intro' }
       slides[n - 1] = { ...slides[n - 1], role: 'outro' }
     }
-    onProgress?.({ phase: 'images', note: 'Composing slide photography', sources: research.map((note) => note.title) })
+    onProgress?.({ phase: 'images', note: 'Composing full-bleed slide photography', sources: research.map((note) => note.title) })
     const parsed = parsePrompt(topicSeed(prompt))
     const series = (asString(json.title) || parsed.title).slice(0, 80)
     const blob = `${series} ${slides.map((slide) => `${slide.title} ${slide.body}`).join(' ')}`
@@ -522,40 +548,53 @@ export async function draftCarousel(
     })
     const parsed = parsePrompt(topicSeed(prompt))
     const items = fallbackItems(prompt, 'list', research)
-    const slides: CarouselSlideModel[] = Array.from({ length: n }, (_, index) => {
-      if (index === 0) {
+    const slides: CarouselSlideModel[] = roles.map((role, index) => {
+      if (role === 'intro') {
         return {
-          role: 'intro',
-          kicker: 'A researched note',
+          role,
+          kicker: 'Cover',
           title: parsed.title,
           body: research[0]?.extract.split(/(?<=\.)\s+/)[0] || parsed.subtitle,
-          image: pollinationsImage(`${parsed.title} editorial cover photograph`, 1080, 1080, seedFrom(`c:${prompt}:0`)),
+          image: pollinationsImage(
+            coverPrompt(parsed.title, 'intro'),
+            size.width,
+            size.height,
+            seedFrom(`c:${prompt}:0`),
+            'frame',
+          ),
         }
       }
-      if (index === n - 1) {
+      if (role === 'outro') {
         return {
-          role: 'outro',
+          role,
           kicker: 'Next',
-          title: 'Save this. Then use it once.',
-          body:
-            research
-              .map((note) => note.title)
-              .filter(Boolean)
-              .slice(0, 3)
-              .join(' · ') || 'A calm close beats a loud one.',
-          image: pollinationsImage(`${parsed.title} quiet closing scene`, 1080, 1080, seedFrom(`c:${prompt}:end`)),
+          title: parsed.title,
+          body: briefFooter(prompt, 'Save this. Then use it once.'),
+          image: pollinationsImage(
+            coverPrompt(parsed.title, 'outro'),
+            size.width,
+            size.height,
+            seedFrom(`c:${prompt}:end`),
+            'frame',
+          ),
         }
       }
       const item = items[(index - 1) % Math.max(items.length, 1)] ?? { label: parsed.title, desc: parsed.subtitle }
       return {
-        role: item.value ? 'stat' : 'content',
+        role,
         kicker: String(index).padStart(2, '0'),
         title: item.label,
         body: item.desc,
-        stat: item.value,
-        statLabel: item.label,
-        image:
-          item.image || pollinationsImage(`${item.label}. ${item.desc}`, 1080, 1080, seedFrom(`c:${prompt}:${index}`)),
+        points: pointsFromText(item.desc),
+        stat: role === 'stat' ? item.value : undefined,
+        statLabel: role === 'stat' ? item.label : undefined,
+        image: pollinationsImage(
+          coverPrompt(`${item.label}. ${item.desc}`, role),
+          size.width,
+          size.height,
+          seedFrom(`c:${prompt}:${index}`),
+          'frame',
+        ),
       }
     })
     return {
@@ -572,3 +611,4 @@ export async function draftCarousel(
     }
   }
 }
+

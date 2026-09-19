@@ -82,6 +82,7 @@ export function CarouselStudio({ onCreated }: Props) {
         handle,
         onProgress,
         ctrl.signal,
+        { width: platform.width, height: platform.height },
       )
       if (ctrl.signal.aborted) return
       setModel(next)
@@ -265,6 +266,20 @@ export function CarouselStudio({ onCreated }: Props) {
                 className="small-area"
                 value={current.body}
                 onChange={(e) => patchSlide({ body: e.target.value })}
+              />
+              <label htmlFor="slide-points">Points</label>
+              <textarea
+                className="small-area"
+                id="slide-points"
+                value={(current.points ?? []).join('\n')}
+                onChange={(e) =>
+                  patchSlide({
+                    points: e.target.value
+                      .split('\n')
+                      .map((line) => line.trim())
+                      .filter(Boolean),
+                  })
+                }
               />
               <div className="row">
                 <div>
