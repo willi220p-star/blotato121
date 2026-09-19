@@ -3,7 +3,7 @@ import type { ContentItem, InfographicKind, ParsedIdea } from './types'
 const KIND_WORDS: Array<{ kind: InfographicKind; words: string[] }> = [
   { kind: 'swot', words: ['swot', 'strengths', 'weaknesses', 'opportunities', 'threats'] },
   { kind: 'comparison', words: [' vs ', 'versus', 'before', 'after', 'compare'] },
-  { kind: 'funnel', words: ['funnel', 'awareness', 'conversion', 'checkout'] },
+  { kind: 'funnel', words: ['sales funnel', 'launch funnel', 'conversion funnel'] },
   { kind: 'pyramid', words: ['pyramid', 'hierarchy of', 'levels of'] },
   { kind: 'cycle', words: ['cycle', 'loop', 'flywheel', 'repeat'] },
   { kind: 'roadmap', words: ['roadmap', '90-day', 'quarter', 'phase'] },
@@ -32,15 +32,13 @@ function cleanLine(line: string): string {
 }
 
 function splitLabelDesc(raw: string): ContentItem {
-  const colon = raw.split(/[:–—-]\s+/)
-  if (colon.length >= 2) {
-    return { label: colon[0].trim(), desc: colon.slice(1).join(' — ').trim() }
+  const colon = raw.split(/:\s+/)
+  if (colon.length >= 2 && colon[0].length <= 52) {
+    return { label: colon[0].trim(), desc: colon.slice(1).join(': ').trim() }
   }
+  if (raw.length <= 72) return { label: raw, desc: '' }
   const words = raw.split(/\s+/)
-  if (words.length > 8) {
-    return { label: words.slice(0, 4).join(' '), desc: words.slice(4).join(' ') }
-  }
-  return { label: raw, desc: '' }
+  return { label: words.slice(0, 8).join(' '), desc: words.slice(8).join(' ') }
 }
 
 function extractList(prompt: string): ContentItem[] {
@@ -78,6 +76,15 @@ function extractList(prompt: string): ContentItem[] {
   }
 
   return []
+}
+
+export function clausesFromPrompt(prompt: string): ContentItem[] {
+  return prompt
+    .split(/\n+|(?<=[.!?])\s+|;\s+/)
+    .map((s) => s.trim().replace(/[.!?]$/, ''))
+    .filter((s) => s.length > 18)
+    .slice(0, 8)
+    .map((s) => splitLabelDesc(s))
 }
 
 function inventItems(prompt: string, kind: InfographicKind): ContentItem[] {
@@ -136,7 +143,10 @@ export function parsePrompt(prompt: string, forced?: InfographicKind): ParsedIde
   const kindHint = !forced || forced === 'auto' ? detectKind(prompt) : forced
   const title = titleFromPrompt(prompt)
   let items = extractList(prompt).slice(0, 8)
-  if (items.length < 2) items = inventItems(prompt, kindHint)
+  if (items.length < 2) {
+    const clauses = clausesFromPrompt(prompt)
+    items = clauses.length >= 2 ? clauses : inventItems(prompt, kindHint)
+  }
 
   const rest = prompt
     .split(/\n+/)

@@ -106,7 +106,7 @@ export function InfographicStudio({ onCreated }: Props) {
               onClick={() => setPlatformId(p.id)}
               type="button"
             >
-              {p.network} · {p.name.replace(p.network + ' ', '')}
+              {p.network} · {p.hint}
             </button>
           ))}
         </div>
