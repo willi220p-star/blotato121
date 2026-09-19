@@ -403,7 +403,7 @@ export async function draftInfographic(
       title: title.slice(0, 80),
       subtitle: (asString(json.subtitle) || items[0]?.desc || '').slice(0, 160),
       caption: asString(json.caption) || research[0]?.title || '',
-      header: header.slice(0, 42).toUpperCase(),
+      header: header.slice(0, 28).toUpperCase(),
       footer: footer.slice(0, 64),
       kind: usedKind,
       items,
@@ -494,7 +494,7 @@ export async function draftCarousel(
     return {
       title: series,
       subtitle: (asString(json.subtitle) || slides[0]?.body || '').slice(0, 160),
-      header: (asString(json.header) || series).slice(0, 42).toUpperCase(),
+      header: (asString(json.header) || series).slice(0, 28).toUpperCase(),
       footer: (asString(json.footer) || 'Save this series').slice(0, 64),
       brand: (asString(json.brand) || 'Studio').slice(0, 28),
       handle: (asString(json.handle) || '@studio').slice(0, 24),
@@ -550,7 +550,7 @@ export async function draftCarousel(
     return {
       title: parsed.title,
       subtitle: (research[0]?.extract.split(/(?<=\.)\s+/)[0] || parsed.subtitle).slice(0, 160),
-      header: parsed.title.slice(0, 42).toUpperCase(),
+      header: resolved.replace(/-/g, ' ').toUpperCase(),
       footer: 'Save this series',
       brand: 'Studio',
       handle: '@studio',
