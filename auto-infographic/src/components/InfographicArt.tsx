@@ -10,17 +10,19 @@ interface Props {
 
 function pad(platform: Platform): number {
   const short = Math.min(platform.width, platform.height)
-  return Math.round(short * 0.07)
+  return Math.round(short * 0.08)
 }
 
 export function InfographicArt({ model, palette, platform, scale = 1 }: Props) {
   const p = pad(platform)
+  const wide = platform.width / platform.height > 1.15
+  const titleSize = wide ? Math.round(platform.width * 0.032) : Math.round(platform.width * 0.048)
   const style = {
     width: platform.width,
     height: platform.height,
     transform: `scale(${scale})`,
     transformOrigin: 'top left',
-    background: palette.surface,
+    background: `linear-gradient(180deg, ${palette.surface} 0%, ${palette.bg} 100%)`,
     color: palette.ink,
     padding: p,
     ['--accent' as string]: palette.accent,
@@ -33,26 +35,25 @@ export function InfographicArt({ model, palette, platform, scale = 1 }: Props) {
     ['--ink' as string]: palette.ink,
   } as CSSProperties
 
-  const titleSize = platform.height > platform.width ? 52 : 40
-  const isWide = platform.width / platform.height > 1.2
-
   return (
     <article className="artboard" style={style}>
       <div className="art-header">
         <span>{model.header || palette.name}</span>
-        <span>{platform.network}</span>
+        <span>{platform.network === 'Generic' ? `${platform.width}×${platform.height}` : platform.network}</span>
       </div>
-      <div className="art-body" style={{ marginTop: 22 }}>
+      <div className="art-body">
         <h3 className="art-title" style={{ fontSize: titleSize }}>
           {model.title}
         </h3>
-        <p className="art-sub">{model.subtitle}</p>
-        <Layout model={model} isWide={isWide} palette={palette} />
+        {model.subtitle ? <p className="art-sub">{model.subtitle}</p> : null}
+        <Layout model={model} isWide={wide} palette={palette} />
       </div>
-      <div className="art-footer" style={{ marginTop: 18 }}>
-        <span>{model.footer || 'Auto Infographic Generator'}</span>
-        <span>{String(model.items.length).padStart(2, '0')} marks</span>
-      </div>
+      {model.footer ? (
+        <div className="art-footer">
+          <span>{model.footer}</span>
+          <span>{String(model.items.length).padStart(2, '0')}</span>
+        </div>
+      ) : null}
     </article>
   )
 }
@@ -73,8 +74,8 @@ function Layout({
         {items.map((item) => (
           <div className="stat" key={item.label}>
             <b>{item.value || item.label}</b>
-            <h4>{item.value ? item.label : ''}</h4>
-            <p>{item.desc}</p>
+            {item.value ? <h4>{item.label}</h4> : null}
+            {item.desc ? <p>{item.desc}</p> : null}
           </div>
         ))}
       </div>
@@ -87,12 +88,12 @@ function Layout({
       <div className="layout-compare">
         <div className="card-item">
           <h4>{left?.label}</h4>
-          <p>{left?.desc}</p>
+          {left?.desc ? <p>{left.desc}</p> : null}
         </div>
         <div className="vs">vs</div>
         <div className="card-item">
           <h4>{right?.label}</h4>
-          <p>{right?.desc}</p>
+          {right?.desc ? <p>{right.desc}</p> : null}
         </div>
       </div>
     )
@@ -103,7 +104,7 @@ function Layout({
         {items.slice(0, 4).map((item) => (
           <div className="swot" key={item.label}>
             <h4>{item.label}</h4>
-            <p>{item.desc}</p>
+            {item.desc ? <p>{item.desc}</p> : null}
           </div>
         ))}
       </div>
@@ -117,7 +118,7 @@ function Layout({
             className="band"
             key={item.label}
             style={{
-              width: `${88 - i * (40 / Math.max(items.length - 1, 1))}%`,
+              width: `${90 - i * (42 / Math.max(items.length - 1, 1))}%`,
               background: i % 2 ? palette.accent2 : palette.accent,
             }}
           >
@@ -134,7 +135,7 @@ function Layout({
           <div
             className="band"
             key={item.label}
-            style={{ width: `${92 - i * (50 / Math.max(items.length - 1, 1))}%` }}
+            style={{ width: `${94 - i * (52 / Math.max(items.length - 1, 1))}%` }}
           >
             {item.label}
             {item.value ? ` · ${item.value}` : ''}
@@ -149,9 +150,9 @@ function Layout({
         {items.map((item, i) => (
           <div className="card-item" key={item.label}>
             <h4>
-              {String(i + 1).padStart(2, '0')}  {item.label}
+              {String(i + 1).padStart(2, '0')} {item.label}
             </h4>
-            <p>{item.desc}</p>
+            {item.desc ? <p>{item.desc}</p> : null}
           </div>
         ))}
       </div>
@@ -165,9 +166,9 @@ function Layout({
             <div className="rail">
               <div className="dot" />
             </div>
-            <div style={{ paddingBottom: i === items.length - 1 ? 0 : 18 }}>
+            <div style={{ paddingBottom: i === items.length - 1 ? 0 : 22 }}>
               <h4>{item.label}</h4>
-              <p>{item.desc}</p>
+              {item.desc ? <p>{item.desc}</p> : null}
             </div>
           </div>
         ))}
@@ -181,7 +182,7 @@ function Layout({
         const hue = i * (360 / n)
         const start = (i / n) * 360
         const end = ((i + 1) / n) * 360
-        return `hsl(${hue} 45% 42%) ${start}deg ${end}deg`
+        return `hsl(${hue} 38% 44%) ${start}deg ${end}deg`
       })
       .join(', ')
     return (
@@ -190,7 +191,7 @@ function Layout({
         <div className="legend">
           {items.map((item, i) => (
             <div key={item.label}>
-              <i style={{ background: `hsl(${i * (360 / n)} 45% 42%)` }} />
+              <i style={{ background: `hsl(${i * (360 / n)} 38% 44%)` }} />
               {item.label}
               {item.value ? ` · ${item.value}` : ''}
             </div>
@@ -207,7 +208,7 @@ function Layout({
           <div className="idx">{String(i + 1).padStart(2, '0')}</div>
           <div>
             <h4>{item.label}</h4>
-            <p>{item.desc}</p>
+            {item.desc ? <p>{item.desc}</p> : null}
           </div>
         </div>
       ))}

@@ -1,15 +1,16 @@
 import { useRef, useState } from 'react'
 import { CarouselSlide } from './CarouselSlide'
+import { PaletteDots, SizeBar, platformLabel } from './SizeBar'
 import { generateCarousel } from '../lib/generateCarousel'
-import { DEFAULT_CAROUSEL_PLATFORM, PLATFORMS, getPlatform, previewScale } from '../lib/platforms'
+import { DEFAULT_CAROUSEL_PLATFORM, getPlatform, previewScale } from '../lib/platforms'
 import { CAROUSEL_SAMPLES } from '../lib/samples'
-import { PALETTES, getPalette } from '../lib/themes'
-import type { CarouselKind, CarouselModel, PaletteId, SampleImage } from '../lib/types'
+import { getPalette } from '../lib/themes'
+import type { CarouselKind, CarouselModel, CarouselSlideModel, PaletteId, SampleImage } from '../lib/types'
 
 const KINDS: Array<{ id: CarouselKind; label: string }> = [
   { id: 'auto', label: 'Auto' },
-  { id: 'thought-leadership', label: 'Thought leadership' },
-  { id: 'product-launch', label: 'Product launch' },
+  { id: 'thought-leadership', label: 'Thought' },
+  { id: 'product-launch', label: 'Launch' },
   { id: 'how-to', label: 'How-to' },
   { id: 'story', label: 'Story' },
   { id: 'metrics', label: 'Proof' },
@@ -21,41 +22,64 @@ interface Props {
 }
 
 export function CarouselStudio({ onCreated }: Props) {
-  const [prompt, setPrompt] = useState(CAROUSEL_SAMPLES[0].prompt)
+  const [prompt, setPrompt] = useState('')
   const [kind, setKind] = useState<CarouselKind>('auto')
-  const [slides, setSlides] = useState(6)
-  const [header, setHeader] = useState('Operator notes')
-  const [footer, setFooter] = useState('Not financial advice. Just taste.')
-  const [brand, setBrand] = useState('Atelier')
-  const [handle, setHandle] = useState('@atelier')
+  const [slides, setSlides] = useState(5)
+  const [header, setHeader] = useState('')
+  const [footer, setFooter] = useState('')
+  const [brand, setBrand] = useState('')
+  const [handle, setHandle] = useState('')
   const [platformId, setPlatformId] = useState(DEFAULT_CAROUSEL_PLATFORM)
+  const [customW, setCustomW] = useState(1080)
+  const [customH, setCustomH] = useState(1080)
   const [paletteId, setPaletteId] = useState<PaletteId>('editorial')
   const [model, setModel] = useState<CarouselModel | null>(null)
   const [active, setActive] = useState(0)
-  const [samples, setSamples] = useState<SampleImage[]>([])
+  const [images, setImages] = useState<SampleImage[]>([])
   const [busy, setBusy] = useState(false)
+  const [sampleId, setSampleId] = useState<string | null>(null)
   const exportHost = useRef<HTMLDivElement>(null)
 
-  const platform = getPlatform(platformId)
+  const platform = getPlatform(platformId, customW, customH)
   const palette = getPalette(paletteId)
-  const thumbScale = previewScale(platform, 180, 220)
-  const stageScale = previewScale(platform, 520, 640)
+  const thumbScale = previewScale(platform, 148, 180)
+  const stageScale = previewScale(platform, 540, 620)
+  const current = model?.slides[active]
 
-  function create() {
-    const next = generateCarousel(prompt, slides, kind, header, footer, brand, handle)
+  function create(nextPrompt = prompt, nextKind = kind, nextSlides = slides) {
+    const text = nextPrompt.trim()
+    if (!text) return
+    const next = generateCarousel(text, nextSlides, nextKind, header, footer, brand, handle)
     setModel(next)
     setActive(0)
     onCreated(next.title)
+  }
+
+  function applySample(id: string) {
+    const sample = CAROUSEL_SAMPLES.find((s) => s.id === id)
+    if (!sample) return
+    setSampleId(id)
+    setPrompt(sample.prompt)
+    setKind(sample.kind)
+    setSlides(sample.slides)
+    create(sample.prompt, sample.kind, sample.slides)
+  }
+
+  function patchSlide(partial: Partial<CarouselSlideModel>) {
+    if (!model) return
+    setModel({
+      ...model,
+      slides: model.slides.map((slide, i) => (i === active ? { ...slide, ...partial } : slide)),
+    })
   }
 
   async function onFiles(files: FileList | null) {
     if (!files) return
     const loaded: SampleImage[] = []
     for (const file of Array.from(files).slice(0, 6)) {
-      const dataUrl = await readFile(file)
-      loaded.push({ name: file.name, dataUrl })
+      loaded.push({ name: file.name, dataUrl: await readFile(file) })
     }
-    setSamples(loaded)
+    setImages(loaded)
   }
 
   async function save(kindOut: 'zip' | 'pdf') {
@@ -72,222 +96,224 @@ export function CarouselStudio({ onCreated }: Props) {
     }
   }
 
-  const current = model?.slides[active]
-
   return (
-    <main className="page studio">
-      <aside className="panel">
-        <div className="kicker">Carousel</div>
-        <h2>How many slides?</h2>
-        <p className="hint">
-          A carousel is a short deck. Set the count, describe the story, optionally drop sample
-          images, then generate intro through close.
-        </p>
-        <label htmlFor="slide-count">Slide count</label>
-        <input
-          id="slide-count"
-          max={10}
-          min={3}
-          type="number"
-          value={slides}
-          onChange={(e) => setSlides(Number(e.target.value) || 3)}
-        />
-        <label htmlFor="ca-prompt">Idea / caption</label>
+    <main className="studio-page">
+      <form
+        className="composer"
+        onSubmit={(e) => {
+          e.preventDefault()
+          create()
+        }}
+      >
         <textarea
+          autoFocus
           id="ca-prompt"
+          placeholder="Describe the carousel…"
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="What should this carousel teach, sell, or prove?"
+          onChange={(e) => {
+            setPrompt(e.target.value)
+            setSampleId(null)
+          }}
         />
-        <label>Kind</label>
-        <div className="chips">
-          {KINDS.map((item) => (
-            <button
-              className={`chip ${kind === item.id ? 'active' : ''}`}
-              key={item.id}
-              onClick={() => setKind(item.id)}
-              type="button"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <label>Platform size</label>
-        <div className="chips">
-          {PLATFORMS.filter((p) =>
-            ['ig-post', 'ig-portrait', 'ig-story', 'fb-feed', 'li-carousel', 'li-post'].includes(p.id),
-          ).map((p) => (
-            <button
-              className={`chip ${platformId === p.id ? 'active' : ''}`}
-              key={p.id}
-              onClick={() => setPlatformId(p.id)}
-              type="button"
-            >
-              {p.network} · {p.hint}
-            </button>
-          ))}
-        </div>
-        <label>Palette</label>
-        <div className="chips">
-          {PALETTES.map((p) => (
-            <button
-              className={`chip ${paletteId === p.id ? 'active' : ''}`}
-              key={p.id}
-              onClick={() => setPaletteId(p.id)}
-              type="button"
-            >
-              {p.name}
-            </button>
-          ))}
-        </div>
-        <div className="row">
-          <div>
-            <label htmlFor="brand">Brand</label>
-            <input id="brand" value={brand} onChange={(e) => setBrand(e.target.value)} />
+        <div className="composer-row">
+          <label className="slide-stepper">
+            Slides
+            <input
+              max={10}
+              min={3}
+              type="number"
+              value={slides}
+              onChange={(e) => setSlides(Number(e.target.value) || 3)}
+            />
+          </label>
+          <div className="sample-pills">
+            {CAROUSEL_SAMPLES.map((sample) => (
+              <button
+                className={`chip ${sampleId === sample.id ? 'active' : ''}`}
+                key={sample.id}
+                onClick={() => applySample(sample.id)}
+                type="button"
+              >
+                {sample.title}
+              </button>
+            ))}
           </div>
-          <div>
-            <label htmlFor="handle">Handle</label>
-            <input id="handle" value={handle} onChange={(e) => setHandle(e.target.value)} />
-          </div>
-        </div>
-        <div className="row">
-          <div>
-            <label htmlFor="ca-header">Header</label>
-            <input id="ca-header" value={header} onChange={(e) => setHeader(e.target.value)} />
-          </div>
-          <div>
-            <label htmlFor="ca-footer">Footer</label>
-            <input id="ca-footer" value={footer} onChange={(e) => setFooter(e.target.value)} />
-          </div>
-        </div>
-        <label>Sample images (optional)</label>
-        <label className="file-btn">
-          Upload references
-          <input accept="image/*" multiple onChange={(e) => void onFiles(e.target.files)} type="file" />
-        </label>
-        {samples.length > 0 && (
-          <p className="hint">{samples.length} sample{samples.length === 1 ? '' : 's'} attached to slides.</p>
-        )}
-        <div className="actions">
-          <button className="primary" onClick={create} type="button">
-            Create carousel
-          </button>
-          <button className="ghost" disabled={!model || busy} onClick={() => void save('zip')} type="button">
-            Download PNG zip
-          </button>
-          <button className="ghost" disabled={!model || busy} onClick={() => void save('pdf')} type="button">
-            Download PDF
+          <button className="primary" disabled={!prompt.trim()} type="submit">
+            Generate
           </button>
         </div>
-        <label>Samples</label>
-        <div className="samples">
-          {CAROUSEL_SAMPLES.map((sample) => (
-            <button
-              className="sample-card"
-              key={sample.id}
-              onClick={() => {
-                setPrompt(sample.prompt)
-                setKind(sample.kind)
-                setSlides(sample.slides)
-              }}
-              type="button"
-            >
-              {sample.title}
-              <small>
-                {sample.kind} · {sample.slides} slides
-              </small>
-            </button>
-          ))}
-        </div>
-      </aside>
-      <section className="preview-wrap">
-        <div className="hint">
-          {platform.name} · {slides} slides · {platform.width}×{platform.height}
-        </div>
-        <div className="stage" style={{ minHeight: platform.height * stageScale + 24 }}>
-          {current && model ? (
-            <div
-              style={{
-                width: platform.width * stageScale,
-                height: platform.height * stageScale,
-                overflow: 'hidden',
-              }}
-            >
+      </form>
+
+      <div className="studio-body">
+        <aside className="edit-rail">
+          <label>Kind</label>
+          <div className="chips">
+            {KINDS.map((item) => (
+              <button
+                className={`chip ${kind === item.id ? 'active' : ''}`}
+                key={item.id}
+                onClick={() => {
+                  setKind(item.id)
+                  if (prompt.trim()) create(prompt, item.id)
+                }}
+                type="button"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <label>Size</label>
+          <SizeBar
+            customH={customH}
+            customW={customW}
+            platformId={platformId}
+            onCustom={(w, h) => {
+              setCustomW(w)
+              setCustomH(h)
+              setPlatformId('custom')
+            }}
+            onPlatform={setPlatformId}
+          />
+          <label>Palette</label>
+          <PaletteDots value={paletteId} onChange={setPaletteId} />
+          {model && current && (
+            <>
+              <label htmlFor="slide-title">This slide</label>
+              <input
+                id="slide-title"
+                value={current.title}
+                onChange={(e) => patchSlide({ title: e.target.value })}
+              />
+              <textarea
+                className="small-area"
+                value={current.body}
+                onChange={(e) => patchSlide({ body: e.target.value })}
+              />
+              <div className="row">
+                <div>
+                  <label htmlFor="brand">Brand</label>
+                  <input id="brand" value={brand} onChange={(e) => setBrand(e.target.value)} />
+                </div>
+                <div>
+                  <label htmlFor="handle">Handle</label>
+                  <input id="handle" value={handle} onChange={(e) => setHandle(e.target.value)} />
+                </div>
+              </div>
+              <div className="row">
+                <div>
+                  <label htmlFor="ca-header">Header</label>
+                  <input id="ca-header" value={header} onChange={(e) => setHeader(e.target.value)} />
+                </div>
+                <div>
+                  <label htmlFor="ca-footer">Footer</label>
+                  <input id="ca-footer" value={footer} onChange={(e) => setFooter(e.target.value)} />
+                </div>
+              </div>
+              <label className="file-btn">
+                Samples
+                <input accept="image/*" multiple onChange={(e) => void onFiles(e.target.files)} type="file" />
+              </label>
+              <div className="actions">
+                <button className="primary" disabled={busy} onClick={() => void save('zip')} type="button">
+                  PNG zip
+                </button>
+                <button className="ghost" disabled={busy} onClick={() => void save('pdf')} type="button">
+                  PDF
+                </button>
+              </div>
+            </>
+          )}
+        </aside>
+        <section className="preview-wrap">
+          <div className="stage-meta">
+            {platformLabel(platform)}
+            {model ? ` · ${model.slides.length}` : ''}
+          </div>
+          <div className="stage">
+            {current && model ? (
+              <div
+                style={{
+                  width: platform.width * stageScale,
+                  height: platform.height * stageScale,
+                  overflow: 'hidden',
+                }}
+              >
+                <CarouselSlide
+                  brand={brand}
+                  footer={footer}
+                  handle={handle}
+                  header={header}
+                  index={active}
+                  palette={palette}
+                  platform={platform}
+                  sampleSrc={images[active % Math.max(images.length, 1)]?.dataUrl}
+                  scale={stageScale}
+                  slide={current}
+                  total={model.slides.length}
+                />
+              </div>
+            ) : (
+              <div className="empty-stage" />
+            )}
+          </div>
+          {model && (
+            <div className="carousel-rail">
+              {model.slides.map((slide, index) => (
+                <button
+                  className={`slide-thumb ${index === active ? 'active' : ''}`}
+                  key={`${slide.title}-${index}`}
+                  onClick={() => setActive(index)}
+                  type="button"
+                >
+                  <div
+                    style={{
+                      width: platform.width * thumbScale,
+                      height: platform.height * thumbScale,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <CarouselSlide
+                      brand={brand}
+                      footer={footer}
+                      handle={handle}
+                      header={header}
+                      index={index}
+                      palette={palette}
+                      platform={platform}
+                      sampleSrc={images[index % Math.max(images.length, 1)]?.dataUrl}
+                      scale={thumbScale}
+                      slide={slide}
+                      total={model.slides.length}
+                    />
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+          <div
+            ref={exportHost}
+            aria-hidden="true"
+            style={{ position: 'fixed', left: 0, top: 0, zIndex: -1, opacity: 0, pointerEvents: 'none' }}
+          >
+            {model?.slides.map((slide, index) => (
               <CarouselSlide
                 brand={brand}
                 footer={footer}
                 handle={handle}
                 header={header}
-                index={active}
+                index={index}
+                key={`export-${index}`}
                 palette={palette}
                 platform={platform}
-                sampleSrc={samples[active % Math.max(samples.length, 1)]?.dataUrl}
-                scale={stageScale}
-                slide={current}
+                sampleSrc={images[index % Math.max(images.length, 1)]?.dataUrl}
+                scale={1}
+                slide={slide}
                 total={model.slides.length}
               />
-            </div>
-          ) : (
-            <div className="empty">Choose a slide count, then create the deck.</div>
-          )}
-        </div>
-        {model && (
-          <div className="carousel-rail">
-            {model.slides.map((slide, index) => (
-              <button
-                className={`slide-thumb ${index === active ? 'active' : ''}`}
-                key={`${slide.title}-${index}`}
-                onClick={() => setActive(index)}
-                type="button"
-              >
-                <div
-                  style={{
-                    width: platform.width * thumbScale,
-                    height: platform.height * thumbScale,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <CarouselSlide
-                    brand={brand}
-                    footer={footer}
-                    handle={handle}
-                    header={header}
-                    index={index}
-                    palette={palette}
-                    platform={platform}
-                    sampleSrc={samples[index % Math.max(samples.length, 1)]?.dataUrl}
-                    scale={thumbScale}
-                    slide={slide}
-                    total={model.slides.length}
-                  />
-                </div>
-              </button>
             ))}
           </div>
-        )}
-        <div
-          ref={exportHost}
-          aria-hidden="true"
-          style={{ position: 'fixed', left: 0, top: 0, zIndex: -1, opacity: 0, pointerEvents: 'none' }}
-        >
-          {model?.slides.map((slide, index) => (
-            <CarouselSlide
-              brand={brand}
-              footer={footer}
-              handle={handle}
-              header={header}
-              index={index}
-              key={`export-${index}`}
-              palette={palette}
-              platform={platform}
-              sampleSrc={samples[index % Math.max(samples.length, 1)]?.dataUrl}
-              scale={1}
-              slide={slide}
-              total={model.slides.length}
-            />
-          ))}
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }

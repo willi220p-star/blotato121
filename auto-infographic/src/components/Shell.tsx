@@ -17,14 +17,11 @@ export function Shell({ page, onNavigate, children }: Props) {
             <span />
             <span />
           </span>
-          <span className="brand-copy">
-            <strong>Auto Infographic Generator</strong>
-            <small>Studio for stills and carousels</small>
-          </span>
+          <span className="brand-copy">Auto Infographic</span>
         </button>
         <nav className="nav">
           <button className={page === 'dashboard' ? 'active' : ''} onClick={() => onNavigate('dashboard')} type="button">
-            Dashboard
+            Home
           </button>
           <button
             className={page === 'infographic' ? 'active' : ''}

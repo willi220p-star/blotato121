@@ -1,10 +1,11 @@
 import { lazy, Suspense, useRef, useState } from 'react'
 import { InfographicArt } from './InfographicArt'
+import { PaletteDots, SizeBar, platformLabel } from './SizeBar'
 import { generateInfographic } from '../lib/generateInfographic'
-import { DEFAULT_INFOGRAPHIC_PLATFORM, PLATFORMS, getPlatform, previewScale } from '../lib/platforms'
+import { DEFAULT_INFOGRAPHIC_PLATFORM, getPlatform, previewScale } from '../lib/platforms'
 import { INFOGRAPHIC_SAMPLES } from '../lib/samples'
-import { PALETTES, getPalette } from '../lib/themes'
-import type { EngineMode, InfographicKind, InfographicModel, PaletteId } from '../lib/types'
+import { getPalette } from '../lib/themes'
+import type { InfographicKind, InfographicModel, PaletteId } from '../lib/types'
 
 const AntvCanvas = lazy(() => import('./AntvCanvas'))
 
@@ -29,27 +30,52 @@ interface Props {
 }
 
 export function InfographicStudio({ onCreated }: Props) {
-  const [prompt, setPrompt] = useState(INFOGRAPHIC_SAMPLES[0].prompt)
+  const [prompt, setPrompt] = useState('')
   const [kind, setKind] = useState<InfographicKind>('auto')
-  const [header, setHeader] = useState('Studio')
-  const [footer, setFooter] = useState('Prepared for client review')
+  const [header, setHeader] = useState('')
+  const [footer, setFooter] = useState('')
+  const [title, setTitle] = useState('')
+  const [subtitle, setSubtitle] = useState('')
   const [platformId, setPlatformId] = useState(DEFAULT_INFOGRAPHIC_PLATFORM)
+  const [customW, setCustomW] = useState(1080)
+  const [customH, setCustomH] = useState(1350)
   const [paletteId, setPaletteId] = useState<PaletteId>('atelier')
-  const [engine, setEngine] = useState<EngineMode>('studio')
+  const [engine, setEngine] = useState<'studio' | 'antv'>('studio')
   const [model, setModel] = useState<InfographicModel | null>(null)
   const [busy, setBusy] = useState(false)
+  const [sampleId, setSampleId] = useState<string | null>(null)
   const board = useRef<HTMLDivElement>(null)
   const exportHost = useRef<HTMLDivElement>(null)
 
-  const platform = getPlatform(platformId)
+  const platform = getPlatform(platformId, customW, customH)
   const palette = getPalette(paletteId)
-  const scale = previewScale(platform)
-  const liveModel = model ? { ...model, header, footer } : null
+  const scale = previewScale(platform, 640, 760)
+  const liveModel = model
+    ? { ...model, header, footer, title: title || model.title, subtitle: subtitle || model.subtitle }
+    : null
 
-  function create() {
-    const next = generateInfographic(prompt, kind, header, footer, palette)
+  function create(nextPrompt = prompt, nextKind = kind) {
+    const text = nextPrompt.trim()
+    if (!text) return
+    const next = generateInfographic(text, nextKind, header, footer, palette)
     setModel(next)
+    setTitle(next.title)
+    setSubtitle(next.subtitle)
     onCreated(next.title)
+  }
+
+  function applySample(id: string) {
+    const sample = INFOGRAPHIC_SAMPLES.find((s) => s.id === id)
+    if (!sample) return
+    setSampleId(id)
+    setPrompt(sample.prompt)
+    setKind(sample.kind)
+    create(sample.prompt, sample.kind)
+  }
+
+  function changeKind(nextKind: InfographicKind) {
+    setKind(nextKind)
+    if (prompt.trim()) create(prompt, nextKind)
   }
 
   async function save(kindOut: 'png' | 'svg') {
@@ -60,7 +86,7 @@ export function InfographicStudio({ onCreated }: Props) {
     setBusy(true)
     try {
       const { downloadPng, downloadSvg, slugify } = await import('../lib/download')
-      const name = slugify(model?.title || 'infographic')
+      const name = slugify(liveModel?.title || 'infographic')
       if (kindOut === 'png') await downloadPng(node, `${name}.png`)
       else await downloadSvg(node, `${name}.svg`)
     } finally {
@@ -69,145 +95,145 @@ export function InfographicStudio({ onCreated }: Props) {
   }
 
   return (
-    <main className="page studio">
-      <aside className="panel">
-        <div className="kicker">Infographic</div>
-        <h2>Describe the piece</h2>
-        <p className="hint">
-          A caption, a list of steps, or a messy brief is enough. Pick a type or leave Auto to
-          read the idea.
-        </p>
-        <label htmlFor="ig-prompt">Idea / caption</label>
+    <main className="studio-page">
+      <form
+        className="composer"
+        onSubmit={(e) => {
+          e.preventDefault()
+          create()
+        }}
+      >
         <textarea
+          autoFocus
           id="ig-prompt"
+          placeholder="Describe the infographic…"
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="What should this infographic say?"
+          onChange={(e) => {
+            setPrompt(e.target.value)
+            setSampleId(null)
+          }}
         />
-        <label>Type</label>
-        <div className="chips">
-          {KINDS.map((item) => (
-            <button
-              className={`chip ${kind === item.id ? 'active' : ''}`}
-              key={item.id}
-              onClick={() => setKind(item.id)}
-              type="button"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <label>Platform size</label>
-        <div className="chips">
-          {PLATFORMS.map((p) => (
-            <button
-              className={`chip ${platformId === p.id ? 'active' : ''}`}
-              key={p.id}
-              onClick={() => setPlatformId(p.id)}
-              type="button"
-            >
-              {p.network} · {p.hint}
-            </button>
-          ))}
-        </div>
-        <label>Palette</label>
-        <div className="chips">
-          {PALETTES.map((p) => (
-            <button
-              className={`chip ${paletteId === p.id ? 'active' : ''}`}
-              key={p.id}
-              onClick={() => setPaletteId(p.id)}
-              type="button"
-            >
-              {p.name}
-            </button>
-          ))}
-        </div>
-        <div className="row">
-          <div>
-            <label htmlFor="ig-header">Header</label>
-            <input id="ig-header" value={header} onChange={(e) => setHeader(e.target.value)} />
+        <div className="composer-row">
+          <div className="sample-pills">
+            {INFOGRAPHIC_SAMPLES.map((sample) => (
+              <button
+                className={`chip ${sampleId === sample.id ? 'active' : ''}`}
+                key={sample.id}
+                onClick={() => applySample(sample.id)}
+                type="button"
+              >
+                {sample.title}
+              </button>
+            ))}
           </div>
-          <div>
-            <label htmlFor="ig-footer">Footer</label>
-            <input id="ig-footer" value={footer} onChange={(e) => setFooter(e.target.value)} />
+          <button className="primary" disabled={!prompt.trim()} type="submit">
+            Generate
+          </button>
+        </div>
+      </form>
+
+      <div className="studio-body">
+        <aside className="edit-rail">
+          <label>Layout</label>
+          <div className="chips">
+            {KINDS.map((item) => (
+              <button
+                className={`chip ${kind === item.id ? 'active' : ''}`}
+                key={item.id}
+                onClick={() => changeKind(item.id)}
+                type="button"
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
-        </div>
-        <label>Engine</label>
-        <div className="chips">
-          <button className={`chip ${engine === 'studio' ? 'active' : ''}`} onClick={() => setEngine('studio')} type="button">
-            Studio layout
-          </button>
-          <button className={`chip ${engine === 'antv' ? 'active' : ''}`} onClick={() => setEngine('antv')} type="button">
-            AntV diagram
-          </button>
-        </div>
-        <div className="actions">
-          <button className="primary" onClick={create} type="button">
-            Create infographic
-          </button>
-          <button className="ghost" disabled={!liveModel || busy} onClick={() => void save('png')} type="button">
-            Download PNG
-          </button>
-          <button className="ghost" disabled={!liveModel || busy} onClick={() => void save('svg')} type="button">
-            Download SVG
-          </button>
-        </div>
-        <label>Samples</label>
-        <div className="samples">
-          {INFOGRAPHIC_SAMPLES.map((sample) => (
-            <button
-              className="sample-card"
-              key={sample.id}
-              onClick={() => {
-                setPrompt(sample.prompt)
-                setKind(sample.kind)
-              }}
-              type="button"
-            >
-              {sample.title}
-              <small>{sample.kind}</small>
-            </button>
-          ))}
-        </div>
-      </aside>
-      <section className="preview-wrap">
-        <div className="hint">
-          {platform.name} · {platform.width}×{platform.height} · {platform.hint}
-        </div>
-        <div className="stage" style={{ minHeight: platform.height * scale + 24 }}>
-          {liveModel ? (
-            <div
-              ref={board}
-              style={{
-                width: platform.width * scale,
-                height: platform.height * scale,
-                overflow: 'hidden',
-              }}
-            >
-              {engine === 'antv' ? (
-                <Suspense fallback={<div className="empty">Loading diagram engine…</div>}>
-                  <AntvCanvas syntax={liveModel.syntax} platform={platform} palette={palette} scale={scale} />
-                </Suspense>
-              ) : (
-                <InfographicArt model={liveModel} palette={palette} platform={platform} scale={scale} />
-              )}
-            </div>
-          ) : (
-            <div className="empty">Create a piece to preview it at the chosen crop.</div>
+          <label>Size</label>
+          <SizeBar
+            customH={customH}
+            customW={customW}
+            platformId={platformId}
+            onCustom={(w, h) => {
+              setCustomW(w)
+              setCustomH(h)
+              setPlatformId('custom')
+            }}
+            onPlatform={setPlatformId}
+          />
+          <label>Palette</label>
+          <PaletteDots value={paletteId} onChange={setPaletteId} />
+          {liveModel && (
+            <>
+              <label htmlFor="ig-title">Title</label>
+              <input id="ig-title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <div className="row">
+                <div>
+                  <label htmlFor="ig-header">Header</label>
+                  <input id="ig-header" value={header} onChange={(e) => setHeader(e.target.value)} />
+                </div>
+                <div>
+                  <label htmlFor="ig-footer">Footer</label>
+                  <input id="ig-footer" value={footer} onChange={(e) => setFooter(e.target.value)} />
+                </div>
+              </div>
+              <div className="chips engine-row">
+                <button className={`chip ${engine === 'studio' ? 'active' : ''}`} onClick={() => setEngine('studio')} type="button">
+                  Studio
+                </button>
+                <button className={`chip ${engine === 'antv' ? 'active' : ''}`} onClick={() => setEngine('antv')} type="button">
+                  Diagram
+                </button>
+              </div>
+              <div className="actions">
+                <button className="primary" disabled={busy} onClick={() => void save('png')} type="button">
+                  PNG
+                </button>
+                <button className="ghost" disabled={busy} onClick={() => void save('svg')} type="button">
+                  SVG
+                </button>
+              </div>
+            </>
           )}
-        </div>
-        <div ref={exportHost} aria-hidden="true" style={{ position: 'fixed', left: 0, top: 0, zIndex: -1, opacity: 0, pointerEvents: 'none' }}>
-          {liveModel && engine === 'studio' && (
-            <InfographicArt model={liveModel} palette={palette} platform={platform} scale={1} />
-          )}
-          {liveModel && engine === 'antv' && (
-            <Suspense fallback={null}>
-              <AntvCanvas syntax={liveModel.syntax} platform={platform} palette={palette} scale={1} />
-            </Suspense>
-          )}
-        </div>
-      </section>
+        </aside>
+        <section className="preview-wrap">
+          <div className="stage-meta">{platformLabel(platform)}</div>
+          <div className="stage">
+            {liveModel ? (
+              <div
+                ref={board}
+                style={{
+                  width: platform.width * scale,
+                  height: platform.height * scale,
+                  overflow: 'hidden',
+                }}
+              >
+                {engine === 'antv' ? (
+                  <Suspense fallback={<div className="empty">…</div>}>
+                    <AntvCanvas syntax={liveModel.syntax} platform={platform} palette={palette} scale={scale} />
+                  </Suspense>
+                ) : (
+                  <InfographicArt model={liveModel} palette={palette} platform={platform} scale={scale} />
+                )}
+              </div>
+            ) : (
+              <div className="empty-stage" />
+            )}
+          </div>
+          <div
+            ref={exportHost}
+            aria-hidden="true"
+            style={{ position: 'fixed', left: 0, top: 0, zIndex: -1, opacity: 0, pointerEvents: 'none' }}
+          >
+            {liveModel && engine === 'studio' && (
+              <InfographicArt model={liveModel} palette={palette} platform={platform} scale={1} />
+            )}
+            {liveModel && engine === 'antv' && (
+              <Suspense fallback={null}>
+                <AntvCanvas syntax={liveModel.syntax} platform={platform} palette={palette} scale={1} />
+              </Suspense>
+            )}
+          </div>
+        </section>
+      </div>
     </main>
   )
 }
