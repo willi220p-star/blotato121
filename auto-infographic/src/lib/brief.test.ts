@@ -19,6 +19,7 @@ describe('brief lock', () => {
   it('rejects copy that wandered onto another subject', () => {
     expect(staysOnTopic('Workplace disability access', 'Disability ramps, captions, and flexible hours at work')).toBe(true)
     expect(staysOnTopic('Workplace disability access', 'Roast to Bitter: The Chemistry of Coffee')).toBe(false)
+    expect(staysOnTopic('Workplace disability access', 'Workplace bullying and harassment policy')).toBe(false)
   })
 
   it('asks contact, emails, and disability focus after a disability prompt', () => {

@@ -48,7 +48,10 @@ export function staysOnTopic(prompt: string, text: string): boolean {
   const keys = topicWords(prompt)
   if (keys.length === 0) return true
   const blob = text.toLowerCase()
-  return keys.some((word) => blob.includes(word))
+  const hits = keys.filter((word) => blob.includes(word))
+  const longest = [...keys].sort((a, b) => b.length - a.length)[0]
+  if (longest.length >= 8) return blob.includes(longest) || hits.length >= 2
+  return hits.length >= 1
 }
 
 export function defaultQuestions(prompt: string, mode: 'infographic' | 'carousel'): BriefQuestion[] {
