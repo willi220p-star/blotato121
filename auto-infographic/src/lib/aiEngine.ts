@@ -39,6 +39,8 @@ export interface InfographicDraft {
   title: string
   subtitle: string
   caption: string
+  header: string
+  footer: string
   kind: Exclude<InfographicKind, 'auto'>
   items: ContentItem[]
   heroImage?: string
@@ -49,6 +51,10 @@ export interface InfographicDraft {
 export interface CarouselDraft {
   title: string
   subtitle: string
+  header: string
+  footer: string
+  brand: string
+  handle: string
   kind: Exclude<CarouselKind, 'auto'>
   slides: CarouselSlideModel[]
   research: ResearchNote[]
@@ -83,7 +89,7 @@ export function pollinationsImage(
   height: number,
   seed: number,
 ): string {
-  const styled = `${prompt.slice(0, 280)}. Editorial photography, cinematic lighting, photorealistic, no text, no letters, no watermark, no logo`
+  const styled = `${prompt.slice(0, 240)}. Vivid saturated color photography, bold complementary colors, cinematic lighting, photorealistic, no text, no letters, no watermark, no logo`
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(styled)}?width=${width}&height=${height}&nologo=true&seed=${seed}`
 }
 
@@ -380,8 +386,8 @@ export async function draftInfographic(
   try {
     const json = asRecord(
       await completeJson(
-        'You are a visual journalist. Turn a brief plus research notes into ORIGINAL infographic copy. Do not parrot the prompt. Use specific facts, names, dates, and numbers from research when present. Invent a coherent narrative if research is thin. Return JSON only.',
-        `User brief:\n${prompt}\n\nRequested layout: ${kind === 'auto' ? `choose the best of ${KINDS.join(', ')}` : resolved}\nNeed ${min}-${max} items.\n\nResearch notes:\n${researchBlock(research)}\n\nJSON shape:\n{"title":"short punchy title","subtitle":"one sentence with a real insight","kind":"${resolved}","caption":"source line","heroImagePrompt":"photographic scene, no text","items":[{"label":"short","desc":"1-2 factual sentences","value":"optional stat","group":"optional","imagePrompt":"photographic scene, no text"}]}`,
+        'You are a visual journalist and art director. Turn a brief plus research notes into ORIGINAL infographic copy for a vivid, magazine-quality graphic. Do not parrot the prompt. Use specific facts, names, dates, and numbers from research when present. Header is a short series name. Footer is a save-worthy sign-off. Image prompts must be colorful photographic scenes with no text. Return JSON only.',
+        `User brief:\n${prompt}\n\nRequested layout: ${kind === 'auto' ? `choose the best of ${KINDS.join(', ')}` : resolved}\nNeed ${min}-${max} items.\n\nResearch notes:\n${researchBlock(research)}\n\nJSON shape:\n{"title":"short punchy title","subtitle":"one sentence with a real insight","header":"SHORT SERIES NAME","footer":"save this / follow line","kind":"${resolved}","caption":"source line","heroImagePrompt":"vivid photographic scene, no text","items":[{"label":"short","desc":"1-2 factual sentences","value":"optional stat","group":"optional","imagePrompt":"vivid photographic scene, no text"}]}`,
         signal,
       ),
     )
@@ -390,11 +396,15 @@ export async function draftInfographic(
     if (items.length < 2) throw new Error('Model returned too few items')
     const title = asString(json.title) || parsePrompt(prompt).title
     const heroPrompt = asString(json.heroImagePrompt) || `${title}, ${asString(json.subtitle)}`
+    const header = asString(json.header) || usedKind.toUpperCase()
+    const footer = asString(json.footer) || asString(json.caption) || 'Save this graphic'
     onProgress?.({ phase: 'images', note: 'Composing illustrations', sources: research.map((n) => n.title) })
     return {
       title: title.slice(0, 80),
       subtitle: (asString(json.subtitle) || items[0]?.desc || '').slice(0, 160),
       caption: asString(json.caption) || research[0]?.title || '',
+      header: header.slice(0, 42).toUpperCase(),
+      footer: footer.slice(0, 64),
       kind: usedKind,
       items,
       heroImage: pollinationsImage(heroPrompt, 1280, 720, seedFrom(`hero:${prompt}:${title}`)),
@@ -409,6 +419,8 @@ export async function draftInfographic(
       title: parsed.title,
       subtitle: (research[0]?.extract.split(/(?<=\.)\s+/)[0] || parsed.subtitle).slice(0, 160),
       caption: research.map((n) => n.title).join(' · ') || parsed.caption,
+      header: resolved.toUpperCase(),
+      footer: research[0]?.title ? `Source · ${research[0].title}` : 'Save this graphic',
       kind: resolved,
       items,
       heroImage:
@@ -450,8 +462,8 @@ export async function draftCarousel(
   try {
     const json = asRecord(
       await completeJson(
-        'You are a social editorial director. Create an ORIGINAL carousel. Do not reshuffle the prompt. Use research facts. First slide is a hook, last slide is a quiet close. Return JSON only.',
-        `User brief:\n${prompt}\n\nKind: ${resolved}\nExactly ${n} slides.\n\nResearch notes:\n${researchBlock(research)}\n\nJSON shape:\n{"title":"series title","subtitle":"one insight","kind":"${resolved}","slides":[{"role":"intro|content|stat|quote|outro","kicker":"tiny label","title":"slide title","body":"2 sentences","stat":"optional","statLabel":"optional","imagePrompt":"photographic scene, no text"}]}`,
+        'You are a social art director. Create an ORIGINAL carousel that looks like a premium Instagram or LinkedIn series: vivid, punchy, saveable. Do not reshuffle the prompt. Use research facts. First slide is a cinematic hook, last slide is a clear close. Header is a short series name. Footer is a brand sign-off. Image prompts must be colorful photographic scenes with no text. Return JSON only.',
+        `User brief:\n${prompt}\n\nKind: ${resolved}\nExactly ${n} slides.\n\nResearch notes:\n${researchBlock(research)}\n\nJSON shape:\n{"title":"series title","subtitle":"one insight","header":"SERIES NAME","footer":"save / follow line","brand":"short brand","handle":"@handle","kind":"${resolved}","slides":[{"role":"intro|content|stat|quote|outro","kicker":"tiny label","title":"slide title","body":"2 sentences","stat":"optional","statLabel":"optional","imagePrompt":"vivid photographic scene, no text"}]}`,
         signal,
       ),
     )
@@ -478,9 +490,14 @@ export async function draftCarousel(
       slides[n - 1] = { ...slides[n - 1], role: 'outro' }
     }
     onProgress?.({ phase: 'images', note: 'Composing slide photography', sources: research.map((note) => note.title) })
+    const series = (asString(json.title) || parsePrompt(prompt).title).slice(0, 80)
     return {
-      title: (asString(json.title) || parsePrompt(prompt).title).slice(0, 80),
+      title: series,
       subtitle: (asString(json.subtitle) || slides[0]?.body || '').slice(0, 160),
+      header: (asString(json.header) || series).slice(0, 42).toUpperCase(),
+      footer: (asString(json.footer) || 'Save this series').slice(0, 64),
+      brand: (asString(json.brand) || 'Studio').slice(0, 28),
+      handle: (asString(json.handle) || '@studio').slice(0, 24),
       kind: kind === 'auto' ? asCarouselKind(json.kind, resolved) : resolved,
       slides,
       research,
@@ -533,6 +550,10 @@ export async function draftCarousel(
     return {
       title: parsed.title,
       subtitle: (research[0]?.extract.split(/(?<=\.)\s+/)[0] || parsed.subtitle).slice(0, 160),
+      header: parsed.title.slice(0, 42).toUpperCase(),
+      footer: 'Save this series',
+      brand: 'Studio',
+      handle: '@studio',
       kind: resolved,
       slides,
       research,

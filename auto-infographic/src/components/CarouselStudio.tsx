@@ -4,7 +4,7 @@ import { PaletteDots, SizeBar, platformLabel } from './SizeBar'
 import { generateCarousel, patchCarouselSlide, restyleCarousel } from '../lib/generateCarousel'
 import { DEFAULT_CAROUSEL_PLATFORM, getPlatform, previewScale } from '../lib/platforms'
 import { CAROUSEL_SAMPLES } from '../lib/samples'
-import { getPalette } from '../lib/themes'
+import { getPalette, paletteForPrompt } from '../lib/themes'
 import type { AiPhase, AiProgress, CarouselKind, CarouselModel, CarouselSlideModel, PaletteId, SampleImage } from '../lib/types'
 
 const KINDS: Array<{ id: CarouselKind; label: string }> = [
@@ -32,7 +32,7 @@ export function CarouselStudio({ onCreated }: Props) {
   const [platformId, setPlatformId] = useState(DEFAULT_CAROUSEL_PLATFORM)
   const [customW, setCustomW] = useState(1080)
   const [customH, setCustomH] = useState(1080)
-  const [paletteId, setPaletteId] = useState<PaletteId>('editorial')
+  const [paletteId, setPaletteId] = useState<PaletteId>('candy')
   const [model, setModel] = useState<CarouselModel | null>(null)
   const [active, setActive] = useState(0)
   const [images, setImages] = useState<SampleImage[]>([])
@@ -67,6 +67,8 @@ export function CarouselStudio({ onCreated }: Props) {
     setThinkNote('Reading the brief')
     setSources([])
     try {
+      const nextPaletteId = paletteForPrompt(text)
+      setPaletteId(nextPaletteId)
       const next = await generateCarousel(
         text,
         nextSlides,
@@ -81,6 +83,10 @@ export function CarouselStudio({ onCreated }: Props) {
       if (ctrl.signal.aborted) return
       setModel(next)
       setActive(0)
+      setHeader(next.header)
+      setFooter(next.footer)
+      setBrand(next.brand)
+      setHandle(next.handle)
       if (nextKind === 'auto') setKind(next.kind)
       setThinkNote('')
       onCreated(next.title)

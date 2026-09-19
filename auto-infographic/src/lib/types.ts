@@ -26,7 +26,7 @@ export type CarouselKind =
 
 export type EngineMode = 'studio' | 'antv'
 
-export type PaletteId = 'atelier' | 'editorial' | 'sage' | 'midnight' | 'paper' | 'noir'
+export type PaletteId = 'flare' | 'citrus' | 'ocean' | 'volt' | 'candy' | 'ember'
 
 export type AiPhase = 'idle' | 'research' | 'write' | 'images'
 
@@ -40,6 +40,7 @@ export interface Palette {
   muted: string
   accent: string
   accent2: string
+  accent3: string
   line: string
   onAccent: string
 }

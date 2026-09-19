@@ -8,7 +8,7 @@ import {
   seedFrom,
 } from './aiEngine'
 import { assembleInfographic, restyleInfographic } from './generateInfographic'
-import { PALETTES } from './themes'
+import { paletteForPrompt, PALETTES } from './themes'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -35,6 +35,11 @@ describe('ai helpers', () => {
 
   it('keeps comparison at two items', () => {
     expect(itemTarget('comparison')).toEqual({ min: 2, max: 2 })
+  })
+
+  it('picks a vivid palette from the brief', () => {
+    expect(paletteForPrompt('why roasting makes coffee bitter')).toBe('flare')
+    expect(paletteForPrompt('explain photosynthesis and green leaves')).toBe('citrus')
   })
 })
 

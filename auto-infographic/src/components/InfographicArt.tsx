@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { tone } from '../lib/themes'
 import type { InfographicModel, Palette, Platform } from '../lib/types'
 
 interface Props {
@@ -8,30 +9,37 @@ interface Props {
   scale?: number
 }
 
-function pad(platform: Platform): number {
-  const short = Math.min(platform.width, platform.height)
-  return Math.round(short * 0.08)
-}
-
 function Shot({ src, alt, className }: { src?: string; alt: string; className: string }) {
   if (!src) return null
   return <img alt={alt} className={className} crossOrigin="anonymous" src={src} />
 }
 
+function BrandMark() {
+  return (
+    <span className="piece-mark" aria-hidden="true">
+      <i />
+      <i />
+      <i />
+    </span>
+  )
+}
+
 export function InfographicArt({ model, palette, platform, scale = 1 }: Props) {
-  const p = pad(platform)
   const wide = platform.width / platform.height > 1.15
-  const titleSize = wide ? Math.round(platform.width * 0.032) : Math.round(platform.width * 0.048)
+  const titleSize = wide ? Math.round(platform.width * 0.042) : Math.round(platform.width * 0.058)
+  const heroH = Math.round(platform.height * (wide ? 0.36 : 0.3))
+  const header = model.header || model.kind.replace('-', ' ')
+  const footer = model.footer || model.caption || 'Save this graphic'
   const style = {
     width: platform.width,
     height: platform.height,
     transform: `scale(${scale})`,
     transformOrigin: 'top left',
-    background: `linear-gradient(180deg, ${palette.surface} 0%, ${palette.bg} 100%)`,
+    background: `linear-gradient(165deg, ${palette.surface} 0%, ${palette.bg} 55%, ${palette.accent}22 100%)`,
     color: palette.ink,
-    padding: p,
     ['--accent' as string]: palette.accent,
     ['--accent-2' as string]: palette.accent2,
+    ['--accent-3' as string]: palette.accent3,
     ['--muted' as string]: palette.muted,
     ['--line' as string]: palette.line,
     ['--on-accent' as string]: palette.onAccent,
@@ -41,25 +49,31 @@ export function InfographicArt({ model, palette, platform, scale = 1 }: Props) {
   } as CSSProperties
 
   return (
-    <article className="artboard" style={style}>
-      <div className="art-header">
-        <span>{model.header || palette.name}</span>
-        <span>{platform.network === 'Generic' ? `${platform.width}×${platform.height}` : platform.network}</span>
+    <article className="artboard piece" style={style}>
+      <header className="piece-top">
+        <span className="piece-top-left">
+          <BrandMark />
+          <span>{header}</span>
+        </span>
+        <span className="piece-pill">{model.kind}</span>
+      </header>
+      <div className="piece-hero" style={{ height: heroH }}>
+        <Shot alt="" className="piece-hero-img" src={model.heroImage} />
+        <div className="piece-hero-shade" />
+        <div className="piece-hero-copy">
+          <h3 className="art-title" style={{ fontSize: titleSize }}>
+            {model.title}
+          </h3>
+          {model.subtitle ? <p className="art-sub">{model.subtitle}</p> : null}
+        </div>
       </div>
-      <div className="art-body">
-        <h3 className="art-title" style={{ fontSize: titleSize }}>
-          {model.title}
-        </h3>
-        {model.subtitle ? <p className="art-sub">{model.subtitle}</p> : null}
-        <Shot alt="" className="hero-shot" src={model.heroImage} />
+      <div className={`piece-main ${wide ? 'wide' : ''}`}>
         <Layout isWide={wide} model={model} palette={palette} />
       </div>
-      {model.footer || model.source ? (
-        <div className="art-footer">
-          <span>{model.footer || (model.source === 'ai' ? 'Researched & illustrated' : '')}</span>
-          <span>{String(model.items.length).padStart(2, '0')}</span>
-        </div>
-      ) : null}
+      <footer className="piece-bottom">
+        <span>{footer}</span>
+        <span className="piece-count">{String(model.items.length).padStart(2, '0')}</span>
+      </footer>
     </article>
   )
 }
@@ -78,11 +92,13 @@ function Layout({
     return (
       <div className="layout-stats">
         {items.map((item, i) => (
-          <div className="stat" key={`${item.label}-${i}`}>
-            <Shot alt="" className="item-shot wide" src={item.image} />
-            <b>{item.value || item.label}</b>
-            {item.value ? <h4>{item.label}</h4> : null}
-            {item.desc ? <p>{item.desc}</p> : null}
+          <div className="stat-tile" key={`${item.label}-${i}`} style={{ background: tone(palette, i) }}>
+            <Shot alt="" className="stat-shot" src={item.image} />
+            <div className="stat-copy">
+              <b>{item.value || item.label}</b>
+              {item.value ? <h4>{item.label}</h4> : null}
+              {item.desc ? <p>{item.desc}</p> : null}
+            </div>
           </div>
         ))}
       </div>
@@ -93,13 +109,13 @@ function Layout({
     const right = items[1] ?? items[0]
     return (
       <div className="layout-compare">
-        <div className="card-item">
+        <div className="compare-card" style={{ ['--card' as string]: palette.accent }}>
           <Shot alt="" className="card-shot" src={left?.image} />
           <h4>{left?.label}</h4>
           {left?.desc ? <p>{left.desc}</p> : null}
         </div>
-        <div className="vs">vs</div>
-        <div className="card-item">
+        <div className="vs">VS</div>
+        <div className="compare-card" style={{ ['--card' as string]: palette.accent2 }}>
           <Shot alt="" className="card-shot" src={right?.image} />
           <h4>{right?.label}</h4>
           {right?.desc ? <p>{right.desc}</p> : null}
@@ -108,10 +124,11 @@ function Layout({
     )
   }
   if (model.kind === 'swot') {
+    const colors = ['#12B76A', '#F04438', '#2E90FA', '#F79009']
     return (
       <div className="swot-grid">
         {items.slice(0, 4).map((item, i) => (
-          <div className="swot" key={`${item.label}-${i}`}>
+          <div className="swot" key={`${item.label}-${i}`} style={{ background: colors[i] }}>
             <Shot alt="" className="item-shot" src={item.image} />
             <h4>{item.label}</h4>
             {item.desc ? <p>{item.desc}</p> : null}
@@ -128,8 +145,8 @@ function Layout({
             className="band"
             key={`${item.label}-${i}`}
             style={{
-              width: `${90 - i * (42 / Math.max(items.length - 1, 1))}%`,
-              background: i % 2 ? palette.accent2 : palette.accent,
+              width: `${92 - i * (40 / Math.max(items.length - 1, 1))}%`,
+              background: tone(palette, i),
             }}
           >
             {item.label}
@@ -145,7 +162,10 @@ function Layout({
           <div
             className="band"
             key={`${item.label}-${i}`}
-            style={{ width: `${94 - i * (52 / Math.max(items.length - 1, 1))}%` }}
+            style={{
+              width: `${94 - i * (50 / Math.max(items.length - 1, 1))}%`,
+              background: tone(palette, i),
+            }}
           >
             {item.label}
             {item.value ? ` · ${item.value}` : ''}
@@ -158,12 +178,13 @@ function Layout({
     return (
       <div className="cycle">
         {items.map((item, i) => (
-          <div className="card-item" key={`${item.label}-${i}`}>
+          <div className="rich-card" key={`${item.label}-${i}`} style={{ ['--card' as string]: tone(palette, i) }}>
             <Shot alt="" className="card-shot" src={item.image} />
-            <h4>
-              {String(i + 1).padStart(2, '0')} {item.label}
-            </h4>
-            {item.desc ? <p>{item.desc}</p> : null}
+            <div className="rich-copy">
+              <span className="idx">{String(i + 1).padStart(2, '0')}</span>
+              <h4>{item.label}</h4>
+              {item.desc ? <p>{item.desc}</p> : null}
+            </div>
           </div>
         ))}
       </div>
@@ -175,10 +196,10 @@ function Layout({
         {items.map((item, i) => (
           <div className="tl" key={`${item.label}-${i}`}>
             <div className="rail">
-              <div className="dot" />
+              <div className="dot" style={{ background: tone(palette, i) }} />
             </div>
-            <div className="tl-copy" style={{ paddingBottom: i === items.length - 1 ? 0 : 22 }}>
-              <Shot alt="" className="item-shot" src={item.image} />
+            <div className="tl-card" style={{ ['--card' as string]: tone(palette, i) }}>
+              <Shot alt="" className="tl-shot" src={item.image} />
               <div>
                 <h4>{item.label}</h4>
                 {item.desc ? <p>{item.desc}</p> : null}
@@ -191,12 +212,12 @@ function Layout({
   }
   if (model.kind === 'pie') {
     const n = Math.max(items.length, 1)
-    const stops = items
-      .map((_, i) => {
-        const hue = i * (360 / n)
+    const colors = items.map((_, i) => tone(palette, i))
+    const stops = colors
+      .map((color, i) => {
         const start = (i / n) * 360
         const end = ((i + 1) / n) * 360
-        return `hsl(${hue} 38% 44%) ${start}deg ${end}deg`
+        return `${color} ${start}deg ${end}deg`
       })
       .join(', ')
     return (
@@ -205,7 +226,7 @@ function Layout({
         <div className="legend">
           {items.map((item, i) => (
             <div key={`${item.label}-${i}`}>
-              <i style={{ background: `hsl(${i * (360 / n)} 38% 44%)` }} />
+              <i style={{ background: colors[i] }} />
               {item.label}
               {item.value ? ` · ${item.value}` : ''}
             </div>
@@ -218,10 +239,10 @@ function Layout({
   return (
     <div className={`layout-process ${isWide ? 'horizontal' : ''}`}>
       {items.map((item, i) => (
-        <div className="step" key={`${item.label}-${i}`}>
-          <Shot alt="" className="item-shot" src={item.image} />
-          <div className="idx">{String(i + 1).padStart(2, '0')}</div>
-          <div>
+        <div className="rich-card" key={`${item.label}-${i}`} style={{ ['--card' as string]: tone(palette, i) }}>
+          <Shot alt="" className="card-shot" src={item.image} />
+          <div className="rich-copy">
+            <span className="idx">{String(i + 1).padStart(2, '0')}</span>
             <h4>{item.label}</h4>
             {item.desc ? <p>{item.desc}</p> : null}
           </div>

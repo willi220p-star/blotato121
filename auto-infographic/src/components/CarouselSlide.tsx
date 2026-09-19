@@ -15,6 +15,16 @@ interface Props {
   sampleSrc?: string
 }
 
+function BrandMark() {
+  return (
+    <span className="piece-mark" aria-hidden="true">
+      <i />
+      <i />
+      <i />
+    </span>
+  )
+}
+
 export function CarouselSlide({
   slide,
   index,
@@ -28,64 +38,67 @@ export function CarouselSlide({
   scale = 1,
   sampleSrc,
 }: Props) {
-  const p = Math.round(Math.min(platform.width, platform.height) * 0.08)
   const photo = sampleSrc || slide.image
+  const series = header || brand || 'Studio'
+  const signoff = footer || 'Save this series'
+  const visual = slide.role === 'quote' ? 'content' : slide.role
+  const dark = visual === 'intro' || visual === 'outro' || visual === 'stat'
   const style = {
     width: platform.width,
     height: platform.height,
     transform: `scale(${scale})`,
     transformOrigin: 'top left',
-    background: palette.surface,
-    color: palette.ink,
-    padding: p,
+    background: visual === 'stat' ? palette.accent : visual === 'outro' ? palette.ink : palette.surface,
+    color: dark ? (visual === 'stat' ? palette.onAccent : '#fff') : palette.ink,
     ['--accent' as string]: palette.accent,
-    ['--muted' as string]: palette.muted,
+    ['--accent-2' as string]: palette.accent2,
+    ['--accent-3' as string]: palette.accent3,
+    ['--muted' as string]: dark ? palette.onAccent : palette.muted,
     ['--line' as string]: palette.line,
     ['--on-accent' as string]: palette.onAccent,
     ['--bg' as string]: palette.bg,
     ['--ink' as string]: palette.ink,
-    backgroundImage: photo
-      ? `linear-gradient(180deg, color-mix(in srgb, ${palette.surface} 82%, transparent), ${palette.surface} 72%), url("${photo}")`
-      : undefined,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    ['--surface' as string]: palette.surface,
   } as CSSProperties
 
-  const titleSize = slide.role === 'intro' ? 64 : slide.role === 'outro' ? 48 : 42
+  const titleSize = slide.role === 'intro' ? 72 : slide.role === 'outro' ? 54 : 44
 
   return (
-    <article className="artboard" style={style}>
-      <div className="art-header">
-        <span>{header || brand}</span>
-        <span>
-          {index + 1} / {total}
+    <article className={`artboard piece slide-${visual}`} style={style}>
+      {photo ? <img alt="" className="slide-photo" crossOrigin="anonymous" src={photo} /> : null}
+      <div className="slide-shade" />
+      <header className="piece-top">
+        <span className="piece-top-left">
+          <BrandMark />
+          <span>{series}</span>
         </span>
-      </div>
-      <div className="art-body" style={{ marginTop: 28, justifyContent: 'center' }}>
-        <div className="kicker" style={{ color: palette.accent }}>
-          {slide.kicker}
-        </div>
+        <span className="piece-count">
+          {index + 1}/{total}
+        </span>
+      </header>
+      <div className="slide-copy">
+        <div className="kicker">{slide.kicker}</div>
         {slide.role === 'stat' && slide.stat ? (
           <>
-            <div className="art-title" style={{ fontSize: 96, marginBottom: 8 }}>
+            <div className="art-title slide-stat" style={{ fontSize: 108 }}>
               {slide.stat}
             </div>
-            <p className="art-sub" style={{ fontSize: 22 }}>
+            <p className="art-sub" style={{ fontSize: 24 }}>
               {slide.statLabel}
             </p>
             <p className="art-sub">{slide.body}</p>
           </>
         ) : (
           <>
-            <h3 className="art-title" style={{ fontSize: titleSize, maxWidth: '18ch' }}>
+            <h3 className="art-title" style={{ fontSize: titleSize, maxWidth: '16ch' }}>
               {slide.title}
             </h3>
             <p
               className="art-sub"
               style={{
-                fontSize: slide.role === 'quote' ? 22 : 18,
+                fontSize: slide.role === 'quote' ? 24 : 20,
                 fontStyle: slide.role === 'quote' ? 'italic' : 'normal',
-                maxWidth: '34ch',
+                maxWidth: '28ch',
               }}
             >
               {slide.body}
@@ -93,12 +106,12 @@ export function CarouselSlide({
           </>
         )}
       </div>
-      <div className="art-footer">
+      <footer className="piece-bottom">
         <span>
           {brand} {handle}
         </span>
-        <span>{footer || 'Auto Infographic Generator'}</span>
-      </div>
+        <span>{signoff}</span>
+      </footer>
     </article>
   )
 }

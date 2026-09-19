@@ -4,7 +4,7 @@ import { PaletteDots, SizeBar, platformLabel } from './SizeBar'
 import { generateInfographic, restyleInfographic } from '../lib/generateInfographic'
 import { DEFAULT_INFOGRAPHIC_PLATFORM, getPlatform, previewScale } from '../lib/platforms'
 import { INFOGRAPHIC_SAMPLES } from '../lib/samples'
-import { getPalette } from '../lib/themes'
+import { getPalette, paletteForPrompt } from '../lib/themes'
 import type { AiPhase, AiProgress, InfographicKind, InfographicModel, PaletteId } from '../lib/types'
 
 const AntvCanvas = lazy(() => import('./AntvCanvas'))
@@ -39,7 +39,7 @@ export function InfographicStudio({ onCreated }: Props) {
   const [platformId, setPlatformId] = useState(DEFAULT_INFOGRAPHIC_PLATFORM)
   const [customW, setCustomW] = useState(1080)
   const [customH, setCustomH] = useState(1350)
-  const [paletteId, setPaletteId] = useState<PaletteId>('atelier')
+  const [paletteId, setPaletteId] = useState<PaletteId>('flare')
   const [engine, setEngine] = useState<'studio' | 'antv'>('studio')
   const [model, setModel] = useState<InfographicModel | null>(null)
   const [busy, setBusy] = useState(false)
@@ -55,7 +55,13 @@ export function InfographicStudio({ onCreated }: Props) {
   const palette = getPalette(paletteId)
   const scale = previewScale(platform, 640, 760)
   const liveModel = model
-    ? { ...model, header, footer, title: title || model.title, subtitle: subtitle || model.subtitle }
+    ? {
+        ...model,
+        header: header || model.header,
+        footer: footer || model.footer,
+        title: title || model.title,
+        subtitle: subtitle || model.subtitle,
+      }
     : null
   const thinking = phase !== 'idle'
 
@@ -75,11 +81,23 @@ export function InfographicStudio({ onCreated }: Props) {
     setThinkNote('Reading the brief')
     setSources([])
     try {
-      const next = await generateInfographic(text, nextKind, header, footer, palette, onProgress, ctrl.signal)
+      const nextPaletteId = paletteForPrompt(text)
+      setPaletteId(nextPaletteId)
+      const next = await generateInfographic(
+        text,
+        nextKind,
+        header,
+        footer,
+        getPalette(nextPaletteId),
+        onProgress,
+        ctrl.signal,
+      )
       if (ctrl.signal.aborted) return
       setModel(next)
       setTitle(next.title)
       setSubtitle(next.subtitle)
+      setHeader(next.header)
+      setFooter(next.footer)
       if (nextKind === 'auto') setKind(next.kind)
       setThinkNote('')
       onCreated(next.title)
