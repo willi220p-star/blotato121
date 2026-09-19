@@ -7,6 +7,7 @@ export async function nodeToPng(node: HTMLElement): Promise<string> {
     cacheBust: true,
     pixelRatio: 2,
     backgroundColor: undefined,
+    includeQueryParams: true,
   })
 }
 

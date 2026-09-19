@@ -28,6 +28,8 @@ export type EngineMode = 'studio' | 'antv'
 
 export type PaletteId = 'atelier' | 'editorial' | 'sage' | 'midnight' | 'paper' | 'noir'
 
+export type AiPhase = 'idle' | 'research' | 'write' | 'images'
+
 export interface Palette {
   id: PaletteId
   name: string
@@ -56,6 +58,14 @@ export interface ContentItem {
   desc: string
   value?: string
   group?: string
+  image?: string
+}
+
+export interface ResearchNote {
+  title: string
+  extract: string
+  thumbnail?: string
+  url?: string
 }
 
 export interface ParsedIdea {
@@ -76,6 +86,9 @@ export interface InfographicModel {
   items: ContentItem[]
   syntax: string
   template: string
+  heroImage?: string
+  research?: ResearchNote[]
+  source?: 'ai' | 'fallback'
 }
 
 export type SlideRole = 'intro' | 'content' | 'stat' | 'quote' | 'outro'
@@ -87,6 +100,7 @@ export interface CarouselSlideModel {
   body: string
   stat?: string
   statLabel?: string
+  image?: string
 }
 
 export interface CarouselModel {
@@ -98,9 +112,17 @@ export interface CarouselModel {
   brand: string
   handle: string
   slides: CarouselSlideModel[]
+  research?: ResearchNote[]
+  source?: 'ai' | 'fallback'
 }
 
 export interface SampleImage {
   name: string
   dataUrl: string
+}
+
+export interface AiProgress {
+  phase: Exclude<AiPhase, 'idle'>
+  note?: string
+  sources?: string[]
 }

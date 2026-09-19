@@ -29,6 +29,7 @@ export function CarouselSlide({
   sampleSrc,
 }: Props) {
   const p = Math.round(Math.min(platform.width, platform.height) * 0.08)
+  const photo = sampleSrc || slide.image
   const style = {
     width: platform.width,
     height: platform.height,
@@ -43,8 +44,8 @@ export function CarouselSlide({
     ['--on-accent' as string]: palette.onAccent,
     ['--bg' as string]: palette.bg,
     ['--ink' as string]: palette.ink,
-    backgroundImage: sampleSrc
-      ? `linear-gradient(180deg, color-mix(in srgb, ${palette.surface} 88%, transparent), ${palette.surface}), url(${sampleSrc})`
+    backgroundImage: photo
+      ? `linear-gradient(180deg, color-mix(in srgb, ${palette.surface} 82%, transparent), ${palette.surface} 72%), url("${photo}")`
       : undefined,
     backgroundSize: 'cover',
     backgroundPosition: 'center',

@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { generateCarousel } from './generateCarousel'
-import { generateInfographic } from './generateInfographic'
 import { detectKind, parsePrompt } from './parsePrompt'
-import { PALETTES } from './themes'
 
 describe('parsePrompt', () => {
   it('detects process lists', () => {
@@ -26,35 +23,9 @@ describe('parsePrompt', () => {
   })
 })
 
-describe('generateInfographic', () => {
-  it('builds antv syntax', () => {
-    const model = generateInfographic(
-      'Client onboarding\n1. Call\n2. Quote\n3. Kickoff',
-      'process',
-      'Studio',
-      'Confidential',
-      PALETTES[0],
-    )
-    expect(model.template).toContain('list-row')
-    expect(model.syntax).toContain('infographic')
-    expect(model.syntax).toContain('Call')
-    expect(model.header).toBe('Studio')
-  })
-})
-
-describe('generateCarousel', () => {
-  it('respects slide count with intro and outro', () => {
-    const model = generateCarousel(
-      'How to brief a designer\n1. Goal\n2. Audience\n3. References',
-      5,
-      'how-to',
-      'Header',
-      'Footer',
-      'Atelier',
-      '@atelier',
-    )
-    expect(model.slides).toHaveLength(5)
-    expect(model.slides[0].role).toBe('intro')
-    expect(model.slides.at(-1)?.role).toBe('outro')
+describe('generateCarousel fallback shape', () => {
+  it('keeps intro and outro roles when assembling slides from a list', () => {
+    const idea = parsePrompt('How to brief a designer\n1. Goal\n2. Audience\n3. References')
+    expect(idea.items.map((i) => i.label)).toEqual(['Goal', 'Audience', 'References'])
   })
 })

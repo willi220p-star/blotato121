@@ -1,7 +1,7 @@
-import { parsePrompt } from './parsePrompt'
-import type { InfographicKind, InfographicModel, Palette } from './types'
+import { draftInfographic } from './aiEngine'
+import type { AiProgress, InfographicKind, InfographicModel, Palette } from './types'
 
-const TEMPLATE_FOR: Record<Exclude<InfographicKind, 'auto'>, string> = {
+export const TEMPLATE_FOR: Record<Exclude<InfographicKind, 'auto'>, string> = {
   process: 'list-row-simple-horizontal-arrow',
   timeline: 'sequence-timeline-simple',
   comparison: 'compare-binary-horizontal-simple-vs',
@@ -72,28 +72,51 @@ data
 ${body}`
 }
 
-export function generateInfographic(
+export function assembleInfographic(
+  draft: Omit<InfographicModel, 'syntax' | 'template'> & { kind: Exclude<InfographicKind, 'auto'> },
+  palette: Palette,
+): InfographicModel {
+  const model: InfographicModel = {
+    ...draft,
+    template: TEMPLATE_FOR[draft.kind],
+    syntax: '',
+  }
+  model.syntax = buildSyntax(model, palette)
+  return model
+}
+
+export function restyleInfographic(
+  model: InfographicModel,
+  kind: InfographicKind,
+  palette: Palette,
+): InfographicModel {
+  const resolved = kind === 'auto' ? model.kind : kind
+  return assembleInfographic({ ...model, kind: resolved }, palette)
+}
+
+export async function generateInfographic(
   prompt: string,
   kind: InfographicKind,
   header: string,
   footer: string,
   palette: Palette,
-): InfographicModel {
-  const parsed = parsePrompt(prompt, kind)
-  const resolved: Exclude<InfographicKind, 'auto'> =
-    kind === 'auto' ? (parsed.kindHint === 'auto' ? 'process' : parsed.kindHint) : kind
-  const template = TEMPLATE_FOR[resolved]
-  const model: InfographicModel = {
-    kind: resolved,
-    title: parsed.title,
-    subtitle: parsed.subtitle,
-    header,
-    footer,
-    caption: parsed.caption,
-    items: parsed.items,
-    template,
-    syntax: '',
-  }
-  model.syntax = buildSyntax(model, palette)
-  return model
+  onProgress?: (progress: AiProgress) => void,
+  signal?: AbortSignal,
+): Promise<InfographicModel> {
+  const draft = await draftInfographic(prompt, kind, onProgress, signal)
+  return assembleInfographic(
+    {
+      kind: draft.kind,
+      title: draft.title,
+      subtitle: draft.subtitle,
+      header,
+      footer,
+      caption: draft.caption,
+      items: draft.items,
+      heroImage: draft.heroImage,
+      research: draft.research,
+      source: draft.source,
+    },
+    palette,
+  )
 }

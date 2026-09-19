@@ -1,11 +1,11 @@
 import { lazy, Suspense, useRef, useState } from 'react'
 import { InfographicArt } from './InfographicArt'
 import { PaletteDots, SizeBar, platformLabel } from './SizeBar'
-import { generateInfographic } from '../lib/generateInfographic'
+import { generateInfographic, restyleInfographic } from '../lib/generateInfographic'
 import { DEFAULT_INFOGRAPHIC_PLATFORM, getPlatform, previewScale } from '../lib/platforms'
 import { INFOGRAPHIC_SAMPLES } from '../lib/samples'
 import { getPalette } from '../lib/themes'
-import type { InfographicKind, InfographicModel, PaletteId } from '../lib/types'
+import type { AiPhase, AiProgress, InfographicKind, InfographicModel, PaletteId } from '../lib/types'
 
 const AntvCanvas = lazy(() => import('./AntvCanvas'))
 
@@ -43,9 +43,13 @@ export function InfographicStudio({ onCreated }: Props) {
   const [engine, setEngine] = useState<'studio' | 'antv'>('studio')
   const [model, setModel] = useState<InfographicModel | null>(null)
   const [busy, setBusy] = useState(false)
+  const [phase, setPhase] = useState<AiPhase>('idle')
+  const [thinkNote, setThinkNote] = useState('')
+  const [sources, setSources] = useState<string[]>([])
   const [sampleId, setSampleId] = useState<string | null>(null)
   const board = useRef<HTMLDivElement>(null)
   const exportHost = useRef<HTMLDivElement>(null)
+  const abortRef = useRef<AbortController | null>(null)
 
   const platform = getPlatform(platformId, customW, customH)
   const palette = getPalette(paletteId)
@@ -53,15 +57,40 @@ export function InfographicStudio({ onCreated }: Props) {
   const liveModel = model
     ? { ...model, header, footer, title: title || model.title, subtitle: subtitle || model.subtitle }
     : null
+  const thinking = phase !== 'idle'
 
-  function create(nextPrompt = prompt, nextKind = kind) {
+  function onProgress(progress: AiProgress) {
+    setPhase(progress.phase)
+    if (progress.note) setThinkNote(progress.note)
+    if (progress.sources) setSources(progress.sources)
+  }
+
+  async function create(nextPrompt = prompt, nextKind = kind) {
     const text = nextPrompt.trim()
-    if (!text) return
-    const next = generateInfographic(text, nextKind, header, footer, palette)
-    setModel(next)
-    setTitle(next.title)
-    setSubtitle(next.subtitle)
-    onCreated(next.title)
+    if (!text || thinking) return
+    abortRef.current?.abort()
+    const ctrl = new AbortController()
+    abortRef.current = ctrl
+    setPhase('research')
+    setThinkNote('Reading the brief')
+    setSources([])
+    try {
+      const next = await generateInfographic(text, nextKind, header, footer, palette, onProgress, ctrl.signal)
+      if (ctrl.signal.aborted) return
+      setModel(next)
+      setTitle(next.title)
+      setSubtitle(next.subtitle)
+      if (nextKind === 'auto') setKind(next.kind)
+      setThinkNote('')
+      onCreated(next.title)
+    } catch {
+      if (!ctrl.signal.aborted) setThinkNote('Could not finish that pass — try again')
+    } finally {
+      if (abortRef.current === ctrl) {
+        setPhase('idle')
+        abortRef.current = null
+      }
+    }
   }
 
   function applySample(id: string) {
@@ -70,12 +99,13 @@ export function InfographicStudio({ onCreated }: Props) {
     setSampleId(id)
     setPrompt(sample.prompt)
     setKind(sample.kind)
-    create(sample.prompt, sample.kind)
+    void create(sample.prompt, sample.kind)
   }
 
   function changeKind(nextKind: InfographicKind) {
     setKind(nextKind)
-    if (prompt.trim()) create(prompt, nextKind)
+    if (!model || nextKind === 'auto') return
+    setModel(restyleInfographic(model, nextKind, palette))
   }
 
   async function save(kindOut: 'png' | 'svg') {
@@ -100,13 +130,13 @@ export function InfographicStudio({ onCreated }: Props) {
         className="composer"
         onSubmit={(e) => {
           e.preventDefault()
-          create()
+          void create()
         }}
       >
         <textarea
           autoFocus
           id="ig-prompt"
-          placeholder="Describe the infographic…"
+          placeholder="Any topic. AI researches, writes original copy, and illustrates it."
           value={prompt}
           onChange={(e) => {
             setPrompt(e.target.value)
@@ -126,10 +156,24 @@ export function InfographicStudio({ onCreated }: Props) {
               </button>
             ))}
           </div>
-          <button className="primary" disabled={!prompt.trim()} type="submit">
-            Generate
+          <button className="primary" disabled={!prompt.trim() || thinking} type="submit">
+            {thinking ? 'Thinking…' : 'Generate'}
           </button>
         </div>
+        {thinking || thinkNote ? (
+          <p className="think-line" role="status">
+            {thinking ? thinkNote || 'Working…' : thinkNote}
+          </p>
+        ) : null}
+        {sources.length > 0 ? (
+          <div className="think-sources">
+            {sources.map((source) => (
+              <span className="chip" key={source}>
+                {source}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </form>
 
       <div className="studio-body">
@@ -195,7 +239,10 @@ export function InfographicStudio({ onCreated }: Props) {
           )}
         </aside>
         <section className="preview-wrap">
-          <div className="stage-meta">{platformLabel(platform)}</div>
+          <div className="stage-meta">
+            {platformLabel(platform)}
+            {liveModel?.source === 'ai' ? ' · researched' : ''}
+          </div>
           <div className="stage">
             {liveModel ? (
               <div
@@ -215,7 +262,7 @@ export function InfographicStudio({ onCreated }: Props) {
                 )}
               </div>
             ) : (
-              <div className="empty-stage" />
+              <div className={`empty-stage ${thinking ? 'thinking' : ''}`} />
             )}
           </div>
           <div
