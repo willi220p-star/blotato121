@@ -1,10 +1,12 @@
 import { lazy, Suspense, useRef, useState } from 'react'
+import { BriefAsk } from './BriefAsk'
 import { InfographicArt } from './InfographicArt'
 import { PaletteDots, SizeBar, platformLabel } from './SizeBar'
+import { defaultQuestions, lockBrief } from '../lib/brief'
 import { generateInfographic, restyleInfographic } from '../lib/generateInfographic'
 import { DEFAULT_INFOGRAPHIC_PLATFORM, getPlatform, previewScale } from '../lib/platforms'
 import { INFOGRAPHIC_SAMPLES } from '../lib/samples'
-import { getPalette, paletteForPrompt } from '../lib/themes'
+import { getPalette } from '../lib/themes'
 import type { AiPhase, AiProgress, InfographicKind, InfographicModel, PaletteId } from '../lib/types'
 
 const AntvCanvas = lazy(() => import('./AntvCanvas'))
@@ -47,6 +49,9 @@ export function InfographicStudio({ onCreated }: Props) {
   const [thinkNote, setThinkNote] = useState('')
   const [sources, setSources] = useState<string[]>([])
   const [sampleId, setSampleId] = useState<string | null>(null)
+  const [askOpen, setAskOpen] = useState(false)
+  const [questions, setQuestions] = useState(() => defaultQuestions('', 'infographic'))
+  const [answers, setAnswers] = useState<Record<string, string>>({})
   const board = useRef<HTMLDivElement>(null)
   const exportHost = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -81,14 +86,12 @@ export function InfographicStudio({ onCreated }: Props) {
     setThinkNote('Reading the brief')
     setSources([])
     try {
-      const nextPaletteId = paletteForPrompt(text)
-      setPaletteId(nextPaletteId)
       const next = await generateInfographic(
         text,
         nextKind,
         header,
         footer,
-        getPalette(nextPaletteId),
+        palette,
         onProgress,
         ctrl.signal,
       )
@@ -111,13 +114,21 @@ export function InfographicStudio({ onCreated }: Props) {
     }
   }
 
+  function openAsk(nextPrompt = prompt) {
+    const text = nextPrompt.trim()
+    if (!text) return
+    setQuestions(defaultQuestions(text, 'infographic'))
+    setAnswers({})
+    setAskOpen(true)
+  }
+
   function applySample(id: string) {
     const sample = INFOGRAPHIC_SAMPLES.find((s) => s.id === id)
     if (!sample) return
     setSampleId(id)
     setPrompt(sample.prompt)
     setKind(sample.kind)
-    void create(sample.prompt, sample.kind)
+    openAsk(sample.prompt)
   }
 
   function changeKind(nextKind: InfographicKind) {
@@ -148,13 +159,13 @@ export function InfographicStudio({ onCreated }: Props) {
         className="composer"
         onSubmit={(e) => {
           e.preventDefault()
-          void create()
+          openAsk()
         }}
       >
         <textarea
           autoFocus
           id="ig-prompt"
-          placeholder="Any topic. AI researches, writes original copy, and illustrates it."
+          placeholder="What do you want made? Be specific."
           value={prompt}
           onChange={(e) => {
             setPrompt(e.target.value)
@@ -175,9 +186,19 @@ export function InfographicStudio({ onCreated }: Props) {
             ))}
           </div>
           <button className="primary" disabled={!prompt.trim() || thinking} type="submit">
-            {thinking ? 'Thinking…' : 'Generate'}
+            {thinking ? 'Building…' : askOpen ? 'Update questions' : 'Next'}
           </button>
         </div>
+        {askOpen ? (
+          <BriefAsk
+            answers={answers}
+            busy={thinking}
+            questions={questions}
+            onBuild={() => void create(lockBrief(prompt, answers), kind)}
+            onChange={(id, value) => setAnswers((prev) => ({ ...prev, [id]: value }))}
+            onSkip={() => void create(lockBrief(prompt, {}), kind)}
+          />
+        ) : null}
         {thinking || thinkNote ? (
           <p className="think-line" role="status">
             {thinking ? thinkNote || 'Working…' : thinkNote}

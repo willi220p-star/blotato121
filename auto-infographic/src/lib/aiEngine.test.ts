@@ -158,11 +158,47 @@ describe('draftInfographic', () => {
       }),
     )
 
-    const draft = await draftInfographic('timeline of the internet', 'timeline')
+    const draft = await draftInfographic('Workplace disability access for new hires', 'list')
     expect(draft.source).toBe('fallback')
-    expect(draft.kind).toBe('timeline')
-    expect(draft.items.length).toBeGreaterThanOrEqual(2)
-    expect(draft.items.some((item) => item.image)).toBe(true)
+    expect(draft.title).toMatch(/disability|access|workplace/i)
+    expect(draft.title).not.toMatch(/coffee/i)
+  })
+
+  it('throws away model copy that leaves the user topic', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes('search/page') || url.includes('list=search')) {
+          return jsonResponse({ query: { search: [] }, pages: [] })
+        }
+        if (url.includes('text.pollinations.ai')) {
+          return jsonResponse({
+            choices: [
+              {
+                message: {
+                  content: JSON.stringify({
+                    title: 'Why roasting makes coffee bitter',
+                    subtitle: 'A chemistry lesson',
+                    kind: 'list',
+                    items: [
+                      { label: 'Maillard', desc: 'Sugars brown in the drum' },
+                      { label: 'Phenylindanes', desc: 'Dark roasts taste sharp' },
+                    ],
+                  }),
+                },
+              },
+            ],
+          })
+        }
+        return jsonResponse({}, 404)
+      }),
+    )
+
+    const draft = await draftInfographic('Workplace disability access for new hires', 'list')
+    expect(draft.source).toBe('fallback')
+    expect(draft.title).toMatch(/disability|access|workplace/i)
+    expect(draft.title).not.toMatch(/coffee/i)
   })
 })
 

@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
+import { BriefAsk } from './BriefAsk'
 import { CarouselSlide } from './CarouselSlide'
 import { PaletteDots, SizeBar, platformLabel } from './SizeBar'
+import { defaultQuestions, lockBrief } from '../lib/brief'
 import { generateCarousel, patchCarouselSlide, restyleCarousel } from '../lib/generateCarousel'
 import { DEFAULT_CAROUSEL_PLATFORM, getPlatform, previewScale } from '../lib/platforms'
 import { CAROUSEL_SAMPLES } from '../lib/samples'
-import { getPalette, paletteForPrompt } from '../lib/themes'
+import { getPalette } from '../lib/themes'
 import type { AiPhase, AiProgress, CarouselKind, CarouselModel, CarouselSlideModel, PaletteId, SampleImage } from '../lib/types'
 
 const KINDS: Array<{ id: CarouselKind; label: string }> = [
@@ -41,6 +43,9 @@ export function CarouselStudio({ onCreated }: Props) {
   const [thinkNote, setThinkNote] = useState('')
   const [sources, setSources] = useState<string[]>([])
   const [sampleId, setSampleId] = useState<string | null>(null)
+  const [askOpen, setAskOpen] = useState(false)
+  const [questions, setQuestions] = useState(() => defaultQuestions('', 'carousel'))
+  const [answers, setAnswers] = useState<Record<string, string>>({})
   const exportHost = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
 
@@ -67,8 +72,6 @@ export function CarouselStudio({ onCreated }: Props) {
     setThinkNote('Reading the brief')
     setSources([])
     try {
-      const nextPaletteId = paletteForPrompt(text)
-      setPaletteId(nextPaletteId)
       const next = await generateCarousel(
         text,
         nextSlides,
@@ -100,6 +103,14 @@ export function CarouselStudio({ onCreated }: Props) {
     }
   }
 
+  function openAsk(nextPrompt = prompt) {
+    const text = nextPrompt.trim()
+    if (!text) return
+    setQuestions(defaultQuestions(text, 'carousel'))
+    setAnswers({})
+    setAskOpen(true)
+  }
+
   function applySample(id: string) {
     const sample = CAROUSEL_SAMPLES.find((s) => s.id === id)
     if (!sample) return
@@ -107,7 +118,7 @@ export function CarouselStudio({ onCreated }: Props) {
     setPrompt(sample.prompt)
     setKind(sample.kind)
     setSlides(sample.slides)
-    void create(sample.prompt, sample.kind, sample.slides)
+    openAsk(sample.prompt)
   }
 
   function patchSlide(partial: Partial<CarouselSlideModel>) {
@@ -144,13 +155,13 @@ export function CarouselStudio({ onCreated }: Props) {
         className="composer"
         onSubmit={(e) => {
           e.preventDefault()
-          void create()
+          openAsk()
         }}
       >
         <textarea
           autoFocus
           id="ca-prompt"
-          placeholder="Any topic. AI researches, writes original slides, and illustrates them."
+          placeholder="What do you want made? Be specific."
           value={prompt}
           onChange={(e) => {
             setPrompt(e.target.value)
@@ -181,9 +192,19 @@ export function CarouselStudio({ onCreated }: Props) {
             ))}
           </div>
           <button className="primary" disabled={!prompt.trim() || thinking} type="submit">
-            {thinking ? 'Thinking…' : 'Generate'}
+            {thinking ? 'Building…' : askOpen ? 'Update questions' : 'Next'}
           </button>
         </div>
+        {askOpen ? (
+          <BriefAsk
+            answers={answers}
+            busy={thinking}
+            questions={questions}
+            onBuild={() => void create(lockBrief(prompt, answers), kind, slides)}
+            onChange={(id, value) => setAnswers((prev) => ({ ...prev, [id]: value }))}
+            onSkip={() => void create(lockBrief(prompt, {}), kind, slides)}
+          />
+        ) : null}
         {thinking || thinkNote ? (
           <p className="think-line" role="status">
             {thinking ? thinkNote || 'Working…' : thinkNote}

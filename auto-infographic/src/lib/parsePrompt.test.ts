@@ -13,6 +13,14 @@ describe('parsePrompt', () => {
     expect(detectKind('SWOT for a bakery')).toBe('swot')
   })
 
+  it('keeps the original topic when the brief has follow-up answers', () => {
+    const idea = parsePrompt(
+      'Workplace disability access for new hires\n\nAudience: HR teams\n\nStay on this exact topic. Do not invent a different subject.',
+    )
+    expect(idea.title).toBe('Workplace disability access for new hires')
+    expect(idea.title).not.toMatch(/Stay on this exact topic/i)
+  })
+
   it('does not treat a closing mention of funnel as a funnel layout', () => {
     expect(detectKind('audit their funnel')).toBe('process')
     const idea = parsePrompt(

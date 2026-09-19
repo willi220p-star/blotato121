@@ -1,4 +1,5 @@
 import { detectKind, parsePrompt } from './parsePrompt'
+import { briefFooter, staysOnTopic, topicSeed } from './brief'
 import type {
   AiProgress,
   CarouselKind,
@@ -62,7 +63,7 @@ export interface CarouselDraft {
 }
 
 export function researchQuery(prompt: string): string {
-  return prompt
+  return topicSeed(prompt)
     .replace(/\n+/g, ' ')
     .replace(
       /\b(infographic|carousel|linkedin|instagram|facebook|slides?|timeline|swot|funnel|roadmap|make|create|design|generate)\b/gi,
@@ -342,7 +343,7 @@ function parseSlides(raw: unknown, count: number, seedKey: string): CarouselSlid
 }
 
 function fallbackItems(prompt: string, kind: Exclude<InfographicKind, 'auto'>, notes: ResearchNote[]): ContentItem[] {
-  const parsed = parsePrompt(prompt, kind)
+  const parsed = parsePrompt(topicSeed(prompt), kind)
   const extras: ContentItem[] = notes.flatMap((note) =>
     note.extract
       .split(/(?<=\.)\s+/)
@@ -372,7 +373,9 @@ export async function draftInfographic(
   onProgress?: (progress: AiProgress) => void,
   signal?: AbortSignal,
 ): Promise<InfographicDraft> {
-  const research = await researchTopic(prompt, signal, onProgress)
+  const research = (await researchTopic(prompt, signal, onProgress)).filter((note) =>
+    staysOnTopic(prompt, `${note.title} ${note.extract}`),
+  )
   const hinted = kind === 'auto' ? detectKind(prompt) : kind
   const resolved: Exclude<InfographicKind, 'auto'> = hinted === 'auto' ? 'process' : hinted
   const { min, max } = itemTarget(resolved)
@@ -386,15 +389,18 @@ export async function draftInfographic(
   try {
     const json = asRecord(
       await completeJson(
-        'You are a visual journalist and art director. Turn a brief plus research notes into ORIGINAL infographic copy for a vivid, magazine-quality graphic. Do not parrot the prompt. Use specific facts, names, dates, and numbers from research when present. Header is a short series name. Footer is a save-worthy sign-off. Image prompts must be colorful photographic scenes with no text. Return JSON only.',
-        `User brief:\n${prompt}\n\nRequested layout: ${kind === 'auto' ? `choose the best of ${KINDS.join(', ')}` : resolved}\nNeed ${min}-${max} items.\n\nResearch notes:\n${researchBlock(research)}\n\nJSON shape:\n{"title":"short punchy title","subtitle":"one sentence with a real insight","header":"SHORT SERIES NAME","footer":"save this / follow line","kind":"${resolved}","caption":"source line","heroImagePrompt":"vivid photographic scene, no text","items":[{"label":"short","desc":"1-2 factual sentences","value":"optional stat","group":"optional","imagePrompt":"vivid photographic scene, no text"}]}`,
+        'You make the exact piece the user specified. Do not change the topic. Do not invent a different subject, brand, era, or story. If they asked about disability, every line stays about disability. Use their required points, names, and contact details. Research may add supporting facts only if they stay on this topic. Title must name their topic. Header is a short series name on that topic. Footer can hold their contact or next step. Image prompts must match this topic, colorful, no text. Return JSON only.',
+        `User brief:\n${prompt}\n\nRequested layout: ${kind === 'auto' ? `choose the best of ${KINDS.join(', ')}` : resolved}\nNeed ${min}-${max} items.\n\nResearch notes (use only if on-topic):\n${researchBlock(research)}\n\nJSON shape:\n{"title":"on-topic title","subtitle":"one sentence on this topic","header":"SHORT SERIES NAME","footer":"contact or next step","kind":"${resolved}","caption":"source line","heroImagePrompt":"photographic scene of THIS topic, no text","items":[{"label":"short","desc":"1-2 sentences on this topic","value":"optional stat","group":"optional","imagePrompt":"photographic scene of THIS topic, no text"}]}`,
         signal,
       ),
     )
     const usedKind = kind === 'auto' ? asKind(json.kind, resolved) : resolved
     const items = parseItems(json.items, usedKind, prompt)
     if (items.length < 2) throw new Error('Model returned too few items')
-    const title = asString(json.title) || parsePrompt(prompt).title
+    const parsed = parsePrompt(topicSeed(prompt), kind)
+    const title = asString(json.title) || parsed.title
+    const blob = `${title} ${items.map((item) => `${item.label} ${item.desc}`).join(' ')}`
+    if (!staysOnTopic(prompt, blob)) throw new Error('Model left the topic')
     const heroPrompt = asString(json.heroImagePrompt) || `${title}, ${asString(json.subtitle)}`
     const header = asString(json.header) || usedKind.toUpperCase()
     const footer = asString(json.footer) || asString(json.caption) || 'Save this graphic'
@@ -404,7 +410,7 @@ export async function draftInfographic(
       subtitle: (asString(json.subtitle) || items[0]?.desc || '').slice(0, 160),
       caption: asString(json.caption) || research[0]?.title || '',
       header: header.slice(0, 28).toUpperCase(),
-      footer: footer.slice(0, 64),
+      footer: briefFooter(prompt, footer),
       kind: usedKind,
       items,
       heroImage: pollinationsImage(heroPrompt, 1280, 720, seedFrom(`hero:${prompt}:${title}`)),
@@ -413,14 +419,14 @@ export async function draftInfographic(
     }
   } catch {
     onProgress?.({ phase: 'images', note: 'Illustrating from research', sources: research.map((n) => n.title) })
-    const parsed = parsePrompt(prompt, kind)
+    const parsed = parsePrompt(topicSeed(prompt), kind)
     const items = fallbackItems(prompt, resolved, research)
     return {
       title: parsed.title,
       subtitle: (research[0]?.extract.split(/(?<=\.)\s+/)[0] || parsed.subtitle).slice(0, 160),
       caption: research.map((n) => n.title).join(' · ') || parsed.caption,
       header: resolved.toUpperCase(),
-      footer: research[0]?.title ? `Source · ${research[0].title}` : 'Save this graphic',
+      footer: briefFooter(prompt, research[0]?.title ? `Source · ${research[0].title}` : 'Save this graphic'),
       kind: resolved,
       items,
       heroImage:
@@ -449,7 +455,9 @@ export async function draftCarousel(
   onProgress?: (progress: AiProgress) => void,
   signal?: AbortSignal,
 ): Promise<CarouselDraft> {
-  const research = await researchTopic(prompt, signal, onProgress)
+  const research = (await researchTopic(prompt, signal, onProgress)).filter((note) =>
+    staysOnTopic(prompt, `${note.title} ${note.extract}`),
+  )
   const resolved = kind === 'auto' ? detectCarouselKind(prompt) : kind
   const n = Math.min(10, Math.max(3, slideCount))
 
@@ -462,8 +470,8 @@ export async function draftCarousel(
   try {
     const json = asRecord(
       await completeJson(
-        'You are a social art director. Create an ORIGINAL carousel that looks like a premium Instagram or LinkedIn series: vivid, punchy, saveable. Do not reshuffle the prompt. Use research facts. First slide is a cinematic hook, last slide is a clear close. Header is a short series name. Footer is a brand sign-off. Image prompts must be colorful photographic scenes with no text. Return JSON only.',
-        `User brief:\n${prompt}\n\nKind: ${resolved}\nExactly ${n} slides.\n\nResearch notes:\n${researchBlock(research)}\n\nJSON shape:\n{"title":"series title","subtitle":"one insight","header":"SERIES NAME","footer":"save / follow line","brand":"short brand","handle":"@handle","kind":"${resolved}","slides":[{"role":"intro|content|stat|quote|outro","kicker":"tiny label","title":"slide title","body":"2 sentences","stat":"optional","statLabel":"optional","imagePrompt":"vivid photographic scene, no text"}]}`,
+        'You make the exact carousel the user specified. Do not change the topic. Do not invent a different subject or brand. Use their required points and contact details. First slide is a hook on THEIR topic, last slide is their next step. Image prompts must match this topic, colorful, no text. Return JSON only.',
+        `User brief:\n${prompt}\n\nKind: ${resolved}\nExactly ${n} slides.\n\nResearch notes (use only if on-topic):\n${researchBlock(research)}\n\nJSON shape:\n{"title":"on-topic series title","subtitle":"one insight on this topic","header":"SERIES NAME","footer":"contact or next step","brand":"short brand","handle":"@handle","kind":"${resolved}","slides":[{"role":"intro|content|stat|quote|outro","kicker":"tiny label","title":"slide title on this topic","body":"2 sentences on this topic","stat":"optional","statLabel":"optional","imagePrompt":"photographic scene of THIS topic, no text"}]}`,
         signal,
       ),
     )
@@ -473,8 +481,8 @@ export async function draftCarousel(
       const extra = fallbackItems(prompt, 'list', research)
       while (slides.length < n) {
         const item = extra[slides.length % Math.max(extra.length, 1)] ?? {
-          label: parsePrompt(prompt).title,
-          desc: parsePrompt(prompt).subtitle,
+          label: parsePrompt(topicSeed(prompt)).title,
+          desc: parsePrompt(topicSeed(prompt)).subtitle,
         }
         const index = slides.length
         slides.push({
@@ -490,12 +498,15 @@ export async function draftCarousel(
       slides[n - 1] = { ...slides[n - 1], role: 'outro' }
     }
     onProgress?.({ phase: 'images', note: 'Composing slide photography', sources: research.map((note) => note.title) })
-    const series = (asString(json.title) || parsePrompt(prompt).title).slice(0, 80)
+    const parsed = parsePrompt(topicSeed(prompt))
+    const series = (asString(json.title) || parsed.title).slice(0, 80)
+    const blob = `${series} ${slides.map((slide) => `${slide.title} ${slide.body}`).join(' ')}`
+    if (!staysOnTopic(prompt, blob)) throw new Error('Model left the topic')
     return {
       title: series,
       subtitle: (asString(json.subtitle) || slides[0]?.body || '').slice(0, 160),
       header: (asString(json.header) || series).slice(0, 28).toUpperCase(),
-      footer: (asString(json.footer) || 'Save this series').slice(0, 64),
+      footer: briefFooter(prompt, asString(json.footer) || 'Save this series'),
       brand: (asString(json.brand) || 'Studio').slice(0, 28),
       handle: (asString(json.handle) || '@studio').slice(0, 24),
       kind: kind === 'auto' ? asCarouselKind(json.kind, resolved) : resolved,
@@ -509,7 +520,7 @@ export async function draftCarousel(
       note: 'Illustrating slides from research',
       sources: research.map((note) => note.title),
     })
-    const parsed = parsePrompt(prompt)
+    const parsed = parsePrompt(topicSeed(prompt))
     const items = fallbackItems(prompt, 'list', research)
     const slides: CarouselSlideModel[] = Array.from({ length: n }, (_, index) => {
       if (index === 0) {
@@ -551,7 +562,7 @@ export async function draftCarousel(
       title: parsed.title,
       subtitle: (research[0]?.extract.split(/(?<=\.)\s+/)[0] || parsed.subtitle).slice(0, 160),
       header: resolved.replace(/-/g, ' ').toUpperCase(),
-      footer: 'Save this series',
+      footer: briefFooter(prompt, 'Save this series'),
       brand: 'Studio',
       handle: '@studio',
       kind: resolved,

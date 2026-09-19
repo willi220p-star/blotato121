@@ -1,3 +1,4 @@
+import { topicSeed } from './brief'
 import type { ContentItem, InfographicKind, ParsedIdea } from './types'
 
 const KIND_WORDS: Array<{ kind: InfographicKind; words: string[] }> = [
@@ -140,15 +141,16 @@ export function titleFromPrompt(prompt: string): string {
 }
 
 export function parsePrompt(prompt: string, forced?: InfographicKind): ParsedIdea {
-  const kindHint = !forced || forced === 'auto' ? detectKind(prompt) : forced
-  const title = titleFromPrompt(prompt)
-  let items = extractList(prompt).slice(0, 8)
+  const seed = topicSeed(prompt)
+  const kindHint = !forced || forced === 'auto' ? detectKind(seed) : forced
+  const title = titleFromPrompt(seed)
+  let items = extractList(seed).slice(0, 8)
   if (items.length < 2) {
-    const clauses = clausesFromPrompt(prompt)
-    items = clauses.length >= 2 ? clauses : inventItems(prompt, kindHint)
+    const clauses = clausesFromPrompt(seed)
+    items = clauses.length >= 2 ? clauses : inventItems(seed, kindHint)
   }
 
-  const rest = prompt
+  const rest = seed
     .split(/\n+/)
     .map((l) => l.trim())
     .filter((l) => l && l !== title && !/^(\d+[.)]|[-*•])/.test(l))
