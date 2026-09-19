@@ -671,10 +671,13 @@ textarea:focus, input:focus { border-color: var(--ink); }
 .mode-cover .slide-shade {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--ink) 28%, transparent) 0%,
-    color-mix(in srgb, var(--ink) 12%, transparent) 32%,
-    color-mix(in srgb, var(--ink) 78%, transparent) 100%
+    color-mix(in srgb, var(--ink) 42%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 18%, transparent) 34%,
+    color-mix(in srgb, var(--ink) 88%, transparent) 100%
   );
+}
+.mode-cover .slide-title {
+  text-shadow: 0 10px 36px rgba(0, 0, 0, 0.45);
 }
 .mode-cover .slide-bar-top { color: #fff; }
 .mode-cover .piece-count {

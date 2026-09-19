@@ -67,7 +67,10 @@ export function CarouselSlide({
     height: platform.height,
     transform: `scale(${scale})`,
     transformOrigin: 'top left',
-    background: paper,
+    background:
+      mode === 'cover'
+        ? `linear-gradient(160deg, ${palette.ink} 0%, ${palette.accent} 58%, ${palette.accent2} 100%)`
+        : paper,
     color: ink,
     ['--accent' as string]: palette.accent,
     ['--accent-2' as string]: palette.accent2,
@@ -85,7 +88,14 @@ export function CarouselSlide({
     <article className={`artboard piece slide mode-${mode} role-${slide.role}`} style={style}>
       {photo ? (
         <div className="slide-media">
-          <img alt="" crossOrigin="anonymous" src={photo} />
+          <img
+            alt=""
+            crossOrigin="anonymous"
+            src={photo}
+            onError={(e) => {
+              e.currentTarget.style.opacity = '0'
+            }}
+          />
           <div className="slide-shade" />
         </div>
       ) : (

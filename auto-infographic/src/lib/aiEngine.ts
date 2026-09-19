@@ -1,6 +1,6 @@
 import { coverPrompt, planRoles, pointsFromText } from './slideLayout'
-import { detectKind, parsePrompt } from './parsePrompt'
-import { briefFooter, staysOnTopic, topicSeed } from './brief'
+import { detectKind, parsePrompt, titleFromPrompt } from './parsePrompt'
+import { briefFooter, fieldFromBrief, staysOnTopic, topicSeed } from './brief'
 import type {
   AiProgress,
   CarouselKind,
@@ -358,6 +358,40 @@ function parseSlides(
   })
 }
 
+function carouselItems(prompt: string, notes: ResearchNote[]): ContentItem[] {
+  const seed = topicSeed(prompt)
+  const title = titleFromPrompt(seed)
+  const must = fieldFromBrief(prompt, 'Must include')
+    .split(/,| and /i)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 1)
+  if (must.length >= 2) {
+    return must.slice(0, 6).map((label) => ({
+      label,
+      desc: `${label} belongs in ${title}.`,
+    }))
+  }
+  const fromNotes = notes.flatMap((note) =>
+    note.extract
+      .split(/(?<=\.)\s+/)
+      .map((sentence) => sentence.trim())
+      .filter((sentence) => sentence.length > 40 && staysOnTopic(prompt, sentence))
+      .slice(0, 2)
+      .map((sentence) => ({
+        label: note.title,
+        desc: sentence.replace(/\.$/, ''),
+        image: note.thumbnail,
+      })),
+  )
+  if (fromNotes.length >= 2) return fromNotes.slice(0, 6)
+  return [
+    { label: title, desc: notes[0]?.extract.split(/(?<=\.)\s+/)[0] || `A clear look at ${title}.` },
+    { label: `Why ${title} matters`, desc: 'The cost of ignoring it shows up in people, time, and trust.' },
+    { label: 'What to change first', desc: 'Pick one change this week and put a name on it.' },
+    { label: 'How to keep it', desc: 'Write it into the habit, not a one-off poster.' },
+  ]
+}
+
 function fallbackItems(prompt: string, kind: Exclude<InfographicKind, 'auto'>, notes: ResearchNote[]): ContentItem[] {
   const parsed = parsePrompt(topicSeed(prompt), kind)
   const extras: ContentItem[] = notes.flatMap((note) =>
@@ -456,11 +490,11 @@ export async function draftInfographic(
 
 function detectCarouselKind(prompt: string): Exclude<CarouselKind, 'auto'> {
   const t = prompt.toLowerCase()
-  if (/(launch|drop|new product|announce)/.test(t)) return 'product-launch'
-  if (/(how to|steps|playbook|brief)/.test(t)) return 'how-to'
-  if (/(metric|proof|%|csat|retention|clients)/.test(t)) return 'metrics'
-  if (/(offer|price|cta|buy)/.test(t)) return 'offer'
-  if (/(story|journey|from|to)/.test(t)) return 'story'
+  if (/\b(launch|drop|new product|announce)\b/.test(t)) return 'product-launch'
+  if (/\b(how to|steps|playbook)\b/.test(t)) return 'how-to'
+  if (/\b(metric|proof|csat|retention|clients)\b/.test(t)) return 'metrics'
+  if (/\b(offer|price|buy now)\b/.test(t)) return 'offer'
+  if (/\b(story|journey|narrative)\b/.test(t)) return 'story'
   return 'thought-leadership'
 }
 
@@ -496,7 +530,7 @@ export async function draftCarousel(
     let slides = parseSlides(json.slides, n, prompt, size)
     if (slides.length < 3) throw new Error('Model returned too few slides')
     if (slides.length < n) {
-      const extra = fallbackItems(prompt, 'list', research)
+      const extra = carouselItems(prompt, research)
       while (slides.length < n) {
         const item = extra[slides.length % Math.max(extra.length, 1)] ?? {
           label: parsePrompt(topicSeed(prompt)).title,
@@ -547,7 +581,7 @@ export async function draftCarousel(
       sources: research.map((note) => note.title),
     })
     const parsed = parsePrompt(topicSeed(prompt))
-    const items = fallbackItems(prompt, 'list', research)
+    const items = carouselItems(prompt, research)
     const slides: CarouselSlideModel[] = roles.map((role, index) => {
       if (role === 'intro') {
         return {
