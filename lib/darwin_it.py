@@ -19,7 +19,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
-USER_AGENT = "Mozilla/5.0 (compatible; Darwin-IT-research/1.0)"
+USER_AGENT = "Darwin-IT-research/1.0"
 ICTNT_ORIGIN = "https://www.ictnt.asn.au"
 ICTNT_LIST_URL = f"{ICTNT_ORIGIN}/ict-list-view"
 ICTNT_CRAWL_DELAY = 3.0
@@ -168,7 +168,8 @@ IT_ROLE_RULES: tuple[tuple[str, re.Pattern], ...] = (
         re.compile(
             r"\b(?:solution architect|enterprise architect|test analyst|"
             r"qa engineer|software tester|product owner|change manager|"
-            r"release manager|service manager)\b",
+            r"release manager|service manager)\b|"
+            r"\b(?:software|cloud|data|network) engineering graduates?\b",
             re.I,
         ),
     ),
@@ -206,20 +207,20 @@ ATS_HOSTS = (
     "kineticit.com.au",
 )
 JOB_CONTEXT_RE = re.compile(
-    r"\b(?:apply|career|careers|employment|hiring|job|jobs|join|opening|openings|"
-    r"opportunit(?:y|ies)|position|positions|recruit|recruitment|role|roles|"
-    r"vacancy|vacancies|work with us|we are hiring)\b",
+    r"\b(?:apply|career|careers|employment|graduate|graduates|hiring|job|jobs|join|"
+    r"opening|openings|opportunit(?:y|ies)|position|positions|recruit|recruitment|"
+    r"role|roles|vacancy|vacancies|work with us|we are hiring)\b",
     re.I,
 )
 JOB_ROLE_NOUN_RE = re.compile(
-    r"\b(?:administrator|analyst|architect|consultant|developer|engineer|"
-    r"lead|leader|manager|officer|programmer|specialist|technician|"
-    r"tester|designer|director|head)\b",
+    r"\b(?:administrators?|analysts?|architects?|consultants?|developers?|"
+    r"engineers?|graduates?|leads?|leaders?|managers?|officers?|programmers?|"
+    r"specialists?|technicians?|testers?|designers?|directors?|heads?)\b",
     re.I,
 )
 NON_JOB_TITLE_RE = re.compile(
     r"^(?:a career|about |benefits? |career in|careers?:|contact |do |how |"
-    r"learn |our |read more|see |the |view |we |what |why |send us)|"
+    r"industry leading|learn |our |read more|see |the |view |we |what |why |send us)|"
     r"\b(?:privacy policy|terms of|cookie|read more|view all jobs)\b",
     re.I,
 )
@@ -232,7 +233,9 @@ SERVICE_TITLE_RE = re.compile(
 EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
 JUNK_EMAIL_RE = re.compile(
     r"@(?:sentry\.io|example\.|wixpress\.|sentry-next|cloudflare|schema\.org)|"
-    r"^(?:noreply|no-reply|donotreply|webmaster|privacy|legal|mailer-daemon)@",
+    r"^(?:noreply|no-reply|donotreply|webmaster|privacy|legal|mailer-daemon|"
+    r"events|newsletter|media|press|unsubscribe)@|"
+    r"\.(?:js|css|png|jpg|jpeg|gif|svg|woff|map|json)$",
     re.I,
 )
 SKIP_EMAIL_HOSTS = {
@@ -242,6 +245,10 @@ SKIP_EMAIL_HOSTS = {
     "example.com",
     "schema.org",
     "embedgooglemap.net",
+    "kalmoya.com",
+    "wix.com",
+    "squarespace.com",
+    "godaddy.com",
 }
 CAREERS_LOCAL = re.compile(
     r"^(?:careers?|jobs?|recruitment|hr|people|talent|employment|vacancies|"
@@ -296,6 +303,20 @@ def _absolute(base: str, href: str | None) -> str:
     if href.startswith("mailto:"):
         return href
     return urljoin(base, href)
+
+
+def clean_website(url: str) -> str:
+    value = (url or "").replace("\t", " ").strip()
+    value = re.sub(r"^(?:url\s+)+", "", value, flags=re.I).strip()
+    value = re.sub(r"^https?://url\s+", "https://", value, flags=re.I).strip()
+    if not value:
+        return ""
+    if not value.startswith(("http://", "https://")):
+        value = "https://" + value.lstrip("/")
+    parsed = urlparse(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc or " " in parsed.netloc:
+        return ""
+    return value
 
 
 def _canonical(url: str) -> str:
@@ -366,6 +387,15 @@ def _email_local(email: str) -> str:
     return email.split("@", 1)[0]
 
 
+def _document(content: str):
+    if not (content or "").strip():
+        return None
+    try:
+        return html.fromstring(content)
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def published_emails(content: str, page_url: str = "") -> list[str]:
     found: list[str] = []
     for match in EMAIL_RE.findall(content or ""):
@@ -375,9 +405,8 @@ def published_emails(content: str, page_url: str = "") -> list[str]:
             continue
         if email not in found:
             found.append(email)
-    try:
-        document = html.fromstring(content or "")
-    except (TypeError, ValueError):
+    document = _document(content or "")
+    if document is None:
         return found
     for anchor in document.xpath("//a[starts-with(@href, 'mailto:')]"):
         href = anchor.get("href") or ""
@@ -506,7 +535,7 @@ def parse_ictnt_profile(content: str, profile_url: str) -> dict:
             and "facebook.com" not in href
             and not website
         ):
-            website = href
+            website = clean_website(href)
     body = _clean_text(document.text_content())
     contact = body[body.find("Contact Us") : body.find("Contact Us") + 240] if "Contact Us" in body else ""
     phone_match = PHONE_RE.search(contact or body)
@@ -538,14 +567,14 @@ def load_extra_companies(path: Path) -> list[dict]:
         companies.append(
             {
                 "name": item["name"],
-                "website": item.get("website") or "",
+                "website": clean_website(item.get("website") or ""),
                 "careers_url": item.get("careers_url") or "",
                 "suburb": item.get("suburb") or "Darwin",
                 "focus": item.get("focus") or "",
                 "source": item.get("source") or "local research",
                 "national": bool(item.get("national")),
                 "employer_type": item.get("employer_type") or "Private IT company",
-                "directory_email": "",
+                "directory_email": (item.get("directory_email") or "").lower(),
                 "phone": "",
                 "address": item.get("suburb") or "",
                 "profile_url": "",
@@ -605,7 +634,13 @@ def merge_companies(directory: list[dict], extras: list[dict]) -> list[dict]:
     return sorted(merged.values(), key=lambda row: str(row.get("name") or "").lower())
 
 
-def scrape_ictnt_directory(timeout: int = 20, delay: float = ICTNT_CRAWL_DELAY) -> list[dict]:
+def scrape_ictnt_directory(
+    timeout: int = 20,
+    delay: float = ICTNT_CRAWL_DELAY,
+    cache: Path | None = None,
+) -> list[dict]:
+    if cache and cache.is_file():
+        return json.loads(cache.read_text(encoding="utf-8"))
     if not _robots_allows(ICTNT_LIST_URL, timeout):
         return []
     response = _session().get(ICTNT_LIST_URL, timeout=timeout, allow_redirects=True)
@@ -624,6 +659,9 @@ def scrape_ictnt_directory(timeout: int = 20, delay: float = ICTNT_CRAWL_DELAY) 
             companies.append({**item, **parse_ictnt_profile(page.text, item["profile_url"])})
         except requests.RequestException:
             companies.append({**item, "website": "", "directory_email": ""})
+    if cache:
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps(companies, indent=2, ensure_ascii=False), encoding="utf-8")
     return companies
 
 
@@ -632,9 +670,8 @@ def _career_pages(home_url: str, content: str, extra: str = "", limit: int = 7) 
     ordered = [home_url]
     if extra:
         ordered.append(extra)
-    try:
-        document = html.fromstring(content or "")
-    except (TypeError, ValueError):
+    document = _document(content or "")
+    if document is None:
         return ordered[:limit]
     scored: list[tuple[int, str]] = []
     for anchor in document.xpath("//a[@href]"):
@@ -685,9 +722,8 @@ def _location_text(value) -> str:
 
 
 def extract_job_openings(content: str, source_url: str) -> list[dict]:
-    try:
-        document = html.fromstring(content or "")
-    except (TypeError, ValueError):
+    document = _document(content or "")
+    if document is None:
         return []
     found: list[dict] = []
     for script in document.xpath("//script[@type='application/ld+json']/text()"):
@@ -700,7 +736,7 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
             kinds = kinds if isinstance(kinds, list) else [kinds]
             if "JobPosting" not in kinds:
                 continue
-            title = _clean_text(str(item.get("title") or ""))
+            title = _clean_text(str(item.get("title") or "")).rstrip(":")
             if not plausible_it_job_title(title):
                 continue
             valid = str(item.get("validThrough") or "")
@@ -719,8 +755,8 @@ def extract_job_openings(content: str, source_url: str) -> list[dict]:
                     "employment_type": _clean_text(str(item.get("employmentType") or "")),
                 }
             )
-    for heading in document.xpath("//h1|//h2|//h3|//a[@href]"):
-        title = _clean_text(" ".join(heading.itertext()))
+    for heading in document.xpath("//h1|//h2|//h3|//h4|//strong|//a[@href]"):
+        title = _clean_text(" ".join(heading.itertext())).rstrip(":")
         href = heading.get("href") if heading.tag == "a" else ""
         target = urljoin(source_url, href) if href else source_url
         if not plausible_it_job_title(title):
@@ -770,8 +806,8 @@ def job_matches_company(opening: dict, company: dict) -> bool:
 
 
 def discover_company(company: dict, timeout: int = 12) -> dict:
-    website = (company.get("website") or "").strip()
-    careers_hint = (company.get("careers_url") or "").strip()
+    website = clean_website(company.get("website") or "")
+    careers_hint = clean_website(company.get("careers_url") or "")
     emails = []
     if company.get("directory_email"):
         emails.append(company["directory_email"].lower())
@@ -887,7 +923,9 @@ def discover_many(companies: list[dict], workers: int = 8, timeout: int = 12) ->
 
 
 def parse_ntg_job_detail(content: str, url: str) -> dict | None:
-    document = html.fromstring(content)
+    document = _document(content)
+    if document is None:
+        return None
     body = _clean_text(document.text_content())
     if re.search(r"vacancy is no longer available", body, re.I):
         return None
@@ -909,6 +947,100 @@ def parse_ntg_job_detail(content: str, url: str) -> dict | None:
         "employment_type": "",
         "contact_email": emails[0] if emails else "apply via jobs.nt.gov.au",
     }
+
+
+OFFICIAL_JOBS = (
+    {
+        "company": "NEC",
+        "position_title": "Senior Systems Engineer",
+        "job_url": "https://careers.nec.com/job/Darwin-Senior-Systems-Engineer-Nort-0800/1364382457/",
+        "location": "Darwin, Northern Territory",
+        "status": "Official careers vacancy",
+    },
+    {
+        "company": "BlueReef Technology",
+        "position_title": "IT Support Officer / Helpdesk Technician",
+        "job_url": "https://bluereef.tech/careers",
+        "location": "Darwin and Brisbane",
+        "status": "Official careers page says Darwin/Brisbane IT support roles are open; apply via the form",
+    },
+    {
+        "company": "Relational Data Systems",
+        "position_title": "Software Engineering Graduates",
+        "job_url": "https://relational.com.au/our-people/graduate-program/software-engineering-graduates/",
+        "location": "Darwin",
+        "status": "Official graduate program page",
+    },
+    {
+        "company": "Relational Data Systems",
+        "position_title": "Cloud Engineering Graduates",
+        "job_url": "https://relational.com.au/our-people/graduate-program/lssa-cloud-engineering-graduates/",
+        "location": "Darwin",
+        "status": "Official graduate program page",
+    },
+    {
+        "company": "Relational Data Systems",
+        "position_title": "Cyber Security Graduate Program",
+        "job_url": "https://relational.com.au/our-people/graduate-program/lssa-cyber-security-graduate-program/",
+        "location": "Darwin",
+        "status": "Official graduate program page",
+    },
+)
+
+
+def _append_opening(row: dict, opening: dict) -> None:
+    existing = {
+        (item.get("job_url", "").lower().rstrip("/"), item.get("position_title", "").lower())
+        for item in row.get("openings") or []
+    }
+    key = (opening["job_url"].lower().rstrip("/"), opening["position_title"].lower())
+    if key in existing:
+        return
+    row.setdefault("openings", []).append(opening)
+    row["jobs_available"] = len(row["openings"])
+    row["research_status"] = "jobs published"
+
+
+def attach_official_jobs(results: list[dict], extra_jobs: list[dict] | None = None, timeout: int = 15) -> list[dict]:
+    by_name = {(row.get("name") or "").lower(): row for row in results}
+    for item in list(OFFICIAL_JOBS) + list(extra_jobs or []):
+        row = by_name.get((item.get("company") or "").lower())
+        if not row:
+            continue
+        url = item.get("job_url") or ""
+        if url and not _robots_allows(url, timeout):
+            continue
+        if url:
+            try:
+                response = _session().get(url, timeout=timeout, allow_redirects=True)
+                response.raise_for_status()
+                extracted = extract_job_openings(response.text, response.url)
+                if extracted:
+                    for opening in extracted:
+                        if job_matches_company(opening, row) or is_darwin_location(
+                            f"{opening.get('location')} {opening.get('position_title')} {opening.get('job_url')}"
+                        ):
+                            _append_opening(row, opening)
+                    continue
+            except requests.RequestException:
+                pass
+        if not plausible_it_job_title(item.get("position_title") or ""):
+            continue
+        _append_opening(
+            row,
+            {
+                "role_category": classify_it_role(item["position_title"]),
+                "position_title": item["position_title"],
+                "job_url": url,
+                "source_page": url,
+                "status": item.get("status") or "Official careers vacancy",
+                "date_posted": "",
+                "valid_through": "",
+                "location": item.get("location") or "Darwin",
+                "employment_type": item.get("employment_type") or "",
+            },
+        )
+    return results
 
 
 def attach_ntg_jobs(results: list[dict], detail_urls: list[str], timeout: int = 15) -> list[dict]:
@@ -1225,13 +1357,18 @@ def build_workbook(
     timeout: int = 12,
     ntg_job_urls: list[str] | None = None,
     include_directory: bool = True,
+    directory_cache: Path | None = None,
 ) -> dict:
-    directory = scrape_ictnt_directory(timeout=timeout) if include_directory else []
+    directory = (
+        scrape_ictnt_directory(timeout=timeout, cache=directory_cache) if include_directory else []
+    )
     extras = load_extra_companies(extras_path)
     companies = merge_companies(directory, extras)
     results = discover_many(companies, workers=workers, timeout=timeout)
+    results = attach_official_jobs(results, timeout=timeout)
     if ntg_job_urls:
         results = attach_ntg_jobs(results, ntg_job_urls, timeout=timeout)
+    results.sort(key=lambda row: (-row.get("jobs_available", 0), str(row.get("name") or "").lower()))
     captured = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     summary = write_workbook(destination, results, captured)
     summary["directory_companies"] = len(directory)

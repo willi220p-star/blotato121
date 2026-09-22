@@ -20,7 +20,8 @@
       "website": "https://www.darwinit.com.au/",
       "suburb": "Darwin",
       "focus": "Business IT support, Microsoft 365, websites, repairs",
-      "source": "Official website"
+      "source": "Official website",
+      "directory_email": "support@darwinit.com.au"
     },
     {
       "name": "Upstream IT",
@@ -96,7 +97,7 @@
     },
     {
       "name": "Department of Corporate and Digital Development",
-      "website": "https://dcdd.nt.gov.au/",
+      "website": "https://jobs.nt.gov.au/",
       "careers_url": "https://jobs.nt.gov.au/",
       "suburb": "Darwin",
       "focus": "NT Government ICT and digital services",

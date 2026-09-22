@@ -42,6 +42,11 @@ def main() -> int:
         help="Official jobs.nt.gov.au/Home/JobDetails URL to include",
     )
     parser.add_argument("--skip-directory", action="store_true")
+    parser.add_argument(
+        "--directory-cache",
+        type=Path,
+        default=ROOT / "feeds" / "darwin-it-ictnt-cache.json",
+    )
     args = parser.parse_args()
     payload = build_workbook(
         args.out,
@@ -50,6 +55,7 @@ def main() -> int:
         timeout=args.timeout,
         ntg_job_urls=args.ntg_job,
         include_directory=not args.skip_directory,
+        directory_cache=None if args.skip_directory else args.directory_cache,
     )
     slim = []
     for row in payload["results"]:

@@ -6,6 +6,7 @@ from openpyxl import load_workbook
 
 from lib.darwin_it import (
     classify_it_role,
+    clean_website,
     extract_job_openings,
     is_darwin_location,
     merge_companies,
@@ -71,6 +72,7 @@ JOB_PAGE = """
 </script>
 <h2>Careers</h2>
 <a href="/careers/software-developer">Software Developer</a>
+<h3><strong>Desktop Support Engineers - Darwin & Brisbane</strong></h3>
 <p>Managed IT Services</p>
 </body></html>
 """
@@ -96,6 +98,9 @@ class DarwinITTest(unittest.TestCase):
         self.assertFalse(plausible_it_job_title("What is a software engineer?"))
         self.assertTrue(plausible_it_job_title("IT Support Officer"))
         self.assertTrue(plausible_it_job_title("Software Developer"))
+        self.assertTrue(plausible_it_job_title("Desktop Support Engineers - Darwin & Brisbane"))
+        self.assertTrue(plausible_it_job_title("Software Engineering Graduates"))
+        self.assertFalse(plausible_it_job_title("Industry Leading Software Engineers"))
 
     def test_prefers_careers_email_over_gmail(self):
         ranked = rank_resume_email(
@@ -105,6 +110,12 @@ class DarwinITTest(unittest.TestCase):
         self.assertEqual(ranked["best_resume_email"], "jobs@trueblueit.com.au")
         self.assertEqual(ranked["email_type"], "careers / HR inbox")
         self.assertEqual(ranked["gmail_email"], "owner@gmail.com")
+
+    def test_cleans_directory_website_values(self):
+        self.assertEqual(
+            clean_website("URL\twww.moraitisconsulting.com.au"),
+            "https://www.moraitisconsulting.com.au",
+        )
 
     def test_uses_published_gmail_when_that_is_the_inbox(self):
         ranked = rank_resume_email(["fixitmichael@gmail.com"])
@@ -131,6 +142,7 @@ class DarwinITTest(unittest.TestCase):
         titles = {item["position_title"] for item in openings}
         self.assertIn("Senior Systems Engineer", titles)
         self.assertIn("Software Developer", titles)
+        self.assertIn("Desktop Support Engineers - Darwin & Brisbane", titles)
         self.assertNotIn("Accountant", titles)
         self.assertNotIn("IT Support Officer", titles)
 
