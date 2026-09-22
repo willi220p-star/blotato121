@@ -1,0 +1,566 @@
+{
+  "summary": {
+    "companies": 41,
+    "hiring": 6,
+    "jobs": 16,
+    "emails": 32,
+    "gmails": 0,
+    "xlsx": "/workspace/feeds/Darwin_IT_companies_jobs.xlsx",
+    "captured_at": "2026-09-22T22:50:46+00:00",
+    "directory_companies": 24,
+    "extra_companies": 17
+  },
+  "companies": [
+    {
+      "name": "Area9",
+      "website": "https://www.area9.com.au/",
+      "jobs_available": 6,
+      "best_resume_email": "hr@area9.com.au",
+      "gmail_email": "",
+      "research_status": "jobs published",
+      "openings": [
+        {
+          "role_category": "IT Support / Helpdesk",
+          "position_title": "Service Desk Engineers Remote and Onsite",
+          "job_url": "https://www.area9.com.au/careers-join-the-team",
+          "source_page": "https://www.area9.com.au/careers-join-the-team",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "DevOps / Platform",
+          "position_title": "DevOps Engineers",
+          "job_url": "https://www.area9.com.au/careers-join-the-team",
+          "source_page": "https://www.area9.com.au/careers-join-the-team",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "Project / Business Analyst",
+          "position_title": "Business Analyst",
+          "job_url": "https://www.area9.com.au/careers-join-the-team",
+          "source_page": "https://www.area9.com.au/careers-join-the-team",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "Software Developer / Engineer",
+          "position_title": "Software Developer",
+          "job_url": "https://www.area9.com.au/careers-join-the-team",
+          "source_page": "https://www.area9.com.au/careers-join-the-team",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "Network Engineer",
+          "position_title": "Senior/Network Engineer – Work from Home anywhere in Australia",
+          "job_url": "https://www.area9.com.au/current-vacancies",
+          "source_page": "https://www.area9.com.au/current-vacancies",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "IT Support / Helpdesk",
+          "position_title": "Desktop Support Engineers - Darwin & Brisbane",
+          "job_url": "https://www.area9.com.au/current-vacancies",
+          "source_page": "https://www.area9.com.au/current-vacancies",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        }
+      ]
+    },
+    {
+      "name": "Jackadder International",
+      "website": "https://www.jackadder.international/",
+      "jobs_available": 4,
+      "best_resume_email": "info@jackadder.international",
+      "gmail_email": "",
+      "research_status": "jobs published",
+      "openings": [
+        {
+          "role_category": "Project / Business Analyst",
+          "position_title": "Senior Business Analyst",
+          "job_url": "https://www.jackadder.international/careers/",
+          "source_page": "https://www.jackadder.international/careers/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "ICT Consultant",
+          "position_title": "monday.com Solutions Consultant",
+          "job_url": "https://www.jackadder.international/careers/",
+          "source_page": "https://www.jackadder.international/careers/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "Project / Business Analyst",
+          "position_title": "ICT Project Manager",
+          "job_url": "https://www.jackadder.international/careers/",
+          "source_page": "https://www.jackadder.international/careers/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "Project / Business Analyst",
+          "position_title": "Business Analyst",
+          "job_url": "https://www.jackadder.international/careers/",
+          "source_page": "https://www.jackadder.international/careers/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        }
+      ]
+    },
+    {
+      "name": "Relational Data Systems",
+      "website": "https://relational.com.au/",
+      "jobs_available": 3,
+      "best_resume_email": "enquiries@relational.com.au",
+      "gmail_email": "",
+      "research_status": "jobs published",
+      "openings": [
+        {
+          "role_category": "Cybersecurity",
+          "position_title": "Cyber Security Graduate Program",
+          "job_url": "https://relational.com.au/our-people/graduate-program/lssa-cyber-security-graduate-program/",
+          "source_page": "https://relational.com.au/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "Other IT Role",
+          "position_title": "Cloud Engineering Graduates",
+          "job_url": "https://relational.com.au/our-people/graduate-program/lssa-cloud-engineering-graduates/",
+          "source_page": "https://relational.com.au/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        },
+        {
+          "role_category": "Other IT Role",
+          "position_title": "Software Engineering Graduates",
+          "job_url": "https://relational.com.au/our-people/graduate-program/software-engineering-graduates/",
+          "source_page": "https://relational.com.au/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        }
+      ]
+    },
+    {
+      "name": "BlueReef Technology",
+      "website": "https://bluereef.tech/",
+      "jobs_available": 1,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "jobs published",
+      "openings": [
+        {
+          "role_category": "IT Support / Helpdesk",
+          "position_title": "IT Support Officer / Helpdesk Technician",
+          "job_url": "https://bluereef.tech/careers",
+          "source_page": "https://bluereef.tech/careers",
+          "status": "Official careers page says Darwin/Brisbane IT support roles are open; apply via the form",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "Darwin and Brisbane",
+          "employment_type": ""
+        }
+      ]
+    },
+    {
+      "name": "MYtech Consulting Services",
+      "website": "https://www.mytechcs.com/",
+      "jobs_available": 1,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "jobs published",
+      "openings": [
+        {
+          "role_category": "Software Developer / Engineer",
+          "position_title": ".NET Senior Developer/Team Lead",
+          "job_url": "https://www.mytechcs.com/Career",
+          "source_page": "https://www.mytechcs.com/Career",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        }
+      ]
+    },
+    {
+      "name": "NEC",
+      "website": "https://www.nec.com.au/",
+      "jobs_available": 1,
+      "best_resume_email": "contactus@nec.com.au",
+      "gmail_email": "",
+      "research_status": "jobs published",
+      "openings": [
+        {
+          "role_category": "Systems / Infrastructure Engineer",
+          "position_title": "Senior Systems Engineer",
+          "job_url": "https://careers.nec.com/job/Darwin-Senior-Systems-Engineer-Nort-0800/1364382457/",
+          "source_page": "https://careers.nec.com/job/Darwin-Senior-Systems-Engineer-Nort-0800/1364382457/",
+          "status": "Published careers-page listing; closing date not supplied",
+          "date_posted": "",
+          "valid_through": "",
+          "location": "",
+          "employment_type": ""
+        }
+      ]
+    },
+    {
+      "name": "ACTEK",
+      "website": "https://actek.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "info@actek.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "ASI Solutions",
+      "website": "https://www.asi.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Ategra Computer Technology",
+      "website": "https://www.ategra.au/",
+      "jobs_available": 0,
+      "best_resume_email": "ategra@ategra.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Captovate",
+      "website": "https://www.captovate.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "hello@captovate.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Cathara Consulting",
+      "website": "https://www.catharaconsulting.com/",
+      "jobs_available": 0,
+      "best_resume_email": "lainey.murphy@catharaconsulting.com",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Charles Darwin University",
+      "website": "https://www.cdu.edu.au/",
+      "jobs_available": 0,
+      "best_resume_email": "cduevents@cdu.edu.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Darwin IT Support",
+      "website": "https://www.darwinit.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "support@darwinit.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Department of Corporate and Digital Development",
+      "website": "https://jobs.nt.gov.au/Home/Search",
+      "jobs_available": 0,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Dialog",
+      "website": "https://www.ncs.co/en-au/?redirectFrom=Dialog-Group",
+      "jobs_available": 0,
+      "best_resume_email": "recruitment@au.ncs.co",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "DXC Technology",
+      "website": "https://dxc.com",
+      "jobs_available": 0,
+      "best_resume_email": "gss-hr-er@dxc.com",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Emerge IT",
+      "website": "https://www.emergeit.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "hello@emergeit.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Fix IT Michael",
+      "website": "https://fixitmichael.com/",
+      "jobs_available": 0,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Get A Geek NT",
+      "website": "https://getageeknt.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "geek@getageeknt.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "IATRT Operations",
+      "website": "https://iatrt.com/",
+      "jobs_available": 0,
+      "best_resume_email": "inquiries@iatrt.com",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Intersystems",
+      "website": "https://www.intersystems.com/au/",
+      "jobs_available": 0,
+      "best_resume_email": "support@intersystems.com",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Kinetic IT",
+      "website": "https://kineticit.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "info@kineticit.com.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Majestix Media",
+      "website": "https://www.majestixmedia.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "info@mmav.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Moraitis Consulting",
+      "website": "https://www.moraitisconsulting.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "admin@moraitisengineering.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "MSP Corporation",
+      "website": "https://www.mspcorp.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "sales@mspcorp.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "National Institute of Technology",
+      "website": "https://www.nitaustralia.edu.au/",
+      "jobs_available": 0,
+      "best_resume_email": "info@nitaustralia.edu.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "NBN Co.",
+      "website": "https://www.nbnco.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "One IT Services",
+      "website": "https://oneitservices.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "steven.roberts@oneitservices.com.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Power and Water Corporation",
+      "website": "https://www.powerwater.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "blocked by robots.txt",
+      "openings": []
+    },
+    {
+      "name": "Radical Systems",
+      "website": "https://radicalsystems.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "directors@radicalsystems.com.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Ricoh Australia Pty Ltd",
+      "website": "http://solutionsfinder.ricoh.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "bhockley@ricoh.com.au",
+      "gmail_email": "",
+      "research_status": "official website error: ConnectionError",
+      "openings": []
+    },
+    {
+      "name": "SalesForce",
+      "website": "https://www.salesforce.com/au/",
+      "jobs_available": 0,
+      "best_resume_email": "hkonedala@salesforce.com",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Secure Data Centre",
+      "website": "http://www.securedatacentre.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "dxn.admin@dxn.solutions",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "SRA Information Technology",
+      "website": "https://www.sra.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "contact@sra.com.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Techie4NT",
+      "website": "https://techie4nt.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "support@techie4nt.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Territory Technology Solutions",
+      "website": "https://www.techsolutions.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "michael@techsolutions.com.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "TQA Consulting",
+      "website": "https://www.tqaconsulting.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "info@tqaconsulting.com.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "True Blue IT Services",
+      "website": "https://trueblueitnt.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "info@trueblueit.com.au",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    },
+    {
+      "name": "Upstream IT",
+      "website": "https://upstreamit.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "blocked by robots.txt",
+      "openings": []
+    },
+    {
+      "name": "Vocus",
+      "website": "https://www.vocus.com.au/",
+      "jobs_available": 0,
+      "best_resume_email": "recruitment@vocus.com.au",
+      "gmail_email": "",
+      "research_status": "careers page found; no current Darwin IT listing extracted",
+      "openings": []
+    },
+    {
+      "name": "Xipnos",
+      "website": "https://www.xipnos.com/",
+      "jobs_available": 0,
+      "best_resume_email": "",
+      "gmail_email": "",
+      "research_status": "official site checked; no published IT jobs extracted",
+      "openings": []
+    }
+  ]
+}

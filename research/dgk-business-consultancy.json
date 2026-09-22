@@ -1,0 +1,702 @@
+{
+  "researched_at": "2026-08-25T01:12:45.342801+00:00",
+  "company_url": "https://dgkbusinessconsultancy.com",
+  "host": "dgkbusinessconsultancy.com",
+  "robots": "User-agent: *\nAllow: /\nDisallow: /directory\n\nSitemap: https://dgkbusinessconsultancy.com/sitemap.xml",
+  "skipped": [
+    "/directory"
+  ],
+  "pages_crawled": 18,
+  "tech_stack_signals": {
+    "Google Analytics 4": 18,
+    "Google Tag Manager": 18,
+    "Cloudflare": 18,
+    "HubSpot": 2,
+    "GoHighLevel": 2,
+    "Zapier": 1
+  },
+  "contacts": {
+    "emails": [
+      "support@dgkbusinessconsultancy.com.au"
+    ],
+    "phones": [
+      "0449 706 450"
+    ]
+  },
+  "pricing_signals": [
+    {
+      "url": "https://dgkbusinessconsultancy.com/foundation",
+      "amount": "$1,500",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/foundation",
+      "amount": "$3,500",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/foundation",
+      "amount": "$5,000",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/outbound",
+      "amount": "$1,500",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/outbound",
+      "amount": "$3,500",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/outbound",
+      "amount": "$5,000",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/content",
+      "amount": "$400",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/content",
+      "amount": "$999",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/content",
+      "amount": "$1,500",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/content",
+      "amount": "$50,000",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/content",
+      "amount": "$80,000",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$1,000",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$3,500",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$5,000",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$78 AUD",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$95 AUD",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$62 AUD",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$88 AUD",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$210",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$105 AUD",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$2,000",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "amount": "$3,000 AUD",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/seo",
+      "amount": "$1,500\nper month",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/seo",
+      "amount": "$2,500\nper month",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/seo",
+      "amount": "$4,000\nper month",
+      "context_kind": "other"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$500",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$900",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$50",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$30",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$20",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$25",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$99 AUD",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$149 AUD",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$567",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$128",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$99",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$149/mo",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$200",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$1,000",
+      "context_kind": "pricing"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "amount": "$99/mo",
+      "context_kind": "pricing"
+    }
+  ],
+  "team_about_signals": [
+    "grew up in Nepal. He's been in Australia for eight years, living and building in Darwin, NT, where DGK is based.",
+    "Not a CRM consultant",
+    "Signal-based lead generation across email, LinkedIn, and phone.",
+    "06, Based in Darwin. Working everywhere."
+  ],
+  "news_blog": [
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog",
+      "title": "Blog — DGK Business Consultancy",
+      "headings": [
+        "DGK Blog — Growth systems for Australian businesses",
+        "Skip the reading — let's map your growth system in one call."
+      ]
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog/missed-call-recovery-guide",
+      "title": "Missed Call Recovery Guide for Australian B2B (2026)",
+      "headings": [
+        "Missed Call Recovery, the Australian B2B",
+        "playbook.",
+        "The missed call is not a lost call. It's an unfinished one.",
+        "From publishing the number to attributing the revenue.",
+        "Most systems fail on timing, not tech.",
+        "What one Australian trades business recovers in a year.",
+        "Common questions from Australian operators.",
+        "The system in this guide ships as a preset inside DGK CRM."
+      ]
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog/how-to-get-more-clients-professional-services",
+      "title": "How to Get More Clients as a Professional Services Business (2026 Guide) | DGK",
+      "headings": [
+        "How to Get More Clients as a",
+        "(2026 Guide).",
+        "It's not your pricing. It's that nobody built you a system.",
+        "Outbound, foundation, SEO, content, ads — connected end to end.",
+        "Which service do you need first?",
+        "Australian professional services firms across five sectors.",
+        "Frequently asked questions.",
+        "Book a 30-minute strategy call with Dilip."
+      ]
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog/how-to-get-more-customers-as-a-tradie",
+      "title": "How to Get More Customers as a Tradie (2026 Guide) | DGK Business Consultancy",
+      "headings": [
+        "How to Get More Customers as a",
+        "(2026 Guide).",
+        "Most tradies are exceptional at their trade and invisible online.",
+        "SEO, foundation, outbound, content, ads — connected end to end.",
+        "Which strategy is right for your trade?",
+        "Australian tradies and service businesses across the country.",
+        "How DGK connects all five strategies.",
+        "What tradies ask us most."
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "url": "https://dgkbusinessconsultancy.com/",
+      "status": 200,
+      "kind": "home",
+      "title": "DGK, Predictable B2B Revenue. Without Referral Dependency.",
+      "headings": [
+        "Trusted by more than 20+ businesses in a year",
+        "Most Businesses",
+        "4 way we help you grow.",
+        "This is not an agency.",
+        "Specific results.",
+        "Stop relying on referrals."
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "DGK, Predictable B2B Revenue. Without Referral Dependency.\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nBuild the system every business will need tomorrow\nYou\nDon't\nHave\na\nGrowth\nProblem\nYou\nHave\na\nSystem\nProblem\nRight now, most B2B pipelines run on referrals, relationships, and luck. We replace all three with infrastructure so you stop waiting for leads and start owning the system that generates them.\nBook a Strategy Call\n→\nFree AI Health Checkup\n20+\nclients in 1yrs\n7+\nindustries\nAustralia\nbased\nNational\nreach\nTrusted by more than 20+ businesses in a year\n01, The problem\nMost Businesses\nare stuck in the same cycle.\nPipeline that stops when referrals do.\nGreat month. Flat month. Scramble month. You can't forecast. You can't scale.\nHired for marketing. No system to plug into.\nYou brought someone in. They worked hard. But without infrastructure no CRM, no sequences, no tracking the results disappointed.\nContent that disappears when you get busy.\nYou started posting. It was working. A project landed and it stopped. Your competitors kept showing up. You didn't.\nThe issue isn't effort.\nIt's the infrastructure that was missing behind it.\n02, The system\n4 way we help you grow.\nFoundation, Outreach, Content & Ads.\nStart with what you need most. Stack the rest when you're ready.\n01 / 04\nFoundation Plan\nBuild the machine before you feed it.\nYour growth system is only as good as what's behind it. No CRM, no tracking, no automation, no sales process every marketing dollar produces"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/about",
+      "status": 200,
+      "kind": "team_about",
+      "title": "About DGK | B2B Growth Systems from Darwin, Australia",
+      "headings": [
+        "About DGK, One growth system instead of six vendors",
+        "A lot of tries.",
+        "Clients kept saying the same thing.",
+        "One complete system.",
+        "Each stage builds on the last. Every system connects to one hub.",
+        "DGK is not just the service.",
+        "Small team.",
+        "Darwin is home.",
+        "For the business owner who is done paying for parts that don't connect.",
+        "Want the same system DGK uses?"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "About DGK | B2B Growth Systems from Darwin, Australia\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nAbout DGK, One growth system instead of six vendors\n01, How it started\nA lot of tries.\nOne that stuck.\nDilip Sapkota\ngrew up in Nepal. He's been in Australia for eight years, living and building in Darwin, NT, where DGK is based.\nBefore DGK, he tried a lot of things.\nAffiliate marketing\nContent marketing\nGarage sales\nCar swapping\nCRM & automation consulting\nWeb development\nEach one taught him something. None of them stuck in a way that felt like the right direction.\nThe work that eventually led to DGK was simple: web design and graphic design for local businesses. Banners, pull-up banners, business cards, websites. The work every small business needs at some point.\nBut every time Dilip sat down with a client to deliver that work, the conversation went the same way.\n02, The moment that changed everything\nClients kept saying the same thing.\n\"\nWe don't just need a website. We need someone who can handle the IT side, the marketing side, the system that converts clients automatically. We need one person, one company, who understands how all of it connects.\nNot a web designer\nNot a marketing agency\nNot a CRM consultant\nOne organisation that understands the whole picture, digital presence, lead generation, content, automation, and can connect it all into something that actually works together.\nDifferent clients. Different industries. Same problem. So Dilip stopped trying to solv"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/why-dgk",
+      "status": 200,
+      "kind": "other",
+      "title": "Why DGK, One Company. Every Stage. One Connected System.",
+      "headings": [
+        "Why DGK,",
+        "A complete growth system",
+        "We Start Where Most Businesses Should, The Foundation",
+        "We Build In Order, For a Reason",
+        "You Own Everything. Always.",
+        "DGK Is the Proof",
+        "We Use AI to Do More for Less",
+        "We Understand the Australian Business Market",
+        "What you need vs. what you get.",
+        "The option that builds something",
+        ".",
+        "Ready to build something that lasts?"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Why DGK, One Company. Every Stage. One Connected System.\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nWhy DGK\nWhy DGK,\nA complete growth system\nbuilt for Australian B2B.\nMost businesses that come to DGK have already worked with someone else. A web designer. A marketing agency. A CRM consultant. A social media manager.\nThey're here because none of it connected.\nBook a Strategy Call →\nNot because the work was bad. Because the work was done in isolation.\nA website with no CRM behind it. A CRM with no automation running through it. Content with no distribution system. Ads driving traffic to a business with no lead capture.\nEvery vendor solved their piece. Nobody solved the whole thing.\nDGK solves the whole thing.\n01\nWe Start Where Most Businesses Should, The Foundation\nEvery DGK engagement begins with infrastructure, not tactics.\nNo cold email. No ad campaigns. No content push. Not until the system that catches, converts, and follows up on every lead is built and working.\nThis is the most common mistake in B2B growth: running marketing into a broken backend. Money and effort go in, results disappoint, the marketing gets blamed, but the real problem was the foundation.\nDGK insists on getting the foundation right first. That discipline is what makes everything that comes after it actually work.\n02\nWe Build In Order, For a Reason\nFoundation → Outbound → Content → LinkedIn Ads.\nThis is not an arbitrary sequence. Each stage builds on the last.\nOutbound generates consistent pipe"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/foundation",
+      "status": 200,
+      "kind": "other",
+      "title": "Foundation Plan, Build the Machine Before You Feed It | DGK",
+      "headings": [
+        "Build the Machine",
+        "The problem most businesses don't realise they have.",
+        "What \"foundation\"",
+        "Seven modules.",
+        "Done-with-you.",
+        "Foundation Plan, pick the build that fits.",
+        "What Foundation builds",
+        "Common Objection",
+        "Questions,",
+        "If your business is growing"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Foundation Plan, Build the Machine Before You Feed It | DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\n← Service 01 / 04 · Foundation Plan\nBuild the Machine\nBefore You\nFeed It.\nMost B2B businesses try to grow before they've built the infrastructure to handle growth. The Foundation Plan builds it first.\nBuilt with you. Owned by you. Running in 8–12 weeks.\nBook a Strategy Call →\nWhy DGK\nThe Foundation stack\n01\nStrategy\nICP, offer, positioning\n02\nWebsite + CRM\nCapture & qualify\n03\nAutomation\nRouting & follow-up\n04\nTracking\nAttribution to revenue\n8–12\nweeks live\n100%\nyou own it\nThe problem\nThe problem most businesses don't realise they have.\nYou can have the best marketing in the world and still lose every lead that comes in  because there's nothing to catch them.\n01\nNo automated follow-up\nLeads go cold while you're busy delivering work.\n02\nNo CRM\nYour pipeline is a mental list or a spreadsheet that's two weeks out of date.\n03\nNo tracking\nYou can't tell what's working, so you keep guessing.\n04\nNo sales process\nEvery enquiry depends on you personally showing up to handle it.\nEvery service you add on top of a broken foundation produces worse results.\nOutbound to a business with no follow-up loses 60% of its potential. LinkedIn Ads driving traffic to a site with no lead capture burn budget. Content building authority for a business with no booking system turns interest into nothing.\nFix the foundation first. Everything else performs better.\nPre-work\nWhat \"foundation\"\nactual"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/outbound",
+      "status": 200,
+      "kind": "other",
+      "title": "Outbound Lead Generation, A Pipeline That Doesn't Depend on Who You Know | DGK",
+      "headings": [
+        "A Pipeline That Doesn't",
+        "The real reason outbound doesn't work for most businesses.",
+        "The Signal That Changes",
+        "The 3-Tier System.",
+        "Signals become",
+        "What's Built.",
+        "Done-with-you.",
+        "Outbound Lead Generation  pick your campaign size.",
+        "Industries DGK has built",
+        "Results,",
+        "Common Objection",
+        "Questions,"
+      ],
+      "tech": [
+        "HubSpot",
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Outbound Lead Generation, A Pipeline That Doesn't Depend on Who You Know | DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\n← Service 02 / 04 · Outbound Lead Generation\nA Pipeline That Doesn't\nDepend on Who You Know.\nReferrals are great, until they stop. DGK builds the system that generates qualified conversations every week through email, LinkedIn, and phone.\nCH 01\nEmail\nCH 02\nLinkedIn\nCH 03\nPhone\nCH 01\nEmail\nCH 02\nLinkedIn\nCH 03\nPhone\nsignal-based · sequenced · tracked\nBook a Strategy Call →\nThe problem\nThe real reason outbound doesn't work for most businesses.\nAsk a business owner who's tried cold outreach before and didn't get results, and you'll hear one of three things none of which are true about cold outreach. They're true about cold outreach done without a system.\nBought a list and blasted it\nNo signal. No reason why this company, at this moment, needs what you sell. Generic pitch → spam folder → nothing.\nTried it for a month then stopped\nNo infrastructure. No follow-up system. One email with no sequence. 42% of replies come from follow-ups, they never got sent.\nCold email is dead\nLazy cold email is dead. Email with no personalisation, no signal, and no deliverability infrastructure gets ignored. That's spam, not outreach.\nDGK's Outbound system is built differently.\nEvery company contacted is contacted for a reason. Every email lands in the primary inbox. Every positive reply goes straight into your pipeline. The system runs on signals  publicly available proo"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/content",
+      "status": 200,
+      "kind": "other",
+      "title": "Content System, Daily Content Without You Doing It Daily | DGK",
+      "headings": [
+        "Daily content.",
+        "Why most business content",
+        "Your expertise. Your tone. Your stories.",
+        "Ten modules.",
+        "Not guesswork.",
+        "Done-with-you.",
+        "Content System  \npick your weekly plan.",
+        "Common objections",
+        "Questions,",
+        "A content system"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare",
+        "GoHighLevel"
+      ],
+      "excerpt": "Content System, Daily Content Without You Doing It Daily | DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\n← Service 03 / 04 · Content System\nDaily content.\nWithout you doing it daily.\nMost business owners know they should be posting consistently. They start. It goes well for a few weeks. Then a big project lands, life gets in the way, and everything stops.\nThe problem isn't motivation. It's that there was never a system behind the content.\nBook a Strategy Call →\nWhy DGK\nFormats we run\n01\nLinkedIn long-form\nFounder voice, 3×/week\n02\nNewsletter\nWeekly, owned distribution\n03\nSearch articles\nBottom-funnel SEO\n04\nRepurposed shorts\nCut from sales calls\n05\nCase stories\nOutcome-led, not vanity\nThe problem\nWhy most business content\nfails.\nContent fails for three reasons. Every time. The Content System fixes all three.\n01\nNo system, just effort\nContent gets made when someone has time. When they don't, it stops. The algorithm punishes inconsistency. The audience never builds. You restart from zero every time.\n02\nGeneric AI content that sounds like nobody\nBusinesses shortcut with AI and get polished, hollow output. No specific expertise, no real stories, no tone that sounds like the people behind the business. Readers feel it. Engagement stays flat.\n03\nNo distribution strategy\nA great post published to 200 followers on one platform gets 12 likes. That same content, repurposed across 6 platforms, reaches an audience 10× the size for the same effort.\nThe difference\nYour expertise."
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/linkedin-ads",
+      "status": 200,
+      "kind": "other",
+      "title": "LinkedIn Ads, Traceable to Closed Revenue | DGK",
+      "headings": [
+        "LinkedIn Ads You Can Trace",
+        "Why most LinkedIn Ads don't produce results.",
+        "The Three-Tier LinkedIn Ad Funnel.",
+        "What's Built.",
+        "LinkedIn Ads, pick your campaign tier.",
+        "LinkedIn Ads across DGK's",
+        "Common Objection",
+        "Questions,",
+        "If you're already running Foundation and Outbound,"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "LinkedIn Ads, Traceable to Closed Revenue | DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\n← Service 04 / 04 · LinkedIn Ads\nLinkedIn Ads You Can Trace\nto Closed Revenue.\nThree-tier funnel, awareness, consideration, conversion. Each doing a specific job. Each tracked so you know what every dollar produced.\nBook a Strategy Call →\nTier 01 ·\nAwareness\nTier 02 ·\nConsideration\nTier 03 ·\nConversion\nTier 02 · Consideration\nTier 03 · Conversion\nTier 01 · Awareness\nYC\nYour Company\nSponsored\n·\nLinkedIn\n3 reasons most B2B LinkedIn campaigns leak budget, and the funnel structure that fixes it.\nInsight · 01 / 03\n\"One campaign can't warm and convert at the same time.\"\nSwipe →\ndgk.com.au\nSee the framework\nLearn more\n312\n48 comments\n27 reposts\n←\n→\nAttribution live · Pixel + CRM\n100% traceable\nThe problem\nWhy most LinkedIn Ads don't produce results.\nLinkedIn Ads fail for the same three reasons across every industry. None of them are about the platform.\nOne campaign doing three jobs\nA single direct-CTA campaign blasted at a cold audience. Cold audiences don't respond to direct CTAs, they need to be warmed first. One campaign can't warm and convert at the same time.\nNo attribution, so no learning\nBudget goes in, some leads come out, but there's no clear picture of which ad, which audience, which message produced which result. You're guessing every month.\nCreative that doesn't match the stage\nA thought leadership post to a high-intent prospect is wasted. A direct offer to someone who's n"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/seo",
+      "status": 200,
+      "kind": "other",
+      "title": "SEO for Tradies & Service Businesses | Get Found on Google | DGK",
+      "headings": [
+        "Get Found on Google",
+        "Your best customers are searching Google right now.",
+        "What DGK SEO",
+        "Six systems. One goal.",
+        "Built for Australian",
+        "How we build",
+        "SEO plans  \npick your level.",
+        "Most SEO agencies",
+        "do one thing.",
+        "Questions,",
+        "Ready to show up"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "SEO for Tradies & Service Businesses | Get Found on Google | DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\n← SEO for Tradies & Service Businesses\nGet Found on Google\nBefore Your Competitors Do.\nMost tradies and service businesses are invisible on Google, not because their work is bad, but because nobody built them a system to get found.\nDGK fixes that.\nTechnical SEO, local search, backlinks, parasite SEO, and cloud stacking, built for Australian service businesses that need enquiries, not theory.\nBook a Strategy Call →\nWhy DGK\n40\nenquiries/month\n26\nnew clients from Maps\nAustralia\nbased\nNational\nreach\nWhere you'll show up\n01\nEmergency plumber Darwin\nLocal pack\n02\nBest mechanic near me\nGoogle Maps\n03\nManaged IT services Sydney\nOrganic #1\n04\nEnd of lease cleaning Darwin\nFeatured\n05\nRoof repair Brisbane quote\nLocal pack\nThe problem\nYour best customers are searching Google right now.\nThey're finding someone else.\nWhen a homeowner in your suburb types \"plumber near me\" or \"electrician Darwin\", someone shows up in those results. That someone is getting the call. If it's not you, it's your competitor. The problem is almost never the quality of your work.\nIt's visibility.\n01\nNo technical foundation\nGoogle can't rank what it can't crawl and understand. Most tradie websites have slow load times, broken mobile layouts, no schema markup, and no tracking. Google sees them as unreliable.\n02\nNo authority, no one linking to them\nGoogle ranks websites that other websites trust. Witho"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/dgk-crm",
+      "status": 200,
+      "kind": "pricing",
+      "title": "DGK CRM | All-in-One B2B Growth Platform",
+      "headings": [
+        "Most businesses pay for",
+        "that don't talk to each other.",
+        "Five stages.",
+        "Everything included.",
+        "All the tools you need to grow your business.",
+        "All the tools you need.",
+        "Two plans.",
+        "Built for Trades + Professional",
+        "One platform vs",
+        "Straight answers",
+        "Stop paying for 6 tools that don't talk to each other."
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "DGK CRM | All-in-One B2B Growth Platform\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nNew · Growth OS\nDGK\nGrowth\nOS.\nOne\nplatform\nto\nrun\nyour\nentire\nB2B\npipeline.\nDGK CRM replaces the six disconnected tools running your business today CRM, marketing automation, websites, scheduling, payments, reviews, and AI with one login, one dashboard, one bill.\nBook a free demo →\nSee pricing\n✓\n14-day free trial\n✓\nNo credit card\n✓\nCancel anytime\n✓\nAUD pricing\nATTRACT\nLeads from every channel\nNURTURE\nAutomated across email, SMS & DM\nCLOSE\nBook · Quote · Get paid\n→ Predictable revenue\nThe 6-Tool Tax\nMost businesses pay for\nsix tools\nthat don't talk to each other.\n$500–$900+\nper month, per business\nPlus the hours lost duct-taping them together with Zaps and spreadsheets.\n📇\nCRM\n$50–150/mo\n📧\nEmail marketing\n$50–120/mo\n🖥️\nWebsite builder\n$30–80/mo\n📅\nScheduling\n$20–60/mo\n💳\nInvoicing & payments\n$25–80/mo\n⭐\nReview management\n$50–150/mo\nVS\nOne platform. From $99 AUD/month.\nEverything above, in one login, one dashboard, one bill.\nHow It Works\nFive stages.\nOne system.\nEvery stage of the customer journey, from first touch to reactivation, lives in one platform, working automatically in the background.\n🧲\nSTEP 1\nAttract\nLanding pages\nLead capture forms\nAd tracking\nChat widgets\n🔁\nSTEP 2\nNurture\nEmail sequences\nSMS follow-ups\nDM automation\nSegmentation\n✅\nSTEP 3\nConvert\nPipeline stages\nProposals & quotes\nBooking calendar\nPayments\n🚚\nSTEP 4\nDeliver\nTask workflows\nClient onboarding\nNotifications\nTeam as"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/contact",
+      "status": 200,
+      "kind": "other",
+      "title": "Contact DGK, Let's Talk. Strategy Call or AI Health Checkup.",
+      "headings": [
+        "Let's Talk.",
+        "We're here. And we respond fast.",
+        "Two ways in. Zero pressure.",
+        "Email or WhatsApp us directly",
+        "Based in Darwin.",
+        "No surprises. No hard close.",
+        "Frequently Asked Questions",
+        "Let's figure out what's blocking your growth."
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Contact DGK, Let's Talk. Strategy Call or AI Health Checkup.\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nGet in Touch\nLet's Talk.\nYou don't need to have it all figured out before reaching out.\nMost of the best DGK engagements started with a business owner who knew something wasn't working, they just weren't sure exactly what.\nThat's what the strategy call is for.\nBook a Strategy Call →\nFree AI Health Checkup\nReach us directly\nOnline\n01 · Email\nsupport@dgkbusinessconsultancy.com.au\n02 · Phone\n0449 706 450\n03 · Office\nPalmerston, NT 0830\n04 · Website\ndgkbusinessconsultancy.com.au\nResponse time: within 1hrs min to 3 business hours\nMonday to Friday, ACST\nReach Us Directly\nWe're here. And we respond fast.\nEmail\nsupport@dgkbusinessconsultancy.com.au\nPhone / WhatsApp\n0449 706 450\nLinkedIn\nlinkedin.com/company/dgk-business-consultancy\nWebsite\ndgkbusinessconsultancy.com.au\nOffice\n1 Palmerston Cct, Palmerston City NT 0830, Australia\nResponse time: within 1hrs min to 3 business hours, Monday to Friday, ACST.\nChoose How You Want to Start\nTwo ways in. Zero pressure.\nMost Popular\nBook a Strategy Call\nA free 30-minute call with Dilip. No pitch. No pressure.\nWe'll look at where your pipeline is now, what's blocking growth, and whether DGK is the right fit to fix it. You'll walk away with a clear picture of what's possible, even if we don't end up working together.\nRuns on Zoom or Google Meet. Calendar goes straight to Dilip.\nBook a Strategy Call\nFree\nFree AI Health Checkup\nNot ready "
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/tools",
+      "status": 200,
+      "kind": "other",
+      "title": "Best B2B Sales & Outbound Tools 2026, DGK Tools Directory",
+      "headings": [
+        "Best B2B Sales & Outbound",
+        "Email Finder",
+        "Email Verification",
+        "Catch-all Verification",
+        "Email Sender",
+        "Email Warmer",
+        "Deliverability Infrastructure",
+        "Email Spam Tester",
+        "Phone Number Finders",
+        "Prospecting Database",
+        "Waterfall Enrichment",
+        "Intent Signals"
+      ],
+      "tech": [
+        "HubSpot",
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare",
+        "GoHighLevel",
+        "Zapier"
+      ],
+      "excerpt": "Best B2B Sales & Outbound Tools 2026, DGK Tools Directory\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nDGK Business Consultancy, Tools Directory\nBest B2B Sales & Outbound\nTools Directory 2026\nEvery tool here is independently reviewed and ranked by the DGK team. No filler, no paid placements. Tools marked\nDGK Stack\nare the ones we use daily in client delivery.\n250\ntools reviewed\n31\ncategories\nRanked\nbest first\n%\nFree Calculator\nOutbound ROI Calculator →\nModel monthly revenue, cost per meeting, CAC and LTV:CAC from your mailboxes and close rate.\nEmail Tools\nEmail Finder\n9\nEmail Verification\n8\nCatch-all Verification\n7\nEmail Sender\n8\nEmail Warmer\n8\nDeliverability Infrastructure\n8\nEmail Spam Tester\n7\nPhone & Data\nPhone Number Finders\n8\nProspecting Database\n9\nWaterfall Enrichment\n9\nIntent Signals\n9\nScraping\n8\nTechnology Lookup\n7\nLinkedIn\nLinkedIn Automation\n9\nLinkedIn Outreach at Scale\n8\nLinkedIn Scraping\n8\nLinkedIn Extension\n8\nSales Stack\nCRMs\n9\nMultichannel Outreach\n8\nWorkflow Automation\n9\nCopywriting\n8\nSales Assistant\n9\nAnalytics & More\nVisitor Identification\n8\nData Attribution\n7\nSales Reporting\n7\nVideo Outreach\n8\nProposals\n8\nPhone Dialers\n8\nSales Coaching\n8\nBuyer Engagement\n8\nSocial Listening\n7\nDGK Stack only\nCategories\nEmail Finder\nEmail Verification\nCatch-all Verification\nEmail Sender\nEmail Warmer\nDeliverability Infrastructure\nEmail Spam Tester\nPhone Number Finders\nProspecting Database\nWaterfall Enrichment\nIntent Signals\nScraping\nTechnology Lookup\nLinkedIn Automation\nL"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/roi-calculator",
+      "status": 200,
+      "kind": "other",
+      "title": "Outbound ROI Calculator, DGK",
+      "headings": [
+        "Outbound",
+        "Revenue Setup",
+        "Performance Metrics",
+        "Cost Structure",
+        "Email Performance Metrics",
+        "Sales Performance",
+        "Financial Analysis",
+        "5-Month Cash Flow Projections"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Outbound ROI Calculator, DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nDGK Tools · Free Calculator\nOutbound\nROI Calculator\nModel your monthly outbound revenue, cost per meeting, CAC and LTV:CAC in seconds. Plug in your mailboxes, sequence and close rate, tune the assumptions to your own pipeline.\nRevenue Setup\nDomains\nSending mailboxes\nEmails per day per mailbox\nWorking days per month\nSequence steps\nPerformance Metrics\nRatio per positive reply\nAEs close-rate (%)\nEstimated LTV per deal\n$\nCost Structure\nDomains monthly cost\n$\nMailboxes monthly cost\n$\nDeliverability setup cost/month\n$\nSoftware cost\n$\nGTM Engineer cost\n$\nReset to defaults\nMonthly ROI\n660.3%\nMonthly Revenue\n$44,100\nEmail Performance Metrics\n378\nEmails/Month per Mailbox\n15,120\nTotal Emails/Month\n5,040\nProspects/Month\n5,040\nLeads Contacted\nSales Performance\n17\nOpportunities\n13\nMeetings\n9\nDeals Closed\n$44,100\nRevenue\nFinancial Analysis\nTotal Monthly Cost\n$5,800\nCost per Meeting\n$460\nCustomer Acquisition Cost\n$658\nLTV/CAC Ratio\n7.6:1\n5-Month Cash Flow Projections\nMonth\nCumulative Cash Flow\nStatus\nMonth 1\n$38,300\nProfitable\nMonth 2\n$76,600\nProfitable\nMonth 3\n$114,900\nProfitable\nMonth 4\n$153,200\nProfitable\nMonth 5\n$191,500\nProfitable\nModel only · calibrate against your own pipeline data · DGK\nDGK Business Consultancy\nSelf-running growth systems for businesses. Built with you. Owned by you.\nSystem\nFoundation\nOutreach\nContent\nLinkedIn Ads\nCompany\nDGK CRM\nAbout\nWhy Us\nContact\nResources\nBlog\nDirectory\nCalculator\nA"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog",
+      "status": 200,
+      "kind": "news_blog",
+      "title": "Blog — DGK Business Consultancy",
+      "headings": [
+        "DGK Blog — Growth systems for Australian businesses",
+        "Skip the reading — let's map your growth system in one call."
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Blog — DGK Business Consultancy\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nInsights\nDGK Blog — Growth systems for Australian businesses\nPractical playbooks on lead generation, outbound, SEO, content and CRM automation. Written for founders and operators of Australian B2B and service businesses who want a system that actually runs.\nProfessional Services\nHow to Get More Clients as a Professional Services Business (2026 Guide)\nThe exact system DGK uses to help accounting firms, IT/MSP providers, NDIS providers, education consultancies, and real estate agencies build a predictable client pipeline.\nJul 12, 2026\n11 min read\nRead article\nTradies\nHow to Get More Customers as a Tradie (2026 Guide)\nA complete guide for Australian plumbers, electricians, cleaners, roofers and more, showing how to generate consistent leads online without relying on word of mouth.\nJul 10, 2026\n9 min read\nRead article\nRevenue Recovery\nThe Missed Call Recovery Guide for Australian B2B (2026)\nAustralian trades and B2B service businesses miss 20–40% of calls. Here is the missed-call text-back system that turns those lost calls into booked jobs within 60 seconds.\nJul 09, 2026\n10 min read\nRead article\nReady to build yours?\nSkip the reading — let's map your growth system in one call.\nBook a call\nDGK Business Consultancy\nSelf-running growth systems for businesses. Built with you. Owned by you.\nSystem\nFoundation\nOutreach\nContent\nLinkedIn Ads\nCompany\nDGK CRM\nAbout\nWhy Us\nContact\nResources\nBlog\nDirectory\nCa"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog/missed-call-recovery-guide",
+      "status": 200,
+      "kind": "news_blog",
+      "title": "Missed Call Recovery Guide for Australian B2B (2026)",
+      "headings": [
+        "Missed Call Recovery, the Australian B2B",
+        "playbook.",
+        "The missed call is not a lost call. It's an unfinished one.",
+        "From publishing the number to attributing the revenue.",
+        "Most systems fail on timing, not tech.",
+        "What one Australian trades business recovers in a year.",
+        "Common questions from Australian operators.",
+        "The system in this guide ships as a preset inside DGK CRM."
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Missed Call Recovery Guide for Australian B2B (2026)\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nDGK\n/\nGuide\n/\nMissed Call Recovery\nMissed Call Recovery, the Australian B2B\nMissed Call Text Back\nplaybook.\nMost Australian trades and B2B service businesses miss between 20 and 40 percent of the calls they pay to generate. This guide is the complete build for a missed call text back system that recovers those calls into two-way SMS conversations, booked jobs, and tracked revenue, using the same workflow DGK runs inside our own CRM.\nPublished 9 July 2026\n·\n12 minute read\n·\nBy the DGK team\n20–40%\nof inbound B2B calls go unanswered\n< 60s\nresponse window before recall rate crashes\n35–55%\nof missed callers reply when texted back fast\n5–10×\ntypical ROI in the first 90 days\nRanges are drawn from DGK client engagements across trades, MSP, accounting, and NDIS providers in Australia. Your numbers will vary, use the\nDGK ROI calculator\nto model your own.\nWhy this matters\nThe missed call is not a lost call. It's an unfinished one.\nEvery Australian B2B business that runs Google Ads, Google Business Profile, or any form of phone-first lead generation is paying twice for missed calls. Once to generate the call. Then again, in silence, when the caller calls the next business on the list and books the job with them instead.\nThe economics are unforgiving. If your cost per call is A$40 and your close rate on answered calls is 40% at an average job value of A$1,500, every missed call that go"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog/how-to-get-more-clients-professional-services",
+      "status": 200,
+      "kind": "news_blog",
+      "title": "How to Get More Clients as a Professional Services Business (2026 Guide) | DGK",
+      "headings": [
+        "How to Get More Clients as a",
+        "(2026 Guide).",
+        "It's not your pricing. It's that nobody built you a system.",
+        "Outbound, foundation, SEO, content, ads — connected end to end.",
+        "Which service do you need first?",
+        "Australian professional services firms across five sectors.",
+        "Frequently asked questions.",
+        "Book a 30-minute strategy call with Dilip."
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "How to Get More Clients as a Professional Services Business (2026 Guide) | DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nDGK\n/\nGuide\n/\nProfessional Services\nHow to Get More Clients as a\nProfessional Services Business\n(2026 Guide).\nReferrals are not a growth strategy. They are a starting point. Most professional services businesses in Australia — accountants, IT providers, NDIS providers, education consultancies, real estate agencies — are one quiet quarter away from scrambling. Exceptional at what they do. Invisible to the clients they haven't met yet.\nThis guide covers exactly how to get more clients as a professional services business using the five systems DGK builds for Australian firms that want consistent, predictable client flow — not a referral lottery.\nPublished 12 July 2026\n·\n8 minute read\n·\nBy Dilip Sapkota, DGK Business Consultancy\nWhy firms struggle to grow\nIt's not your pricing. It's that nobody built you a system.\nMost professional services businesses grow by accident — a client refers a colleague, someone finds you on Google, a networking contact sends work your way. When it happens, great. When it stops, you have no lever to pull.\nThe firms consistently winning new clients in 2026 are not working harder or spending more on ads. They have a connected system where outbound reaches the right prospects at the right moment, their website converts interest into booked calls, Google delivers a steady stream of inbound enquiries, content builds trust before"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/blog/how-to-get-more-customers-as-a-tradie",
+      "status": 200,
+      "kind": "news_blog",
+      "title": "How to Get More Customers as a Tradie (2026 Guide) | DGK Business Consultancy",
+      "headings": [
+        "How to Get More Customers as a",
+        "(2026 Guide).",
+        "Most tradies are exceptional at their trade and invisible online.",
+        "SEO, foundation, outbound, content, ads — connected end to end.",
+        "Which strategy is right for your trade?",
+        "Australian tradies and service businesses across the country.",
+        "How DGK connects all five strategies.",
+        "What tradies ask us most.",
+        "Build a system that generates leads while you're on the tools."
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "How to Get More Customers as a Tradie (2026 Guide) | DGK Business Consultancy\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nDGK\n/\nGuide\n/\nTradie Marketing\nHow to Get More Customers as a\nTradie\n(2026 Guide).\nIf you're a tradie in Australia — a plumber, electrician, cleaner, roofer, tiler, mechanic, or any other service-based trade — you already know what it feels like when the phone stops ringing. One month is great. The next is quiet. You're relying on word of mouth, the occasional referral, and hoping last year's customers remember you when their mate needs someone. That's not a pipeline. That's a gamble.\nThis guide covers exactly how to get more customers as a tradie in 2026 — not vague advice about \"being consistent on social media,\" but a specific system that Australian service businesses are using right now to generate consistent enquiries month after month.\nPublished 12 July 2026\n·\n9 minute read\n·\nBy Dilip Sapkota, DGK Business Consultancy\nWhy most tradies struggle\nMost tradies are exceptional at their trade and invisible online.\nYour potential customers are not asking around as much as they used to. They're picking up their phone, typing \"plumber near me\" or \"best electrician Darwin\" into Google, and calling whoever shows up first. If that's not you — it's your competitor. Every single time.\nThe tradies getting consistent work in 2026 have one thing in common: they have a system that generates enquiries without them doing anything manually. They built it once, an"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/lead-generation-darwin",
+      "status": 200,
+      "kind": "other",
+      "title": "Lead Generation Darwin & Northern Territory | DGK Business Consultancy",
+      "headings": [
+        "Lead Generation in Darwin &",
+        "Why NT businesses hit a growth ceiling, and how we fix it.",
+        "Four systems. Local delivery.",
+        "Based in Darwin. Serving the Territory & Australia.",
+        "Ready to build a Territory pipeline that doesn't stop?"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Lead Generation Darwin & Northern Territory | DGK Business Consultancy\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nDarwin · Northern Territory\nLead Generation in Darwin &\nthe Northern Territory.\nDGK is a Darwin-based B2B growth consultancy. We build outbound, LinkedIn and CRM systems that book qualified meetings for Territory businesses, without depending on referrals or word of mouth.\nBook a Strategy Call →\nSee the outbound system\nBuilt for the Territory\nWhy NT businesses hit a growth ceiling, and how we fix it.\nThe referral ceiling\nDarwin is a relationship market. That works, until you've met everyone. We build a pipeline that generates new conversations every week without waiting on introductions.\nSelling beyond the Territory\nMost NT businesses need customers in Sydney, Melbourne, Brisbane and Perth to scale. Our outbound and LinkedIn systems reach interstate buyers with signal-based precision.\nSmall teams, big pipeline\nYou don't need a full sales team. We build the system, run the campaigns and hand you booked calls, so one owner can compete with a mainland agency.\nServices for Darwin & NT businesses\nFour systems. Local delivery.\nFoundation\n→\nPositioning, offer and website that give Darwin businesses an unfair advantage online.\nOutbound Lead Generation\n→\nSignal-based email, LinkedIn and phone campaigns that book qualified meetings across Australia.\nLinkedIn Ads\n→\nPaid LinkedIn campaigns targeting decision-makers in the industries your NT business serves.\nDGK CRM\n→"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/marketing-agency-darwin",
+      "status": 200,
+      "kind": "other",
+      "title": "Marketing Agency Darwin | B2B Growth & Lead Generation | DGK",
+      "headings": [
+        "A Marketing Agency in Darwin",
+        "Not another Darwin marketing agency doing pretty logos.",
+        "Four systems. One growth engine.",
+        "Darwin-based. Serving the whole Territory.",
+        "Marketing agency Darwin, answered.",
+        "Ready to work with a Darwin marketing agency that measures pipeline?"
+      ],
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "excerpt": "Marketing Agency Darwin | B2B Growth & Lead Generation | DGK\nDGK Business Consultancy\nSystem\nFoundation\nOutreach\nContent\nAds\nSEO\nTools\nDirectory\nCalculator\nAI Tools\nDGK CRM\nWhy Us\nAbout\nBlog\nContact\nBook a call\n→\nDarwin · Northern Territory\nA Marketing Agency in Darwin\nbuilt for B2B growth.\nDGK is a Darwin marketing agency focused on one thing: turning Northern Territory B2B businesses into pipeline-first companies. Websites, LinkedIn Ads, outbound and CRM, delivered locally.\nBook a Strategy Call →\nWhy DGK\nWhy DGK\nNot another Darwin marketing agency doing pretty logos.\nB2B only\nWe only work with B2B businesses. No cafés, no e-commerce, no fashion. That focus is why our systems work.\nMeasured in pipeline\nEvery campaign ties back to booked meetings and closed revenue in your CRM, not impressions or likes.\nOwned by you\nEvery asset, list, sequence and CRM we build is yours. No hostage marketing, no vendor lock-in.\nMarketing services for Darwin businesses\nFour systems. One growth engine.\nFoundation & Website\n→\nPositioning, offer and a website that converts your Darwin business' visitors into qualified conversations.\nLinkedIn Ads\n→\nPaid LinkedIn targeting the exact decision-makers your NT business needs to reach, locally and interstate.\nOutbound Lead Generation\n→\nSignal-based email and LinkedIn campaigns that book qualified meetings every week.\nDGK CRM\n→\nA CRM built for small NT teams that ties every lead back to revenue, not spreadsheets.\nLocal delivery\nDarwin-based. Serving the whole Territory.\nAs a marketing agency in Darwin, we know the Territory market: small teams, tight re"
+    }
+  ]
+}
