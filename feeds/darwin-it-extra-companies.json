@@ -1,0 +1,132 @@
+{
+  "description": "Darwin / Palmerston IT companies found outside the ICTNT member directory. Websites are official home pages only.",
+  "companies": [
+    {
+      "name": "True Blue IT Services",
+      "website": "https://trueblueitnt.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Managed IT, websites, apps, digital marketing, automation",
+      "source": "Official website"
+    },
+    {
+      "name": "Get A Geek NT",
+      "website": "https://getageeknt.com.au/",
+      "suburb": "Darwin",
+      "focus": "Managed IT, Microsoft 365, cyber security, networking",
+      "source": "Official website"
+    },
+    {
+      "name": "Darwin IT Support",
+      "website": "https://www.darwinit.com.au/",
+      "suburb": "Darwin",
+      "focus": "Business IT support, Microsoft 365, websites, repairs",
+      "source": "Official website"
+    },
+    {
+      "name": "Upstream IT",
+      "website": "https://upstreamit.com.au/",
+      "suburb": "Darwin",
+      "focus": "Microsoft 365 consulting, SharePoint, Power Automate",
+      "source": "Official website"
+    },
+    {
+      "name": "IATRT Operations",
+      "website": "https://iatrt.com/",
+      "suburb": "Winnellie",
+      "focus": "Managed IT, servers, cloud, Microsoft 365, cybersecurity",
+      "source": "Official website"
+    },
+    {
+      "name": "MYtech Consulting Services",
+      "website": "https://www.mytechcs.com/",
+      "suburb": "Darwin",
+      "focus": "IT consulting, government systems, digital transformation",
+      "source": "Official website"
+    },
+    {
+      "name": "BlueReef Technology",
+      "website": "https://bluereef.tech/",
+      "suburb": "Winnellie",
+      "focus": "Managed IT, helpdesk, cybersecurity, cloud backup",
+      "source": "Official website"
+    },
+    {
+      "name": "Ategra Computer Technology",
+      "website": "https://www.ategra.au/",
+      "suburb": "Palmerston",
+      "focus": "Computer services, internet, IT support",
+      "source": "Chamber of Commerce NT / official website"
+    },
+    {
+      "name": "Techie4NT",
+      "website": "https://techie4nt.com.au/",
+      "suburb": "Darwin / Palmerston",
+      "focus": "Computer repairs, ICT remote support",
+      "source": "Official website"
+    },
+    {
+      "name": "Fix IT Michael",
+      "website": "https://fixitmichael.com/",
+      "suburb": "Palmerston",
+      "focus": "Residential and small-business computer services",
+      "source": "Official website"
+    },
+    {
+      "name": "Xipnos",
+      "website": "https://www.xipnos.com/",
+      "suburb": "Darwin / Casuarina",
+      "focus": "ICT consulting and certification training",
+      "source": "Official website / ICTNT-related Darwin firm"
+    },
+    {
+      "name": "Vocus",
+      "website": "https://www.vocus.com.au/",
+      "suburb": "Darwin",
+      "focus": "Fibre and network infrastructure",
+      "source": "ICTNT-related Darwin listing / official website",
+      "national": true
+    },
+    {
+      "name": "MSP Corporation",
+      "website": "https://www.mspcorp.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Managed IT services",
+      "source": "Official Darwin service page",
+      "national": true
+    },
+    {
+      "name": "Department of Corporate and Digital Development",
+      "website": "https://dcdd.nt.gov.au/",
+      "careers_url": "https://jobs.nt.gov.au/",
+      "suburb": "Darwin",
+      "focus": "NT Government ICT and digital services",
+      "source": "Official NT Government employer",
+      "employer_type": "NT Government"
+    },
+    {
+      "name": "Charles Darwin University",
+      "website": "https://www.cdu.edu.au/",
+      "careers_url": "https://www.cdu.edu.au/jobs",
+      "suburb": "Casuarina / Darwin",
+      "focus": "University ICT and digital roles",
+      "source": "Official website",
+      "employer_type": "University / public"
+    },
+    {
+      "name": "Power and Water Corporation",
+      "website": "https://www.powerwater.com.au/",
+      "suburb": "Darwin",
+      "focus": "Utility ICT and digital systems",
+      "source": "NT Government related employer",
+      "employer_type": "Government-owned corporation"
+    },
+    {
+      "name": "ASI Solutions",
+      "website": "https://www.asi.com.au/",
+      "suburb": "Darwin",
+      "focus": "IT hardware and managed services",
+      "source": "Local Darwin IT search",
+      "national": true
+    }
+  ]
+}

@@ -179,6 +179,25 @@ therapy assistants, and related care roles. The summary lists filtered position
 titles and staff/opening counts for each company. Published links without a
 closing date may be stale and should be checked manually.
 
+## Darwin IT companies, jobs and resume emails
+
+Research Darwin / Palmerston IT employers and the jobs they publish on official websites:
+
+```bash
+python3 scripts/darwin_it_jobs.py
+```
+
+Writes `feeds/Darwin_IT_companies_jobs.xlsx` and `feeds/darwin-it-companies-jobs.json`. Console: `GET /download/darwin-it-companies-jobs.xlsx`.
+
+Sources:
+
+- **ICTNT** member directory (`/ict-list-view` and Darwin profile pages). Alice Springs-only members are excluded.
+- **Official company websites** — homepage, contact and careers pages. `robots.txt` is honoured.
+- **NT Government jobs** — official `jobs.nt.gov.au` vacancy pages when a JobDetails URL is supplied with `--ntg-job`.
+- Extra local MSPs and digital firms in `feeds/darwin-it-extra-companies.json`.
+
+The workbook lists each company, how many IT jobs were published, each job title and link, the best public resume inbox (`careers@` / `jobs@` / `hr@` first, then `info@` / `contact@`), and any published Gmail. Emails are never invented. LinkedIn is not crawled and Apify is not used. National firms such as NEC or DXC are kept only when a Darwin / NT listing is published. A missing careers page does not mean the company never hires.
+
 ## Upcoming earnings technical workbook
 
 Generate the next 30 calendar days of Nasdaq earnings announcements with
