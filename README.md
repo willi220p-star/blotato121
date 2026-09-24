@@ -179,6 +179,18 @@ therapy assistants, and related care roles. The summary lists filtered position
 titles and staff/opening counts for each company. Published links without a
 closing date may be stale and should be checked manually.
 
+Add head-office state and a company-to-people join:
+
+```bash
+python3 scripts/ndis_company_state_people.py \
+  feeds/NDIS_disability_nonprofit_positions.xlsx
+```
+
+This adds a `state` column throughout and three sheets: `State summary`,
+`Companies by state`, and `Company + people`. State comes from the official
+NDIS Commission head-office address. People are only those already published
+on official websites.
+
 ## Darwin IT companies, jobs and resume emails
 
 Research Darwin / Palmerston IT employers and the jobs they publish on official websites:
