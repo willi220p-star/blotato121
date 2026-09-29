@@ -24,7 +24,7 @@ export function PlatformGlyph({ platform }) {
   return <PinterestMark />;
 }
 
-export function CountLink({ href, platform, label, value, live }) {
+export function CountLink({ href, platform, label, value, live, checkedAt }) {
   const { settings } = useStudio();
   return (
     <a className="count-link" href={href} target="_blank" rel="noreferrer">
@@ -35,9 +35,10 @@ export function CountLink({ href, platform, label, value, live }) {
         <strong>{formatCompact(value)}</strong>
         <em>
           {label}
-          {live ? <i className="mini-live">Live</i> : <i className="mini-live stale">Recent</i>}
+          {live ? <i className="mini-live">Live</i> : <i className={`mini-live ${platform === "instagram" ? "" : "stale"}`}>{platform === "instagram" ? "Every minute" : "Checking"}</i>}
         </em>
         {settings.exactCounts ? <small>{formatExact(value)} exact</small> : null}
+        {platform === "instagram" ? <small>{checkedAt ? `Checked ${timeAgo(checkedAt)}` : "Checks every minute"}</small> : null}
       </span>
     </a>
   );
@@ -149,7 +150,7 @@ export function Rail() {
       <section className="panel">
         <header className="section-head">
           <h2>About me</h2>
-          <button className="text-button" type="button" onClick={() => setEditing(true)}>Edit</button>
+          <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit about</button>
         </header>
         <ul className="about-list">
           {points.map((point) => <li key={point}>{point}</li>)}

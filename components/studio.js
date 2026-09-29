@@ -73,7 +73,7 @@ export function StudioProvider({ children }) {
     refreshPosts();
     refreshInquiries();
     refreshProfile();
-    const timer = setInterval(() => refreshStats(true), 20_000);
+    const timer = setInterval(() => refreshStats(true), 60_000);
     return () => clearInterval(timer);
   }, [refreshStats, refreshPosts, refreshInquiries, refreshProfile]);
 

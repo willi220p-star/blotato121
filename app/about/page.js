@@ -16,7 +16,7 @@ export default function AboutPage() {
         <p className="eyebrow">About</p>
         <h1>About Isha</h1>
         <p>{profile?.tagline}</p>
-        <button className="ghost-button" type="button" onClick={() => setOpen(true)}>Edit about</button>
+        <button className="edit-pill" type="button" onClick={() => setOpen(true)}>Edit about</button>
       </header>
       <section className="panel">
         <h2>Bio</h2>

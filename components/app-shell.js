@@ -22,7 +22,6 @@ export function AppShell({ children }) {
   }, [pathname]);
 
   const updated = stats?.fetchedAt ? timeAgo(stats.fetchedAt) : "waiting";
-  const allLive = Boolean(stats?.tiktok?.live && stats?.instagram?.live && stats?.pinterest?.live);
   const activity = [
     ...(settings.inboxAlerts ? inquiries.slice(0, 3).map((item) => ({
       id: item.id,
@@ -77,7 +76,7 @@ export function AppShell({ children }) {
           </button>
           <p className="live-line">
             <span className={`pulse ${statsStatus === "ready" ? "on" : ""}`} />
-            Follower counts {statsStatus === "error" ? "couldn’t refresh" : statsStatus === "refreshing" ? "are refreshing" : allLive ? "are live" : "just refreshed"} · {updated}
+            {statsStatus === "refreshing" ? "Checking follower counts" : "Instagram checks every minute"} · {updated}
           </p>
           <div className="top-actions">
             <button className="icon-button" type="button" aria-label="Refresh live counts" onClick={() => refreshStats(true)}>

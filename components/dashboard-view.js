@@ -49,11 +49,11 @@ export function DashboardView() {
             <h1>Isha Dhakal <span aria-hidden="true">♡</span></h1>
             <p className="meta-line">Content creator · {profile?.pronouns || CREATOR.pronouns} · {profile?.location || CREATOR.location}</p>
             <p className="bio">{profile?.bio}</p>
-            <button className="text-button" type="button" onClick={() => setEditing(true)}>Edit bio</button>
+            <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit bio</button>
           </div>
           <div className="counts">
             <CountLink href={CREATOR.tiktok} platform="tiktok" label="Followers" value={stats?.tiktok?.followers} live={stats?.tiktok?.live} />
-            <CountLink href={CREATOR.instagram} platform="instagram" label="Followers" value={stats?.instagram?.followers} live={stats?.instagram?.live} />
+            <CountLink href={CREATOR.instagram} platform="instagram" label="Followers" value={stats?.instagram?.followers} live={stats?.instagram?.live} checkedAt={stats?.instagram?.checkedAt} />
             <CountLink href={CREATOR.pinterest} platform="pinterest" label="Followers" value={stats?.pinterest?.followers} live={stats?.pinterest?.live} />
           </div>
           <button className="ghost-button" type="button" onClick={() => downloadMediaKit(stats)}>
