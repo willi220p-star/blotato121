@@ -93,6 +93,10 @@ class Handler(BaseHTTPRequestHandler):
             "/download/ndis-disability-positions.xlsx": "NDIS_disability_nonprofit_positions.xlsx",
             "/download/nasdaq-upcoming-earnings.xlsx": "NASDAQ_US_upcoming_earnings_signals.xlsx",
             "/download/nasdaq-upcoming-earnings.csv": "NASDAQ_US_upcoming_earnings_signals.csv",
+            "/download/darwin-it-company-database.xlsx": "Darwin_IT_company_database.xlsx",
+            "/download/darwin-it-companies.csv": "darwin-it-companies.csv",
+            "/download/darwin-it-vacancies.csv": "darwin-it-vacancies.csv",
+            "/download/darwin-it-sources.csv": "darwin-it-sources.csv",
         }
         if path in downloads:
             file_path = (FEEDS / downloads[path]).resolve()

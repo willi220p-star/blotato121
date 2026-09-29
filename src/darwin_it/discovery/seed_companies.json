@@ -1,0 +1,522 @@
+{
+  "description": "Public Darwin/Greater Darwin IT, ICT and technology companies discovered from ICTNT, Chamber of Commerce NT, InfoMSP, Yellow Pages/Whereis, and official-website search. Websites are official home pages only. Employee hints are public snippets with source URLs — never invented.",
+  "companies": [
+    {
+      "name": "ACTEK",
+      "website": "https://www.actek.com.au",
+      "suburb": "Darwin City",
+      "focus": "ICT services",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/219",
+      "linkedin_hint": "https://www.linkedin.com/company/actek"
+    },
+    {
+      "name": "Area9",
+      "website": "https://www.area9.com.au/",
+      "suburb": "Winnellie",
+      "focus": "Managed IT, cloud, application services",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/89",
+      "employee_hint": {
+        "employee_count": "20-50",
+        "employee_count_type": "range",
+        "employee_count_min": "20",
+        "employee_count_max": "50",
+        "source": "InfoMSP directory estimate",
+        "source_url": "https://infomsp.com/msp/darwin/"
+      }
+    },
+    {
+      "name": "ASI Solutions",
+      "website": "https://www.asi.com.au/",
+      "suburb": "Darwin",
+      "focus": "IT hardware and managed services",
+      "source": "Official Darwin service page",
+      "national": true
+    },
+    {
+      "name": "Ategra Computer Technology",
+      "website": "https://www.ategra.au/",
+      "suburb": "Palmerston",
+      "focus": "Computer services, internet, IT support",
+      "source": "Chamber of Commerce NT / official website"
+    },
+    {
+      "name": "BlueReef Technology",
+      "website": "https://bluereef.tech/",
+      "suburb": "Winnellie",
+      "focus": "Managed IT, helpdesk, cybersecurity, cloud backup",
+      "source": "Official website",
+      "employee_hint": {
+        "employee_count": "5-10",
+        "employee_count_type": "range",
+        "employee_count_min": "5",
+        "employee_count_max": "10",
+        "source": "InfoMSP directory estimate",
+        "source_url": "https://infomsp.com/msp/darwin/"
+      }
+    },
+    {
+      "name": "Captovate",
+      "website": "https://www.captovate.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Digital and web technology",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/94"
+    },
+    {
+      "name": "Cathara Consulting",
+      "website": "https://catharaconsulting.com/",
+      "suburb": "Darwin City",
+      "focus": "ICT consulting",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/228"
+    },
+    {
+      "name": "Charles Darwin University",
+      "website": "https://www.cdu.edu.au/",
+      "careers_url": "https://www.cdu.edu.au/jobs",
+      "suburb": "Casuarina",
+      "focus": "University ICT and digital roles",
+      "source": "Official website",
+      "employer_type": "University / public"
+    },
+    {
+      "name": "Darwin IT Support",
+      "website": "https://www.darwinit.com.au/",
+      "suburb": "Darwin",
+      "focus": "Business IT support, Microsoft 365, websites, repairs",
+      "source": "Official website"
+    },
+    {
+      "name": "Department of Corporate and Digital Development",
+      "website": "https://dcd.nt.gov.au/",
+      "careers_url": "https://jobs.nt.gov.au/",
+      "suburb": "Darwin",
+      "focus": "NT Government ICT and digital services",
+      "source": "Official NT Government employer",
+      "employer_type": "NT Government"
+    },
+    {
+      "name": "Dialog",
+      "website": "https://www.dialog.com.au/",
+      "suburb": "Darwin City",
+      "focus": "ICT consulting and services",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/102"
+    },
+    {
+      "name": "DXC Technology",
+      "website": "https://dxc.com/au/en",
+      "suburb": "Darwin City",
+      "focus": "Enterprise technology services",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/211",
+      "national": true
+    },
+    {
+      "name": "Emerge IT",
+      "website": "https://www.emergeit.com.au/",
+      "suburb": "Berrimah",
+      "focus": "Managed IT services",
+      "source": "ICTNT directory / Chamber of Commerce NT",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/204",
+      "employee_hint": {
+        "employee_count": "20-50",
+        "employee_count_type": "range",
+        "employee_count_min": "20",
+        "employee_count_max": "50",
+        "source": "InfoMSP directory estimate",
+        "source_url": "https://infomsp.com/msp/darwin/"
+      }
+    },
+    {
+      "name": "Fix IT Michael",
+      "website": "https://fixitmichael.com/",
+      "suburb": "Palmerston",
+      "focus": "Residential and small-business computer services",
+      "source": "Official website"
+    },
+    {
+      "name": "Get A Geek NT",
+      "website": "https://getageeknt.com.au/",
+      "suburb": "Darwin",
+      "focus": "Managed IT, Microsoft 365, cyber security, networking",
+      "source": "Official website"
+    },
+    {
+      "name": "Globe Edge NT",
+      "website": "https://globedgent.com.au/",
+      "suburb": "Lyons",
+      "focus": "Software, cyber security, digital and IT services",
+      "source": "Official website"
+    },
+    {
+      "name": "Great Mondays",
+      "website": "https://greatmondays.com.au/",
+      "suburb": "Darwin",
+      "focus": "Web, app and workflow software development",
+      "source": "Official website"
+    },
+    {
+      "name": "Hrishi Digital Solutions",
+      "website": "https://www.hrishidigital.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Software, automation, web applications",
+      "source": "Chamber of Commerce NT / official website",
+      "linkedin_hint": "https://au.linkedin.com/company/hrishi-digital-solutions-pty-ltd",
+      "employee_hint": {
+        "employee_count": "1",
+        "employee_count_type": "estimated",
+        "employee_count_min": "1",
+        "employee_count_max": "1",
+        "source": "Public LinkedIn company snippet",
+        "source_url": "https://au.linkedin.com/company/hrishi-digital-solutions-pty-ltd"
+      }
+    },
+    {
+      "name": "IATRT Operations",
+      "website": "https://iatrt.com/",
+      "suburb": "Winnellie",
+      "focus": "Managed IT, servers, cloud, Microsoft 365, cybersecurity",
+      "source": "Official website"
+    },
+    {
+      "name": "InterSystems",
+      "website": "https://www.intersystems.com/au/",
+      "suburb": "Darwin City",
+      "focus": "Data and healthcare technology",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/183",
+      "national": true
+    },
+    {
+      "name": "Jackadder International",
+      "website": "https://jackadder.international/",
+      "suburb": "Darwin City",
+      "focus": "ICT and technology services",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/224"
+    },
+    {
+      "name": "Kinetic IT",
+      "website": "https://www.kineticit.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Enterprise managed ICT services",
+      "source": "ICTNT directory / Chamber of Commerce NT",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/159",
+      "national": true,
+      "employee_hint": {
+        "employee_count": "1400",
+        "employee_count_type": "company stated",
+        "employee_count_min": "1400",
+        "employee_count_max": "1400",
+        "source": "Chamber of Commerce NT / Kinetic IT public profile (national headcount)",
+        "source_url": "https://chambernt.com.au/Web/Web/Business-Directory/Business-Directory-Detail.aspx?CK=E3AF4C78-C081-4193-99EB-088117103084"
+      }
+    },
+    {
+      "name": "Leal Technology",
+      "website": "https://leal.com.au/",
+      "suburb": "Winnellie",
+      "focus": "IT support, managed IT, cloud, phones",
+      "source": "Public directory / official website",
+      "linkedin_hint": "https://www.linkedin.com/company/leal-technology",
+      "employee_hint": {
+        "employee_count": "5",
+        "employee_count_type": "estimated",
+        "employee_count_min": "5",
+        "employee_count_max": "5",
+        "source": "Public LinkedIn company snippet",
+        "source_url": "https://www.linkedin.com/company/leal-technology"
+      }
+    },
+    {
+      "name": "Majestix Media",
+      "website": "https://www.majestixmedia.com.au/",
+      "suburb": "Darwin",
+      "focus": "Digital media and technology",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/170"
+    },
+    {
+      "name": "Moraitis Consulting",
+      "website": "https://www.moraitisconsulting.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Technology and engineering consulting",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/225"
+    },
+    {
+      "name": "MSP Corporation",
+      "website": "https://www.mspcorp.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Managed IT services",
+      "source": "Official Darwin service page",
+      "national": true
+    },
+    {
+      "name": "MYtech Consulting Services",
+      "website": "https://www.mytechcs.com/",
+      "suburb": "Darwin",
+      "focus": "IT consulting, government systems, digital transformation",
+      "source": "Official website"
+    },
+    {
+      "name": "National Institute of Technology",
+      "website": "https://www.nitaustralia.edu.au/",
+      "suburb": "Darwin City",
+      "focus": "ICT training",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/232"
+    },
+    {
+      "name": "NBN Co",
+      "website": "https://www.nbnco.com.au/",
+      "suburb": "Darwin",
+      "focus": "National broadband network infrastructure",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/234",
+      "national": true
+    },
+    {
+      "name": "NEC",
+      "website": "https://www.nec.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Enterprise ICT and systems",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/155",
+      "national": true
+    },
+    {
+      "name": "New Future IT",
+      "website": "https://www.newfutureit.com.au/",
+      "suburb": "Winnellie",
+      "focus": "Managed IT, print, voice, cybersecurity, cloud",
+      "source": "InfoMSP / official website",
+      "linkedin_hint": "https://au.linkedin.com/company/new-future-it",
+      "employee_hint": {
+        "employee_count": "30",
+        "employee_count_type": "estimated",
+        "employee_count_min": "30",
+        "employee_count_max": "30",
+        "source": "Public LinkedIn company snippet",
+        "source_url": "https://au.linkedin.com/company/new-future-it"
+      }
+    },
+    {
+      "name": "NT IT",
+      "website": "https://www.ntit.net.au/",
+      "suburb": "Winnellie",
+      "focus": "Managed print, telecommunications, ICT services",
+      "source": "Chamber of Commerce NT / official website",
+      "employee_hint": {
+        "employee_count": "8",
+        "employee_count_type": "company stated",
+        "employee_count_min": "8",
+        "employee_count_max": "8",
+        "source": "NT IT official About page (Darwin office staff)",
+        "source_url": "https://www.ntit.net.au/about-us"
+      }
+    },
+    {
+      "name": "One IT Services",
+      "website": "https://www.oneitservices.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Managed IT, cybersecurity, cloud",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/205",
+      "linkedin_hint": "https://au.linkedin.com/company/oneitservices",
+      "employee_hint": {
+        "employee_count": "23",
+        "employee_count_type": "estimated",
+        "employee_count_min": "23",
+        "employee_count_max": "23",
+        "source": "Public LinkedIn company snippet",
+        "source_url": "https://au.linkedin.com/company/oneitservices"
+      }
+    },
+    {
+      "name": "Pixel Digital IT Solutions",
+      "website": "https://pixeldigital.net.au/",
+      "suburb": "Darwin",
+      "focus": "Managed IT, cloud, VoIP, web design",
+      "source": "Chamber of Commerce NT / official website",
+      "linkedin_hint": "https://www.linkedin.com/company/pixel-digital-au",
+      "employee_hint": {
+        "employee_count": "1",
+        "employee_count_type": "estimated",
+        "employee_count_min": "1",
+        "employee_count_max": "1",
+        "source": "Public LinkedIn company snippet",
+        "source_url": "https://www.linkedin.com/company/pixel-digital-au"
+      }
+    },
+    {
+      "name": "Portal Technology",
+      "website": "https://portaltechnology.au/",
+      "suburb": "Parap",
+      "focus": "Managed IT, cybersecurity, 3CX",
+      "source": "Chamber of Commerce NT / official website",
+      "linkedin_hint": "https://www.linkedin.com/company/portaltechnology",
+      "employee_hint": {
+        "employee_count": "19",
+        "employee_count_type": "estimated",
+        "employee_count_min": "19",
+        "employee_count_max": "19",
+        "source": "Public LinkedIn company snippet",
+        "source_url": "https://www.linkedin.com/company/portaltechnology"
+      }
+    },
+    {
+      "name": "Power and Water Corporation",
+      "website": "https://www.powerwater.com.au/",
+      "suburb": "Darwin",
+      "focus": "Utility ICT and digital systems",
+      "source": "NT Government related employer",
+      "employer_type": "Government-owned corporation"
+    },
+    {
+      "name": "Radical Systems",
+      "website": "https://www.radicalsystems.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Software development, systems integration, technology consulting",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/150",
+      "linkedin_hint": "https://www.linkedin.com/company/radical-systems",
+      "employee_hint": {
+        "employee_count": "40",
+        "employee_count_type": "estimated",
+        "employee_count_min": "40",
+        "employee_count_max": "40",
+        "source": "Public LinkedIn company snippet",
+        "source_url": "https://www.linkedin.com/company/radical-systems"
+      }
+    },
+    {
+      "name": "Relational Data Systems",
+      "website": "https://relational.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Data systems and software",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/165"
+    },
+    {
+      "name": "Ricoh Australia",
+      "website": "https://www.ricoh.com.au/",
+      "suburb": "Darwin",
+      "focus": "Workplace technology and ICT",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/178",
+      "national": true
+    },
+    {
+      "name": "Salesforce",
+      "website": "https://www.salesforce.com/au/",
+      "suburb": "Darwin",
+      "focus": "CRM / SaaS",
+      "source": "ICTNT Darwin listing",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/243",
+      "national": true,
+      "notes_seed": "ICTNT lists a Darwin contact; headquarters listed as Sydney. Include only as a Darwin-listed ICT member, not as a Darwin-headquartered firm."
+    },
+    {
+      "name": "Secure Data Centre",
+      "website": "https://www.securedatacentre.com.au/",
+      "suburb": "Darwin",
+      "focus": "Data centre services",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/151"
+    },
+    {
+      "name": "SRA Information Technology",
+      "website": "https://sra.com.au/",
+      "suburb": "Darwin",
+      "focus": "Information technology services",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/98"
+    },
+    {
+      "name": "Techie4NT",
+      "website": "https://techie4nt.com.au/",
+      "suburb": "Palmerston",
+      "focus": "Computer repairs, ICT remote support",
+      "source": "Official website"
+    },
+    {
+      "name": "TechSend",
+      "website": "https://www.techsend.com.au/",
+      "suburb": "Darwin",
+      "focus": "On-site IT support, managed IT, cyber security",
+      "source": "Official website"
+    },
+    {
+      "name": "Territory Technology Solutions",
+      "website": "https://www.techsolutions.com.au/",
+      "suburb": "Winnellie",
+      "focus": "IT services and technology solutions",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/144",
+      "employee_hint": {
+        "employee_count": "10-20",
+        "employee_count_type": "range",
+        "employee_count_min": "10",
+        "employee_count_max": "20",
+        "source": "InfoMSP directory estimate",
+        "source_url": "https://infomsp.com/msp/darwin/"
+      }
+    },
+    {
+      "name": "TQA Consulting",
+      "website": "https://www.tqaconsulting.com.au/",
+      "suburb": "Bayview",
+      "focus": "ICT consulting, software, cyber security, project delivery",
+      "source": "ICTNT directory",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/200"
+    },
+    {
+      "name": "True Blue IT Services",
+      "website": "https://trueblueit.com.au/",
+      "suburb": "Darwin City",
+      "focus": "Managed IT, websites, apps, digital marketing, automation",
+      "source": "Official website / Chamber of Commerce NT",
+      "employee_hint": {
+        "employee_count": "3",
+        "employee_count_type": "company stated",
+        "employee_count_min": "3",
+        "employee_count_max": "3",
+        "source": "Chamber of Commerce NT member profile",
+        "source_url": "https://chambernt.com.au/Web/Web/Business-Directory/Business-Directory-Detail.aspx?CK=C134E618-D94D-44CA-885A-DDE5E6BBF1C0"
+      }
+    },
+    {
+      "name": "Upstream IT",
+      "website": "https://upstreamit.com.au/",
+      "suburb": "Darwin",
+      "focus": "Microsoft 365 consulting, SharePoint, Power Automate",
+      "source": "Official website"
+    },
+    {
+      "name": "Vocus",
+      "website": "https://www.vocus.com.au/",
+      "suburb": "Darwin",
+      "focus": "Fibre and network infrastructure",
+      "source": "ICTNT-related Darwin listing / official website",
+      "national": true
+    },
+    {
+      "name": "We Fix IT",
+      "website": "https://wefixit.com.au/",
+      "suburb": "Darwin",
+      "focus": "Managed IT, cybersecurity, cloud, repairs",
+      "source": "Official website"
+    },
+    {
+      "name": "Xipnos",
+      "website": "https://www.xipnos.com/",
+      "suburb": "Casuarina",
+      "focus": "ICT consulting and certification training",
+      "source": "Official website / ICTNT-related Darwin firm"
+    }
+  ]
+}

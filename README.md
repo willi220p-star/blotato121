@@ -179,6 +179,28 @@ therapy assistants, and related care roles. The summary lists filtered position
 titles and staff/opening counts for each company. Published links without a
 closing date may be stale and should be checked manually.
 
+## Darwin IT company and hiring database
+
+Discover Darwin / Greater Darwin IT, ICT, MSP, software, cybersecurity and
+related technology companies, then enrich official websites, employee-count
+evidence, career pages and SEEK keyword search.
+
+```bash
+python3 scripts/darwin_it_research.py
+```
+
+Writes `feeds/Darwin_IT_company_database.xlsx`, `data/companies.csv`,
+`data/vacancies.csv`, `data/sources.csv`, and
+`reports/darwin-it-market-summary.md`. Console:
+`GET /download/darwin-it-company-database.xlsx`.
+
+Discovery starts from the ICTNT member directory, Chamber of Commerce NT,
+InfoMSP, local directories and official-website search. Companies are
+deduplicated by domain, name, LinkedIn slug and ABN. Employee ranges are never
+converted to exact counts. Unknown values stay Unknown. SEEK individual `/job/`
+pages are never fetched; a Cloudflare or robots block is recorded as
+`Unable to verify`. LinkedIn is not crawled.
+
 ## Upcoming earnings technical workbook
 
 Generate the next 30 calendar days of Nasdaq earnings announcements with
