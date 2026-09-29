@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CREATOR } from "../lib/catalog";
 import { formatWhen } from "../lib/format";
+import { saveInquiry } from "../lib/localStudio";
 import { useStudio } from "./studio";
 
 const TYPES = ["Paid collaboration", "UGC video", "Product review", "Event or feature", "Something else"];
@@ -23,13 +24,20 @@ export function CollabView() {
     setBusy(true);
     setError("");
     try {
-      const response = await fetch("/api/inquiries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      if (form.name.trim().length < 2) throw new Error("Add your name.");
+      if (form.message.trim().length < 8) throw new Error("Tell Isha a little about the collaboration.");
+      if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+        throw new Error("That email doesn’t look complete.");
+      }
+      saveInquiry({
+        id: crypto.randomUUID(),
+        name: form.name.trim(),
+        email: form.email.trim(),
+        brand: form.brand.trim(),
+        type: form.type,
+        message: form.message.trim(),
+        createdAt: new Date().toISOString(),
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Could not save the note");
       await refreshInquiries();
       const subject = encodeURIComponent(`${form.type} — ${form.brand || form.name}`);
       const body = encodeURIComponent(

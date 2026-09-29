@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { loadInquiries, loadPosts } from "../lib/localStudio";
+import { asset } from "../lib/paths";
 
 const StudioContext = createContext(null);
 
@@ -15,7 +17,7 @@ export function StudioProvider({ children }) {
   const refreshStats = useCallback(async (fresh = false) => {
     setStatsStatus((current) => (current === "ready" ? "refreshing" : "loading"));
     try {
-      const response = await fetch(fresh ? "/api/stats?fresh=1" : "/api/stats", { cache: "no-store" });
+      const response = await fetch(asset("/stats.json"), { cache: "no-store" });
       if (!response.ok) throw new Error("Stats request failed");
       const data = await response.json();
       setStats(data);
@@ -27,17 +29,11 @@ export function StudioProvider({ children }) {
   }, []);
 
   const refreshPosts = useCallback(async () => {
-    const response = await fetch("/api/posts", { cache: "no-store" });
-    if (!response.ok) return;
-    const data = await response.json();
-    setPosts(data.posts || []);
+    setPosts(await loadPosts());
   }, []);
 
   const refreshInquiries = useCallback(async () => {
-    const response = await fetch("/api/inquiries", { cache: "no-store" });
-    if (!response.ok) return;
-    const data = await response.json();
-    setInquiries(data.inquiries || []);
+    setInquiries(loadInquiries());
   }, []);
 
   useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
+import { publishPost } from "../lib/localStudio";
 import { Rail } from "./pieces";
 import { useStudio } from "./studio";
 
@@ -50,18 +51,16 @@ export function CreateView() {
     }
     setBusy(true);
     try {
-      const body = new FormData();
-      body.set("file", file);
-      body.set("title", title);
-      body.set("caption", caption);
-      body.set("platforms", platforms.join(","));
-      if (showSchedule && schedule) body.set("schedule", schedule);
-      const response = await fetch("/api/posts", { method: "POST", body });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Could not publish");
+      const post = await publishPost({
+        file,
+        title,
+        caption,
+        platforms,
+        schedule: showSchedule ? schedule : "",
+      });
       await refreshPosts();
-      setNotice(data.post.status === "scheduled" ? "Scheduled on your content calendar." : "Published to your studio feed.");
-      router.push(data.post.status === "scheduled" ? "/content" : "/");
+      setNotice(post.status === "scheduled" ? "Scheduled on your content calendar." : "Published to your studio feed.");
+      router.push(post.status === "scheduled" ? "/content" : "/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not publish");
     } finally {

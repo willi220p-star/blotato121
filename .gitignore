@@ -6,3 +6,6 @@ public/uploads/*
 !public/uploads/.gitkeep
 cloned
 *.log
+
+public/stats.json
+public/media/ig

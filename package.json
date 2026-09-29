@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "node --experimental-default-type=module scripts/prepare-static.mjs",
     "dev": "next dev",
+    "prebuild": "node --experimental-default-type=module scripts/prepare-static.mjs",
     "build": "next build",
     "start": "next start"
   },

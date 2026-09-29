@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { CREATOR } from "../lib/catalog";
 import { formatCompact, formatExact, timeAgo } from "../lib/format";
+import { asset } from "../lib/paths";
+import { Icon, InstagramMark, PinterestMark, TikTokMark } from "./icons";
+import { useStudio } from "./studio";
 
 function postedWhen(iso) {
   if (!iso) return "";
@@ -12,8 +15,6 @@ function postedWhen(iso) {
   }
   return timeAgo(iso);
 }
-import { Icon, InstagramMark, PinterestMark, TikTokMark } from "./icons";
-import { useStudio } from "./studio";
 
 export function PlatformGlyph({ platform }) {
   if (platform === "tiktok") return <TikTokMark />;
@@ -41,8 +42,8 @@ export function CountLink({ href, platform, label, value, live }) {
 }
 
 export function mediaSrc(item) {
-  if (item?.src) return item.src;
-  if (item?.imageUrl) return `/api/image?url=${encodeURIComponent(item.imageUrl)}`;
+  if (item?.src) return asset(item.src);
+  if (item?.imageUrl) return item.imageUrl;
   return "";
 }
 

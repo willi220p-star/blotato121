@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { PUBLIC_PINS } from "../lib/catalog";
+import { removePost } from "../lib/localStudio";
 import { ContentCard, matchesFilter } from "./pieces";
 import { useStudio } from "./studio";
 
@@ -25,15 +26,9 @@ export function ContentView() {
   const visible = items;
 
   async function remove(id) {
-    const response = await fetch("/api/posts", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    if (response.ok) {
-      await refreshPosts();
-      setNotice("Removed from the studio.");
-    }
+    await removePost(id);
+    await refreshPosts();
+    setNotice("Removed from the studio.");
   }
 
   return (

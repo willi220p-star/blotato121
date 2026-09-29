@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { CREATOR, PUBLIC_PINS } from "../lib/catalog";
 import { formatCompact } from "../lib/format";
+import { asset } from "../lib/paths";
 import { ContentCard, CountLink, downloadMediaKit, Filters, Insight, matchesFilter, mediaSrc, Rail } from "./pieces";
 import { useStudio } from "./studio";
 
@@ -30,7 +31,7 @@ export function DashboardView() {
     <div className="workspace">
       <div className="main-col">
         <section className="hero">
-          <img src="/media/avatar-tt.jpg" alt="Isha by the water at dusk" />
+          <img src={asset("/media/avatar-tt.jpg")} alt="Isha by the water at dusk" />
           <div className="hero-copy">
             <p className="script-name">Isha Dhakal</p>
             <p className="hero-sub">Content creator · Lifestyle · {CREATOR.location}</p>
@@ -39,7 +40,7 @@ export function DashboardView() {
         </section>
 
         <section className="profile-card">
-          <img className="avatar" src="/media/avatar-ig.jpg" alt="" />
+          <img className="avatar" src={asset("/media/avatar-ig.jpg")} alt="" />
           <div className="profile-copy">
             <h1>Isha Dhakal <span aria-hidden="true">♡</span></h1>
             <p className="meta-line">Content creator · {CREATOR.pronouns} · {CREATOR.location}</p>
