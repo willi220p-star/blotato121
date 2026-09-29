@@ -8,7 +8,7 @@ from pathlib import Path
 from lib.ndis_providers import fetch_register_csv, is_nt_text, parse_register_rows
 from src.nt_ndis.config import COMMISSION_FINDER_URL, UNKNOWN, today_iso
 from src.nt_ndis.deduplication import dedupe_companies
-from src.nt_ndis.validation import classify_org_type, is_nt_operation, nt_locations
+from src.nt_ndis.validation import classify_org_type, is_nt_operation, looks_like_website, nt_locations
 
 logger = logging.getLogger("nt_ndis.discovery")
 
@@ -85,7 +85,7 @@ def aggregate_nt_private(rows: list[dict]) -> list[dict]:
                 "services": groups or UNKNOWN,
                 "locations": ", ".join(locations) or "Other NT",
                 "address": rec["outlets"][0] if rec["outlets"] else rec["head_office"] or UNKNOWN,
-                "website": rec["website"] or UNKNOWN,
+                "website": rec["website"] if looks_like_website(rec["website"]) else UNKNOWN,
                 "phone": rec["phones"][0] if rec["phones"] else UNKNOWN,
                 "email": UNKNOWN,
                 "linkedin": UNKNOWN,
@@ -141,7 +141,7 @@ def discover_companies(cache_path: Path | None = None, fallback_csv: Path | None
                         "services": raw.get("registration_groups") or UNKNOWN,
                         "locations": ", ".join(nt_locations(f"{raw.get('head_office')} {raw.get('nt_outlets')}")) or "Other NT",
                         "address": raw.get("nt_outlets") or raw.get("head_office") or UNKNOWN,
-                        "website": raw.get("website") or UNKNOWN,
+                        "website": raw.get("website") if looks_like_website(raw.get("website") or "") else UNKNOWN,
                         "phone": raw.get("outlet_phone") or UNKNOWN,
                         "email": UNKNOWN,
                         "linkedin": UNKNOWN,

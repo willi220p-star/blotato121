@@ -19,21 +19,32 @@ def main() -> int:
     parser.add_argument("--limit", type=int, help="Enrich only the first N discovered companies (website-bearing first)")
     parser.add_argument("--workers", type=int, default=6, help="Parallel official-website workers")
     parser.add_argument("--no-seek", action="store_true", help="Skip SEEK keyword search")
+    parser.add_argument("--reprocess", action="store_true", help="Rebuild exports from cached register and prior enrichment")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output")
     parser.add_argument("--data-dir", type=Path, default=ROOT / "data" / "nt-ndis")
     parser.add_argument("--reports-dir", type=Path, default=ROOT / "reports")
     parser.add_argument("--feeds-dir", type=Path, default=ROOT / "feeds")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    payload = run_research(
-        output_dir=args.output_dir,
-        data_dir=args.data_dir,
-        reports_dir=args.reports_dir,
-        feeds_dir=args.feeds_dir,
-        limit=args.limit,
-        workers=args.workers,
-        seek=not args.no_seek,
-    )
+    if args.reprocess:
+        from src.nt_ndis.pipeline import reprocess_existing
+
+        payload = reprocess_existing(
+            output_dir=args.output_dir,
+            data_dir=args.data_dir,
+            reports_dir=args.reports_dir,
+            feeds_dir=args.feeds_dir,
+        )
+    else:
+        payload = run_research(
+            output_dir=args.output_dir,
+            data_dir=args.data_dir,
+            reports_dir=args.reports_dir,
+            feeds_dir=args.feeds_dir,
+            limit=args.limit,
+            workers=args.workers,
+            seek=not args.no_seek,
+        )
     stats = payload["stats"]
     print(
         f"Companies {stats['total_companies_discovered']} · "

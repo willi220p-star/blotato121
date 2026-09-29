@@ -27,6 +27,19 @@ NFP_RE = re.compile(
 )
 SOLE_TRADER_RE = re.compile(r"^[A-Z][A-Z'’\-]+,\s+[A-Z]", re.I)
 NT_RE = re.compile(r"\bNT\b|NORTHERN TERRITORY", re.I)
+NT_POSTCODE_RE = re.compile(r"\b0[89]\d{2}\b")
+AMBIGUOUS_SUBURBS = {
+    "palmerston",
+    "yarrawonga",
+    "durack",
+    "gray",
+    "driver",
+    "gunn",
+    "rosebery",
+    "bakewell",
+    "farrar",
+    "woodroffe",
+}
 
 
 def domain_of(url: str) -> str:
@@ -71,19 +84,45 @@ def classify_org_type(legal_name: str, business_name: str = "") -> str | None:
     return "private_other"
 
 
+def _nt_chunks(text: str) -> list[str]:
+    chunks = []
+    for part in re.split(r"[|;]+", text or ""):
+        part = part.strip()
+        if part and (NT_RE.search(part) or NT_POSTCODE_RE.search(part)):
+            chunks.append(part)
+    return chunks
+
+
 def nt_locations(text: str) -> list[str]:
-    blob = (text or "").lower()
+    chunks = _nt_chunks(text)
+    if not chunks:
+        return []
+    blob = " ".join(chunks)
     found = []
     for label, hints in LOCATION_HINTS.items():
-        if any(hint in blob for hint in hints):
+        for hint in hints:
+            pattern = rf"\b{re.escape(hint)}\b"
+            if not re.search(pattern, blob, re.I):
+                continue
             found.append(label)
-    if NT_RE.search(text or "") and not found:
+            break
+    if not found:
         found.append("Other NT")
-    return found or (["Other NT"] if NT_RE.search(text or "") else [])
+    return found
 
 
 def is_nt_operation(text: str) -> bool:
-    return bool(nt_locations(text) or NT_RE.search(text or ""))
+    return bool(NT_RE.search(text or "") or NT_POSTCODE_RE.search(text or ""))
+
+
+def looks_like_website(value: str) -> bool:
+    text = (value or "").strip()
+    if not text or " " in text or text.lower() in {"not publicly available", "unknown"}:
+        return False
+    if not re.search(r"\.[A-Za-z]{2,}", text):
+        return False
+    host = domain_of(text if text.startswith(("http://", "https://")) else "https://" + text)
+    return bool(host) and not host.isdigit() and "." in host
 
 
 def split_name(full_name: str) -> tuple[str, str]:

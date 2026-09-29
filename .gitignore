@@ -2,6 +2,7 @@ node_modules/
 cloned/
 .cache/
 *.log
+data/nt-ndis/register-cache.csv
 .DS_Store
 __pycache__/
 .pytest_cache/

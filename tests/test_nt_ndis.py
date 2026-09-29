@@ -9,8 +9,8 @@ from src.nt_ndis.email_finder import attach_published_email, company_email, extr
 from src.nt_ndis.employee_scraper import people_from_html
 from src.nt_ndis.exporters import completeness, write_outputs
 from src.nt_ndis.queries import company_discovery_queries, employee_queries, vacancy_queries
-from src.nt_ndis.validation import classify_org_type, email_status, nt_locations
-from src.nt_ndis.vacancy_scraper import vacancies_from_html
+from src.nt_ndis.validation import classify_org_type, email_status, is_nt_operation, nt_locations
+from src.nt_ndis.vacancy_scraper import plausible_vacancy, vacancies_from_html
 from lib.ndis_providers import parse_register_rows
 
 REGISTER = """Provider business name,Legal name,ABN,Head office address,Website,Registration status,Period of registration in force until,Approved registration groups,Conditions of registration,Outlet name,Outlet address,Outlet phone
@@ -56,6 +56,13 @@ class NtNdisIntelligenceTest(unittest.TestCase):
         self.assertEqual(nt_locations("1 Smith ST, Darwin, NT, 0800"), ["Darwin"])
         self.assertIn("Alice Springs", nt_locations("ALICE SPRINGS, NT, 0870, AU"))
         self.assertEqual(nt_locations("Cardiff, NSW, 2285"), [])
+        self.assertEqual(nt_locations("GUNNEDAH, NSW, 2380, AU"), [])
+        self.assertEqual(nt_locations("YARRAWONGA, VIC, 3730, AU"), [])
+        self.assertEqual(nt_locations("PALMERSTON, ACT, 2913, AU"), [])
+        self.assertEqual(nt_locations("YARRAWONGA, NT, 0830, AU"), ["Palmerston"])
+        self.assertEqual(nt_locations("DURACK, NT, 0830, AU"), ["Palmerston"])
+        self.assertTrue(is_nt_operation("DARWIN CITY, NT, 0800, AU"))
+        self.assertFalse(is_nt_operation("All Suburbs Specialised Driver Training, CROYDON, VIC"))
 
     def test_aggregate_keeps_nt_private_and_allied_health(self):
         rows = aggregate_nt_private(parse_register_rows(REGISTER))
@@ -126,6 +133,9 @@ class NtNdisIntelligenceTest(unittest.TestCase):
         jobs = vacancies_from_html(TEAM_HTML, "https://www.lovingarmscare.com.au/careers", company)
         titles = {row["job_title"] for row in jobs}
         self.assertIn("Support Coordinator", titles)
+        self.assertFalse(plausible_vacancy("Disability Confident Recruiter"))
+        self.assertFalse(plausible_vacancy("Graduate Program"))
+        self.assertTrue(plausible_vacancy("Support Coordinator – Darwin"))
 
     def test_search_queries_cover_nt_locations(self):
         queries = company_discovery_queries()

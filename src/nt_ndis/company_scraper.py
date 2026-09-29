@@ -11,7 +11,7 @@ from src.darwin_it.http import fetch
 from src.nt_ndis.config import UNKNOWN, today_iso
 from src.nt_ndis.email_finder import company_email, extract_emails
 from src.nt_ndis.linkedin_research import company_linkedin_from_html
-from src.nt_ndis.validation import PHONE_RE
+from src.nt_ndis.validation import PHONE_RE, looks_like_website
 
 
 def _safe_html(content: str):
@@ -55,7 +55,8 @@ def enrich_company_site(company: dict) -> tuple[dict, dict]:
     """Return (updated company, page payload {url,text,status})."""
     website = company.get("website") or ""
     page = {"ok": False, "text": "", "url": website, "source_status": "Unknown"}
-    if not website or website == UNKNOWN:
+    if not looks_like_website(website):
+        company["website"] = UNKNOWN
         company["scrape_status"] = "no official website"
         return company, page
     if not website.startswith(("http://", "https://")):

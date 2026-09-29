@@ -18,7 +18,7 @@ from src.nt_ndis.employee_scraper import people_from_html, people_page_urls
 from src.nt_ndis.exporters import write_outputs
 from src.nt_ndis.queries import company_discovery_queries
 from src.nt_ndis.seek_research import reset_seek_circuit, seek_for_company, vacancies_from_seek
-from src.nt_ndis.vacancy_scraper import career_urls, vacancies_from_html
+from src.nt_ndis.vacancy_scraper import career_urls, plausible_vacancy, vacancies_from_html
 
 logger = logging.getLogger("nt_ndis")
 
@@ -227,3 +227,73 @@ def run_research(
     }
     cache_path.write_text(json.dumps({k: payload[k] for k in ("stats", "logs")}, indent=2, ensure_ascii=False), encoding="utf-8")
     return payload
+
+
+def reprocess_existing(
+    *,
+    output_dir: Path | None = None,
+    data_dir: Path | None = None,
+    feeds_dir: Path | None = None,
+    reports_dir: Path | None = None,
+) -> dict:
+    """Rebuild locations and vacancy quality from the cached register plus prior enrichment."""
+    from src.nt_ndis.discovery import aggregate_nt_private
+    from lib.ndis_providers import parse_register_rows
+
+    output_dir = output_dir or (ROOT / "output")
+    data_dir = data_dir or (ROOT / "data" / "nt-ndis")
+    feeds_dir = feeds_dir or (ROOT / "feeds")
+    reports_dir = reports_dir or (ROOT / "reports")
+    register = (data_dir / "register-cache.csv").read_text(encoding="utf-8-sig")
+    fresh = {row["abn"]: row for row in aggregate_nt_private(parse_register_rows(register))}
+    payload = json.loads((output_dir / "nt-ndis-intelligence.json").read_text(encoding="utf-8"))
+    keep_fields = (
+        "description",
+        "phone",
+        "website",
+        "email",
+        "linkedin",
+        "employee_count",
+        "employee_count_min",
+        "employee_count_max",
+        "employee_count_source",
+        "employee_count_source_url",
+        "scrape_status",
+        "research_confidence",
+        "source_urls",
+        "last_verified",
+    )
+    companies = []
+    for old in payload.get("companies") or []:
+        rec = fresh.get(old.get("abn"))
+        if not rec:
+            continue
+        merged = dict(rec)
+        for field in keep_fields:
+            value = old.get(field)
+            if value not in {None, ""}:
+                merged[field] = value
+        companies.append(merged)
+    seen = {row["abn"] for row in companies}
+    for abn, rec in fresh.items():
+        if abn not in seen:
+            companies.append(rec)
+    ids = {str(row.get("company_id") or row.get("abn")) for row in companies}
+    employees = [row for row in payload.get("employees") or [] if str(row.get("company_id")) in ids]
+    vacancies = [
+        row
+        for row in payload.get("vacancies") or []
+        if str(row.get("company_id")) in ids and plausible_vacancy(str(row.get("job_title") or ""))
+    ]
+    sources = [row for row in payload.get("sources") or [] if str(row.get("company_id") or "") in ids or not row.get("company_id")]
+    stats = write_outputs(
+        companies,
+        employees,
+        vacancies,
+        sources,
+        output_dir=output_dir,
+        data_dir=data_dir,
+        feeds_dir=feeds_dir,
+        reports_dir=reports_dir,
+    )
+    return {"stats": stats, "companies": companies, "employees": employees, "vacancies": vacancies, "sources": sources}
