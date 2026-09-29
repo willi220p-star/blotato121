@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -84,9 +85,11 @@ def discover_companies() -> tuple[list[dict], list[dict]]:
 
 
 def _meta_description(content: str) -> str:
+    if not (content or "").strip():
+        return ""
     try:
-        document = html.fromstring(content or "")
-    except (TypeError, ValueError):
+        document = html.fromstring(content)
+    except Exception:  # noqa: BLE001
         return ""
     for xpath in (
         "//meta[@name='description']/@content",
@@ -100,9 +103,11 @@ def _meta_description(content: str) -> str:
 
 
 def _page_text(content: str) -> str:
+    if not (content or "").strip():
+        return content or ""
     try:
-        document = html.fromstring(content or "")
-    except (TypeError, ValueError):
+        document = html.fromstring(content)
+    except Exception:  # noqa: BLE001
         return content or ""
     return " ".join(document.xpath("//body//text()"))
 
@@ -197,20 +202,26 @@ def enrich_company(seed: dict) -> tuple[dict, list[dict], list[dict]]:
         if seed.get("careers_url"):
             candidates = [seed["careers_url"]] + candidates
         checked = []
-        for candidate in candidates[:6]:
+        for candidate in candidates[:8]:
             page = fetch(candidate)
             checked.append(candidate)
             if not page["ok"]:
                 continue
             path = urlparse(page["url"]).path.lower()
-            is_career = any(token in path for token in ("career", "job", "vacanc", "work-with", "join"))
+            if re.search(r"diploma|career-expo|digital-career-with|launch-your-digital-career", path):
+                continue
+            is_career = any(token in path for token in ("career", "job", "vacanc", "work-with", "join", "opportunit"))
             extracted = extract_vacancies(page["text"], page["url"])
-            if extracted or is_career:
+            if extracted:
                 career_found = "YES"
                 career_url = page["url"]
                 career_vacancies = extracted
-                career_status = "Vacancies listed" if extracted else "Career page exists but no vacancy"
+                career_status = "Vacancies listed"
                 break
+            if is_career and career_found == "NO":
+                career_found = "YES"
+                career_url = page["url"]
+                career_status = "Career page exists but no vacancy"
         if career_found == "NO" and external:
             career_found = "YES"
             career_url = external[0]

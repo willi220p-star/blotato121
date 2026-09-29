@@ -87,12 +87,16 @@ class DarwinItResearchTest(unittest.TestCase):
           </script>
           <a href="/services/managed-it">Managed IT Services</a>
           <a href="/careers/helpdesk-technician">Helpdesk Technician</a>
+          <h3>Desktop Support Engineers - Darwin &amp; Brisbane</h3>
+          <a href="/Career/GetJobDescription?jobId=7&amp;title=.NET%20Senior%20Developer%2FTeam%20Lead">Apply Now</a>
         </body></html>
         """
         jobs = extract_vacancies(page, "https://example.com/careers")
         titles = {job["vacancy_title"] for job in jobs}
         self.assertIn("Senior Systems Engineer", titles)
         self.assertIn("Helpdesk Technician", titles)
+        self.assertIn("Desktop Support Engineers - Darwin & Brisbane", titles)
+        self.assertIn(".NET Senior Developer/Team Lead", titles)
         self.assertNotIn("Managed IT Services", titles)
         self.assertTrue(plausible_it_job("Network Engineer"))
         self.assertFalse(plausible_it_job("Contact"))

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from urllib.parse import urljoin, urlparse, urlunparse
+from urllib.parse import parse_qs, unquote, urljoin, urlparse, urlunparse
 
 from lxml import html
 
@@ -17,6 +17,8 @@ CAREER_HINTS = (
     "job",
     "vacancies",
     "vacancy",
+    "current-vacancies",
+    "current-opportunities",
     "work-with-us",
     "workwithus",
     "join-us",
@@ -25,6 +27,10 @@ CAREER_HINTS = (
     "employment",
     "opportunities",
     "we-are-hiring",
+)
+FALSE_CAREER_RE = re.compile(
+    r"diploma|short-course|training-course|career-expo|digital-career-with|launch-your-digital-career",
+    re.I,
 )
 ATS_HOSTS = (
     "seek.com.au",
@@ -45,15 +51,17 @@ JOB_CONTEXT_RE = re.compile(
 )
 JOB_NOUN_RE = re.compile(
     r"\b(?:administrator|analyst|architect|consultant|developer|devops|engineer|"
-    r"helpdesk|help desk|officer|programmer|specialist|technician|technologist|"
-    r"coordinator|manager|lead|designer|support|security|cyber|network|systems|"
-    r"cloud|data|infrastructure|service desk)\b",
+    r"graduate|helpdesk|help desk|officer|programmer|recruiter|specialist|"
+    r"technician|technologist|coordinator|manager|lead|designer|support|"
+    r"security|cyber|network|systems|cloud|data|infrastructure|service desk)\b",
     re.I,
 )
 NON_JOB_RE = re.compile(
-    r"^(?:about|careers?|jobs?|vacancies|our services|contact|home|learn more|"
-    r"read more|view all|see all|privacy|terms|login|sign in)|"
-    r"\b(?:our services|what we do|why (?:choose|us)|case stud)\b",
+    r"^(?:about|careers?|jobs?|vacancies|current (?:vacancies|openings|opportunities)|"
+    r"job opening|our services|contact|home|learn more|read more|view all|see all|"
+    r"privacy|terms|login|sign in|apply now|join (?:us|the|our)|start your|"
+    r"our teams?|life at)|"
+    r"\b(?:our services|what we do|why (?:choose|us)|case stud|view current)\b",
     re.I,
 )
 IT_CATEGORY_RULES = [
@@ -91,6 +99,8 @@ def career_candidates(home_url: str, content: str, limit: int = 8) -> tuple[list
         parsed = urlparse(target)
         text = _clean(" ".join(anchor.itertext()))
         hay = f"{parsed.path} {text}".lower()
+        if FALSE_CAREER_RE.search(hay):
+            continue
         score = sum(hint in hay for hint in CAREER_HINTS)
         if not score:
             continue
@@ -134,6 +144,16 @@ def _location(value) -> str:
         for key in ("addressLocality", "addressRegion", "addressCountry")
         if address.get(key)
     )
+
+
+def _location_from_title(title: str) -> str:
+    match = re.search(
+        r"\b(Darwin|Palmerston|Winnellie|Casuarina|Brisbane|Sydney|Melbourne|Perth|"
+        r"Adelaide|Canberra|Hyderabad|Remote|Work from Home)(?:\s*[&,/]\s*[A-Za-z ]+)?\b",
+        title,
+        re.I,
+    )
+    return match.group(0) if match else NOT_FOUND
 
 
 def _job_category(title: str) -> str:
@@ -186,25 +206,48 @@ def extract_vacancies(content: str, source_url: str) -> list[dict]:
                 }
             )
     page_is_career = any(hint in urlparse(source_url).path.lower() for hint in CAREER_HINTS)
-    page_text = _clean(" ".join(document.xpath("//body//text()")[:80]))
+    page_text = _clean(" ".join(document.xpath("//body//text()")[:120]))
     if page_is_career or JOB_CONTEXT_RE.search(page_text):
         for anchor in document.xpath("//a[@href]"):
             title = _clean(" ".join(anchor.itertext()))
             target = urljoin(source_url, anchor.get("href") or "")
-            if not plausible_it_job(title):
+            parsed = urlparse(target)
+            query_title = ""
+            params = parse_qs(parsed.query)
+            if params.get("title"):
+                query_title = _clean(unquote(params["title"][0]))
+            chosen = title if plausible_it_job(title) else query_title
+            hay = f"{parsed.path} {parsed.query} {chosen}"
+            if not chosen or not plausible_it_job(chosen):
                 continue
-            if not JOB_CONTEXT_RE.search(f"{urlparse(target).path} {title}"):
+            if not JOB_CONTEXT_RE.search(hay) and "graduate" not in hay.lower():
+                continue
+            found.append(
+                {
+                    "vacancy_title": chosen,
+                    "vacancy_url": target,
+                    "vacancy_location": NOT_FOUND,
+                    "employment_type": "Unknown",
+                    "job_category": _job_category(chosen),
+                    "job_description_summary": NOT_FOUND,
+                    "vacancy_source": "Company Career Page",
+                    "evidence": "careers link",
+                }
+            )
+        for heading in document.xpath("//h1|//h2|//h3|//h4"):
+            title = _clean(" ".join(heading.itertext()))
+            if not plausible_it_job(title):
                 continue
             found.append(
                 {
                     "vacancy_title": title,
-                    "vacancy_url": target,
-                    "vacancy_location": NOT_FOUND,
+                    "vacancy_url": source_url,
+                    "vacancy_location": _location_from_title(title),
                     "employment_type": "Unknown",
                     "job_category": _job_category(title),
                     "job_description_summary": NOT_FOUND,
                     "vacancy_source": "Company Career Page",
-                    "evidence": "careers link",
+                    "evidence": "careers heading",
                 }
             )
     unique: dict[tuple[str, str], dict] = {}
