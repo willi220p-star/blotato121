@@ -202,6 +202,7 @@ def enrich_company(seed: dict) -> tuple[dict, list[dict], list[dict]]:
         if seed.get("careers_url"):
             candidates = [seed["careers_url"]] + candidates
         checked = []
+        collected: list[dict] = []
         for candidate in candidates[:8]:
             page = fetch(candidate)
             checked.append(candidate)
@@ -213,15 +214,23 @@ def enrich_company(seed: dict) -> tuple[dict, list[dict], list[dict]]:
             is_career = any(token in path for token in ("career", "job", "vacanc", "work-with", "join", "opportunit"))
             extracted = extract_vacancies(page["text"], page["url"])
             if extracted:
+                collected.extend(extracted)
                 career_found = "YES"
-                career_url = page["url"]
-                career_vacancies = extracted
+                if career_url == NOT_FOUND or "vacanc" in path or "job" in path:
+                    career_url = page["url"]
                 career_status = "Vacancies listed"
-                break
-            if is_career and career_found == "NO":
+            elif is_career and career_found == "NO":
                 career_found = "YES"
                 career_url = page["url"]
                 career_status = "Career page exists but no vacancy"
+        unique_jobs: dict[tuple[str, str], dict] = {}
+        for job in collected:
+            key = (job["vacancy_url"].lower().rstrip("/"), job["vacancy_title"].lower())
+            unique_jobs[key] = job
+        career_vacancies = list(unique_jobs.values())
+        if career_vacancies:
+            career_found = "YES"
+            career_status = "Vacancies listed"
         if career_found == "NO" and external:
             career_found = "YES"
             career_url = external[0]
@@ -377,6 +386,8 @@ def run_research(
     reports_dir = reports_dir or (ROOT / "reports")
     feeds_dir = feeds_dir or (ROOT / "feeds")
     cache_path = cache_path or (feeds_dir / "darwin-it-research-cache.json")
+    global _SEEK_BLOCKED_DETAIL
+    _SEEK_BLOCKED_DETAIL = ""
     logger.info("Starting Darwin IT company discovery")
     discovered, discovery_sources = discover_companies()
     if limit:

@@ -50,18 +50,22 @@ JOB_CONTEXT_RE = re.compile(
     re.I,
 )
 JOB_NOUN_RE = re.compile(
-    r"\b(?:administrator|analyst|architect|consultant|developer|devops|engineer|"
-    r"graduate|helpdesk|help desk|officer|programmer|recruiter|specialist|"
-    r"technician|technologist|coordinator|manager|lead|designer|support|"
-    r"security|cyber|network|systems|cloud|data|infrastructure|service desk)\b",
+    r"\b(?:administrators?|analysts?|architects?|consultants?|developers?|devops|"
+    r"engineers?|graduates?|help ?desk|officers?|programmers?|recruiters?|"
+    r"specialists?|technicians?|technologists?|coordinators?|managers?|team leads?)\b",
     re.I,
+)
+PERSON_HEADING_RE = re.compile(
+    r"^[A-Z][a-z]+ [A-Z][a-z]+(?: [A-Z][a-z]+)?\s+(?:General Manager|Director|CEO|Manager|Officer)\b"
 )
 NON_JOB_RE = re.compile(
     r"^(?:about|careers?|jobs?|vacancies|current (?:vacancies|openings|opportunities)|"
     r"job opening|our services|contact|home|learn more|read more|view all|see all|"
     r"privacy|terms|login|sign in|apply now|join (?:us|the|our)|start your|"
-    r"our teams?|life at)|"
-    r"\b(?:our services|what we do|why (?:choose|us)|case stud|view current)\b",
+    r"our teams?|life at|help and support|get product support|support (?:tools|links)|"
+    r"phone systems|cloud computing|hybrid cloud|data and applications|industry leading)|"
+    r"\b(?:our services|what we do|why (?:choose|us)|case stud|view current|"
+    r"landscape is changing)\b",
     re.I,
 )
 IT_CATEGORY_RULES = [
@@ -87,9 +91,11 @@ def _same_host(url: str, host: str) -> bool:
 
 def career_candidates(home_url: str, content: str, limit: int = 8) -> tuple[list[str], list[str]]:
     host = urlparse(home_url).netloc
+    if not (content or "").strip():
+        return [home_url], []
     try:
-        document = html.fromstring(content or "")
-    except (TypeError, ValueError):
+        document = html.fromstring(content)
+    except Exception:  # noqa: BLE001
         return [home_url], []
     ranked: list[tuple[int, str]] = []
     external: list[str] = []
@@ -101,7 +107,10 @@ def career_candidates(home_url: str, content: str, limit: int = 8) -> tuple[list
         hay = f"{parsed.path} {text}".lower()
         if FALSE_CAREER_RE.search(hay):
             continue
-        score = sum(hint in hay for hint in CAREER_HINTS)
+        bonus = 0
+        if any(token in hay for token in ("current-vacanc", "current-opportunit", "vacancies", "/jobs")):
+            bonus = 4
+        score = sum(hint in hay for hint in CAREER_HINTS) + bonus
         if not score:
             continue
         if _same_host(target, host):
@@ -171,13 +180,17 @@ def plausible_it_job(title: str) -> bool:
         and "?" not in value
         and JOB_NOUN_RE.search(value)
         and not NON_JOB_RE.search(value)
+        and not PERSON_HEADING_RE.search(value)
+        and "|" not in value
     )
 
 
 def extract_vacancies(content: str, source_url: str) -> list[dict]:
+    if not (content or "").strip():
+        return []
     try:
-        document = html.fromstring(content or "")
-    except (TypeError, ValueError):
+        document = html.fromstring(content)
+    except Exception:  # noqa: BLE001
         return []
     found: list[dict] = []
     for script in document.xpath("//script[@type='application/ld+json']/text()"):
@@ -250,12 +263,20 @@ def extract_vacancies(content: str, source_url: str) -> list[dict]:
                     "evidence": "careers heading",
                 }
             )
-    unique: dict[tuple[str, str], dict] = {}
+    unique: dict[str, dict] = {}
+    rank = {"JobPosting": 0, "careers link": 1, "careers heading": 2}
     for row in found:
-        key = (row["vacancy_url"].lower().rstrip("/"), row["vacancy_title"].lower())
+        key = row["vacancy_title"].lower()
         current = unique.get(key)
-        if current is None or (row["evidence"] == "JobPosting" and current["evidence"] != "JobPosting"):
+        if current is None:
             unique[key] = row
+            continue
+        if rank.get(row["evidence"], 9) < rank.get(current["evidence"], 9):
+            if row.get("vacancy_location") == NOT_FOUND:
+                row["vacancy_location"] = current.get("vacancy_location") or NOT_FOUND
+            unique[key] = row
+        elif current.get("vacancy_location") == NOT_FOUND and row.get("vacancy_location") not in {None, "", NOT_FOUND}:
+            current["vacancy_location"] = row["vacancy_location"]
     return list(unique.values())
 
 

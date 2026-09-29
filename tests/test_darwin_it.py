@@ -99,7 +99,10 @@ class DarwinItResearchTest(unittest.TestCase):
         self.assertIn(".NET Senior Developer/Team Lead", titles)
         self.assertNotIn("Managed IT Services", titles)
         self.assertTrue(plausible_it_job("Network Engineer"))
+        self.assertTrue(plausible_it_job("Desktop Support Engineers - Darwin & Brisbane"))
         self.assertFalse(plausible_it_job("Contact"))
+        self.assertFalse(plausible_it_job("Hybrid Cloud"))
+        self.assertFalse(plausible_it_job("Stewart Litster General Manager"))
 
     def test_parses_ictnt_and_skips_alice_springs(self):
         html = """
