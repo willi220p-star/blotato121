@@ -1,0 +1,228 @@
+{
+  "feed": "dgk-signal-source",
+  "version": 1,
+  "generated_at": "2026-08-25T01:37:32.291021+00:00",
+  "queue": "tier1",
+  "policy": {
+    "linkedin": "Company page URLs are recorded only. LinkedIn robots.txt and ToS forbid automated crawling.",
+    "seek": "Only robots-allowed search URLs with ?keywords= or ?advertiserid= are fetched. Individual /job/ listings are never requested.",
+    "careers_about": "About Us and careers pages on the company host are scraped when robots.txt allows."
+  },
+  "companies_scanned": [
+    {
+      "name": "Rice Spice & Dice",
+      "domain": "ricespicedice.com.au",
+      "tech": [
+        "Google Analytics 4",
+        "Cloudflare",
+        "Shopify"
+      ],
+      "tech_snapshot": "created"
+    },
+    {
+      "name": "Triple R Community Service",
+      "domain": "triplerccs.com.au",
+      "tech": [
+        "Google Analytics 4",
+        "WordPress"
+      ],
+      "tech_snapshot": "updated"
+    },
+    {
+      "name": "DGK Business Consultancy",
+      "domain": "dgkbusinessconsultancy.com",
+      "tech": [
+        "Google Analytics 4",
+        "Google Tag Manager",
+        "Cloudflare"
+      ],
+      "tech_snapshot": "updated"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.ricespicedice.com.au/robots.txt",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "robots"
+    },
+    {
+      "url": "https://www.ricespicedice.com.au/",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "home"
+    },
+    {
+      "url": "https://www.ricespicedice.com.au/policies/privacy-policy",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "about"
+    },
+    {
+      "url": "https://au.zipleaf.com/robots.txt",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "robots"
+    },
+    {
+      "url": "https://au.zipleaf.com/Companies/Ricespicedice",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "about"
+    },
+    {
+      "url": "https://www.ricespicedice.com.au/pages/careers",
+      "status": "skipped",
+      "detail": "HTTP 404",
+      "kind": "careers"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=Rice+Spice+Dice",
+      "status": "blocked",
+      "detail": "Cloudflare challenge on SEEK search (robots-allowed ?keywords= only; /job/ never fetched)",
+      "kind": "job_board"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=delivery+driver",
+      "status": "skipped",
+      "detail": "SEEK already Cloudflare-blocked this run; not retrying every keyword",
+      "kind": "job_board"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=picker+packer",
+      "status": "skipped",
+      "detail": "SEEK already Cloudflare-blocked this run; not retrying every keyword",
+      "kind": "job_board"
+    },
+    {
+      "url": "https://www.triplerccs.com.au/robots.txt",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "robots"
+    },
+    {
+      "url": "https://www.triplerccs.com.au/",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "home"
+    },
+    {
+      "url": "https://www.triplerccs.com.au/about-us/",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "about"
+    },
+    {
+      "url": "https://www.triplerccs.com.au/career/",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "careers"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=support+worker",
+      "status": "skipped",
+      "detail": "SEEK already Cloudflare-blocked this run; not retrying every keyword",
+      "kind": "job_board"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=registered+nurse",
+      "status": "skipped",
+      "detail": "SEEK already Cloudflare-blocked this run; not retrying every keyword",
+      "kind": "job_board"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=NDIS+support",
+      "status": "skipped",
+      "detail": "SEEK already Cloudflare-blocked this run; not retrying every keyword",
+      "kind": "job_board"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/robots.txt",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "robots"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "home"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/about",
+      "status": "ok",
+      "detail": "HTTP 200",
+      "kind": "about"
+    },
+    {
+      "url": "https://dgkbusinessconsultancy.com/joinourteam",
+      "status": "skipped",
+      "detail": "HTTP 404",
+      "kind": "careers"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=Marketing+Manager",
+      "status": "skipped",
+      "detail": "SEEK already Cloudflare-blocked this run; not retrying every keyword",
+      "kind": "job_board"
+    },
+    {
+      "url": "https://www.seek.com.au/jobs?keywords=Business+Development+Manager",
+      "status": "skipped",
+      "detail": "SEEK already Cloudflare-blocked this run; not retrying every keyword",
+      "kind": "job_board"
+    }
+  ],
+  "linkedin_watch": [
+    {
+      "company_name": "DGK Business Consultancy",
+      "url": "https://www.linkedin.com/company/dgk-business-consultancy",
+      "note": "Not scraped. Recorded for official LinkedIn API or manual review only."
+    }
+  ],
+  "signals": [
+    {
+      "id": "2a5380580984f1f1",
+      "type": "hiring",
+      "company_name": "Triple R Community Service",
+      "company_domain": "triplerccs.com.au",
+      "role": null,
+      "evidence_url": "https://www.triplerccs.com.au/career/",
+      "evidence_source": "careers_page",
+      "snippet": "…e (NDIS) Support Cordination | NDIS NDIS Worker Screening Check Worker Orientation Module Referral DVA Career Contact Us Career Home Career Want to work with us? Please fill this form and send it to us by clicking ‘Apply Now’ button. We will contact you as soon as possible. Contact us: Sydney: World…",
+      "confidence": 0.85,
+      "queue": "tier1",
+      "detected_at": "2026-08-25T01:37:30.560774+00:00"
+    },
+    {
+      "id": "71c5fb77bf4ebabf",
+      "type": "expansion",
+      "company_name": "Rice Spice & Dice",
+      "company_domain": "ricespicedice.com.au",
+      "role": null,
+      "evidence_url": "https://au.zipleaf.com/Companies/Ricespicedice",
+      "evidence_source": "directory_profile",
+      "snippet": "…s and updated to Rice Spice Dice as a grocery store. Rice Spice Dice has commenced its business since 2012 and are currently operating with 2 stores in Kogarah and Auburn with 10-15 employees. We offer different ranges of grocery product starting from spices and herbs to other food suppl…",
+      "confidence": 0.8,
+      "queue": "tier1",
+      "detected_at": "2026-08-25T01:37:20.399741+00:00"
+    },
+    {
+      "id": "6e31977046ea4aad",
+      "type": "expansion",
+      "company_name": "Triple R Community Service",
+      "company_domain": "triplerccs.com.au",
+      "role": null,
+      "evidence_url": "https://www.triplerccs.com.au/career/",
+      "evidence_source": "careers_page",
+      "snippet": "Offices or locations listed in Sydney, Melbourne.",
+      "confidence": 0.58,
+      "queue": "tier1",
+      "detected_at": "2026-08-25T01:37:30.598528+00:00",
+      "locations": [
+        "Sydney",
+        "Melbourne"
+      ]
+    }
+  ]
+}
