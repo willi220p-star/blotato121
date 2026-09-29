@@ -8,7 +8,7 @@
       "focus": "ICT services",
       "source": "ICTNT directory",
       "profile_url": "https://www.ictnt.asn.au/ict-directory/219",
-      "linkedin_hint": "https://www.linkedin.com/company/actek"
+      "notes_seed": "ICTNT lists ACTEK as a Darwin ICT member at 66 Smith Street. The current actek.com.au homepage describes tax accounting; treat the website match as uncertain."
     },
     {
       "name": "Area9",
@@ -422,11 +422,12 @@
     },
     {
       "name": "Secure Data Centre",
-      "website": "https://www.securedatacentre.com.au/",
+      "website": "https://dxn.solutions/",
       "suburb": "Darwin",
       "focus": "Data centre services",
-      "source": "ICTNT directory",
-      "profile_url": "https://www.ictnt.asn.au/ict-directory/151"
+      "source": "ICTNT directory / DXN official site",
+      "profile_url": "https://www.ictnt.asn.au/ict-directory/151",
+      "notes_seed": "ICTNT listed securedatacentre.com.au; that host now returns an empty page. Official operating site used is dxn.solutions."
     },
     {
       "name": "SRA Information Technology",
