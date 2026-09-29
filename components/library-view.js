@@ -1,26 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { PUBLIC_PINS } from "../lib/catalog";
-import { mediaSrc } from "./pieces";
+import { socialFeed } from "../lib/feed";
+import { ContentCard, mediaSrc } from "./pieces";
 import { useStudio } from "./studio";
 
 export function LibraryView() {
   const { posts, stats } = useStudio();
-  const instagram = stats?.instagram?.recent || [];
+  const social = socialFeed(stats);
   const photos = [
     ...posts.filter((post) => post.kind === "photo"),
-    ...instagram.filter((item) => item.kind === "photo"),
-    ...PUBLIC_PINS,
+    ...social.instagram.filter((item) => item.kind === "photo"),
+    ...social.pinterest,
   ];
-  const videos = posts.filter((post) => post.kind === "video");
+  const videos = [...social.tiktok, ...posts.filter((post) => post.kind === "video")];
 
   return (
     <div className="page">
       <header className="page-intro">
         <p className="eyebrow">Files</p>
         <h1>Media library</h1>
-        <p>Photos already on the studio, public Pinterest frames, and any videos you upload.</p>
+        <p>TikTok videos, Instagram photos, and Pinterest pins refresh from her public accounts.</p>
       </header>
       <section>
         <header className="section-head bare">
@@ -29,17 +29,12 @@ export function LibraryView() {
         </header>
         {videos.length === 0 ? (
           <div className="empty panel">
-            <p>No videos in the studio yet. TikTok keeps the live videos on her profile; add a cut here when you want it on the dashboard.</p>
+            <p>TikTok videos will appear here as soon as the profile feed refreshes.</p>
             <Link href="/create?kind=video">Upload video</Link>
           </div>
         ) : (
           <div className="card-grid">
-            {videos.map((item) => (
-              <article key={item.id} className="content-card">
-                <div className="thumb"><video src={item.src} controls preload="metadata" /></div>
-                <div className="card-copy"><h3>{item.title}</h3><p>{item.caption}</p></div>
-              </article>
-            ))}
+            {videos.map((item) => <ContentCard key={item.id} item={item} />)}
           </div>
         )}
       </section>

@@ -2,30 +2,34 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CREATOR, PUBLIC_PINS } from "../lib/catalog";
+import { CREATOR } from "../lib/catalog";
+import { socialFeed } from "../lib/feed";
 import { formatCompact } from "../lib/format";
 import { asset } from "../lib/paths";
+import { ProfileEditor } from "./profile-editor";
 import { ContentCard, CountLink, downloadMediaKit, Filters, Insight, matchesFilter, mediaSrc, Rail } from "./pieces";
 import { useStudio } from "./studio";
 
 export function DashboardView() {
-  const { stats, posts } = useStudio();
+  const { stats, posts, profile } = useStudio();
   const [filter, setFilter] = useState("all");
   const [monthCursor, setMonthCursor] = useState(() => new Date());
+  const [editing, setEditing] = useState(false);
 
   const feed = useMemo(() => {
+    const social = socialFeed(stats);
     const studio = posts
       .filter((post) => post.status !== "scheduled")
       .map((post) => ({ ...post, platform: post.platforms[0] }));
-    const instagram = stats?.instagram?.recent || [];
-    return [...studio, ...instagram, ...PUBLIC_PINS];
+    return [...studio, ...social.tiktok, ...social.instagram, ...social.pinterest];
   }, [posts, stats]);
 
-  const visible = feed.filter((item) => matchesFilter(item, filter)).slice(0, 4);
-  const ranked = [...(stats?.instagram?.recent || [])].sort(
+  const visible = feed.filter((item) => matchesFilter(item, filter)).slice(0, 8);
+  const social = socialFeed(stats);
+  const ranked = [...social.instagram, ...social.tiktok].sort(
     (a, b) => (b.views || b.likes || 0) - (a.views || a.likes || 0)
   );
-  const spotlight = (ranked.length ? ranked : PUBLIC_PINS).slice(0, 3);
+  const spotlight = (ranked.length ? ranked : social.pinterest).slice(0, 3);
 
   return (
     <div className="workspace">
@@ -34,20 +38,18 @@ export function DashboardView() {
           <img src={asset("/media/avatar-tt.jpg")} alt="Isha by the water at dusk" />
           <div className="hero-copy">
             <p className="script-name">Isha Dhakal</p>
-            <p className="hero-sub">Content creator · Lifestyle · {CREATOR.location}</p>
+            <p className="hero-sub">{profile?.tagline || `Content creator · ${CREATOR.location}`}</p>
           </div>
-          <p className="hero-note">A little bit<br />of everything</p>
+          <p className="hero-note">{profile?.heroNote || "A little bit of everything"}</p>
         </section>
 
         <section className="profile-card">
           <img className="avatar" src={asset("/media/avatar-ig.jpg")} alt="" />
           <div className="profile-copy">
             <h1>Isha Dhakal <span aria-hidden="true">♡</span></h1>
-            <p className="meta-line">Content creator · {CREATOR.pronouns} · {CREATOR.location}</p>
-            <p className="bio">
-              Sharing bits of my life — everyday moments, photo stories, and a little bit of everything in between.
-              Let’s make something together.
-            </p>
+            <p className="meta-line">Content creator · {profile?.pronouns || CREATOR.pronouns} · {profile?.location || CREATOR.location}</p>
+            <p className="bio">{profile?.bio}</p>
+            <button className="text-button" type="button" onClick={() => setEditing(true)}>Edit bio</button>
           </div>
           <div className="counts">
             <CountLink href={CREATOR.tiktok} platform="tiktok" label="Followers" value={stats?.tiktok?.followers} live={stats?.tiktok?.live} />
@@ -57,6 +59,7 @@ export function DashboardView() {
           <button className="ghost-button" type="button" onClick={() => downloadMediaKit(stats)}>
             Download media kit
           </button>
+          <ProfileEditor open={editing} onClose={() => setEditing(false)} />
         </section>
 
         <section className="panel">

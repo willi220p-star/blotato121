@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { PUBLIC_PINS } from "../lib/catalog";
+import { socialFeed } from "../lib/feed";
 import { removePost } from "../lib/localStudio";
 import { ContentCard, matchesFilter } from "./pieces";
 import { useStudio } from "./studio";
@@ -12,15 +12,15 @@ export function ContentView() {
   const [tab, setTab] = useState("all");
 
   const items = useMemo(() => {
-    const instagram = stats?.instagram?.recent || [];
+    const social = socialFeed(stats);
     const studio = posts
       .filter((post) => post.status !== "scheduled")
       .map((post) => ({ ...post, platform: post.platforms[0] }));
     if (tab === "scheduled") return posts.filter((post) => post.status === "scheduled");
-    if (tab === "instagram") return instagram;
-    if (tab === "pins") return PUBLIC_PINS;
-    if (tab === "tiktok") return [...studio, ...instagram].filter((item) => matchesFilter(item, "tiktok"));
-    return [...studio, ...instagram, ...PUBLIC_PINS];
+    if (tab === "instagram") return social.instagram;
+    if (tab === "pins") return social.pinterest;
+    if (tab === "tiktok") return [...social.tiktok, ...studio.filter((item) => matchesFilter(item, "tiktok"))];
+    return [...studio, ...social.tiktok, ...social.instagram, ...social.pinterest];
   }, [posts, stats, tab]);
 
   const visible = items;
@@ -36,7 +36,7 @@ export function ContentView() {
       <header className="page-intro">
         <p className="eyebrow">Library</p>
         <h1>My content</h1>
-        <p>Studio uploads sit beside her public Instagram posts and Pinterest pins.</p>
+        <p>New TikTok videos, Instagram posts, and Pinterest pins show up here as they go live, next to anything you add in the studio.</p>
       </header>
       <div className="toolbar">
         <div className="filters" role="tablist" aria-label="Content views">

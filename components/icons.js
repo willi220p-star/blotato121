@@ -116,6 +116,13 @@ export function Icon({ name, size = 18 }) {
           <path d="m13 6 6 6-6 6" />
         </svg>
       );
+    case "user":
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="8" r="3" />
+          <path d="M5 19c1.2-3 3.4-4.5 7-4.5S17.8 16 19 19" />
+        </svg>
+      );
     case "menu":
       return (
         <svg {...props}>

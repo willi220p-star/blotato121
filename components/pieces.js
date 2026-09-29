@@ -5,6 +5,8 @@ import { CREATOR } from "../lib/catalog";
 import { formatCompact, formatExact, timeAgo } from "../lib/format";
 import { asset } from "../lib/paths";
 import { Icon, InstagramMark, PinterestMark, TikTokMark } from "./icons";
+import { useState } from "react";
+import { ProfileEditor } from "./profile-editor";
 import { useStudio } from "./studio";
 
 function postedWhen(iso) {
@@ -42,9 +44,13 @@ export function CountLink({ href, platform, label, value, live }) {
 }
 
 export function mediaSrc(item) {
-  if (item?.src) return asset(item.src);
+  if (item?.imageUrl && process.env.NEXT_PUBLIC_STATIC !== "1") {
+    return asset(`/api/image?url=${encodeURIComponent(item.imageUrl)}`);
+  }
   if (item?.imageUrl) return item.imageUrl;
-  return "";
+  if (!item?.src) return "";
+  if (item.src.startsWith("blob:") || item.src.startsWith("data:")) return item.src;
+  return asset(item.src);
 }
 
 export function ContentCard({ item, onRemove }) {
@@ -115,7 +121,9 @@ export function matchesFilter(item, filter) {
 }
 
 export function Rail() {
-  const { stats } = useStudio();
+  const { stats, profile } = useStudio();
+  const [editing, setEditing] = useState(false);
+  const points = profile?.aboutPoints || [];
   return (
     <aside className="rail">
       <section className="panel">
@@ -139,16 +147,15 @@ export function Rail() {
         </a>
       </section>
       <section className="panel">
-        <h2>About me</h2>
+        <header className="section-head">
+          <h2>About me</h2>
+          <button className="text-button" type="button" onClick={() => setEditing(true)}>Edit</button>
+        </header>
         <ul className="about-list">
-          <li><Icon name="play" /> Content creator</li>
-          <li><Icon name="heart" /> Lifestyle, photo stories, everyday moments</li>
-          <li><Icon name="pin" /> {CREATOR.location} · {CREATOR.pronouns}</li>
-          <li><Icon name="mail" /> Open for collaborations</li>
+          {points.map((point) => <li key={point}>{point}</li>)}
         </ul>
-        <p className="about-copy">
-          A little bit of everything, from a small corner of the internet. TikTok is where the videos live, Instagram keeps the everyday frames, and Pinterest holds the photo inspo.
-        </p>
+        <p className="about-copy">{profile?.aboutText}</p>
+        <ProfileEditor open={editing} onClose={() => setEditing(false)} />
       </section>
       <section className="panel">
         <h2>My platforms</h2>

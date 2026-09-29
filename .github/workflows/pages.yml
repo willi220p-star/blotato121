@@ -27,6 +27,8 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: /blotato121
+          NEXT_OUTPUT: export
+          NEXT_PUBLIC_STATIC: "1"
       - run: touch out/.nojekyll
       - uses: peaceiris/actions-gh-pages@v4
         with:
