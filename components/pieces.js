@@ -24,8 +24,9 @@ export function PlatformGlyph({ platform }) {
   return <PinterestMark />;
 }
 
-export function CountLink({ href, platform, label, value, live, checkedAt }) {
+export function CountLink({ href, platform, label, value, live, checkedAt, blocked }) {
   const { settings } = useStudio();
+  const badge = live ? "Live" : blocked ? "Blocked" : "Checking";
   return (
     <a className="count-link" href={href} target="_blank" rel="noreferrer">
       <span className={`mark ${platform}`}>
@@ -35,10 +36,12 @@ export function CountLink({ href, platform, label, value, live, checkedAt }) {
         <strong>{formatCompact(value)}</strong>
         <em>
           {label}
-          {live ? <i className="mini-live">Live</i> : <i className={`mini-live ${platform === "instagram" ? "" : "stale"}`}>{platform === "instagram" ? "Every minute" : "Checking"}</i>}
+          <i className={`mini-live ${live ? "" : "stale"}`}>{badge}</i>
         </em>
         {settings.exactCounts ? <small>{formatExact(value)} exact</small> : null}
-        {platform === "instagram" ? <small>{checkedAt ? `Checked ${timeAgo(checkedAt)}` : "Checks every minute"}</small> : null}
+        {platform === "instagram" ? (
+          <small>{blocked ? "Instagram refused this refresh" : checkedAt ? `Checked ${timeAgo(checkedAt)}` : "Checks every minute"}</small>
+        ) : null}
       </span>
     </a>
   );

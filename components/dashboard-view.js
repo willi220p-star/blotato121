@@ -53,7 +53,7 @@ export function DashboardView() {
           </div>
           <div className="counts">
             <CountLink href={CREATOR.tiktok} platform="tiktok" label="Followers" value={stats?.tiktok?.followers} live={stats?.tiktok?.live} />
-            <CountLink href={CREATOR.instagram} platform="instagram" label="Followers" value={stats?.instagram?.followers} live={stats?.instagram?.live} checkedAt={stats?.instagram?.checkedAt} />
+            <CountLink href={CREATOR.instagram} platform="instagram" label="Followers" value={stats?.instagram?.followers} live={stats?.instagram?.live} checkedAt={stats?.instagram?.checkedAt} blocked={!stats?.instagram?.live} />
             <CountLink href={CREATOR.pinterest} platform="pinterest" label="Followers" value={stats?.pinterest?.followers} live={stats?.pinterest?.live} />
           </div>
           <button className="ghost-button" type="button" onClick={() => downloadMediaKit(stats)}>
