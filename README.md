@@ -201,6 +201,32 @@ converted to exact counts. Unknown values stay Unknown. SEEK individual `/job/`
 pages are never fetched; a Cloudflare or robots block is recorded as
 `Unable to verify`. LinkedIn is not crawled.
 
+## NT private NDIS provider intelligence
+
+Discover private and commercial NDIS providers operating in the Northern
+Territory (Darwin, Palmerston, Alice Springs, Katherine, Tennant Creek,
+Nhulunbuy and other NT locations), then enrich official websites for
+public company, employee, email and vacancy data.
+
+```bash
+python3 scripts/nt_ndis_intelligence.py
+```
+
+Writes `feeds/NT_private_NDIS_provider_intelligence.xlsx`,
+`output/companies.csv`, `output/employees.csv`, `output/vacancies.csv`,
+`output/sources.csv`, `output/combined.csv`,
+`output/nt-ndis-intelligence.json`, `output/nt-ndis-intelligence.sqlite`,
+and `reports/nt-ndis-private-summary.md`. Console:
+`GET /download/nt-ndis-intelligence.xlsx`.
+
+Discovery starts from the official NDIS Commission register CSV. Government
+departments, hospitals and councils are excluded. Pty Ltd providers are
+prioritised, including allied health and plan management. Non-profits are
+kept only when they operate as NDIS providers. Employee names, work emails
+and vacancies are recorded only when published on an official company page.
+Inferred emails are never silently stored as facts. LinkedIn is not crawled.
+SEEK `/job/` pages are never fetched; a block is recorded as `blocked`.
+
 ## Upcoming earnings technical workbook
 
 Generate the next 30 calendar days of Nasdaq earnings announcements with

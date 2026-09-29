@@ -97,6 +97,12 @@ class Handler(BaseHTTPRequestHandler):
             "/download/darwin-it-companies.csv": "darwin-it-companies.csv",
             "/download/darwin-it-vacancies.csv": "darwin-it-vacancies.csv",
             "/download/darwin-it-sources.csv": "darwin-it-sources.csv",
+            "/download/nt-ndis-intelligence.xlsx": "NT_private_NDIS_provider_intelligence.xlsx",
+            "/download/nt-ndis-companies.csv": "nt-ndis-private-companies.csv",
+            "/download/nt-ndis-employees.csv": "nt-ndis-private-employees.csv",
+            "/download/nt-ndis-vacancies.csv": "nt-ndis-private-vacancies.csv",
+            "/download/nt-ndis-combined.csv": "nt-ndis-private-combined.csv",
+            "/download/nt-ndis-intelligence.json": "nt-ndis-intelligence.json",
         }
         if path in downloads:
             file_path = (FEEDS / downloads[path]).resolve()
