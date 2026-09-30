@@ -57,7 +57,7 @@ export function mediaSrc(item) {
   return asset(item.src);
 }
 
-export function ContentCard({ item, onRemove, delay = 0 }) {
+export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onDashboard, delay = 0 }) {
   const scheduled = item.status === "scheduled";
   const src = mediaSrc(item);
   const platform = item.platform || item.platforms?.[0] || "pinterest";
@@ -93,6 +93,18 @@ export function ContentCard({ item, onRemove, delay = 0 }) {
                   : "Pinterest"}
       </p>
       </div>
+      {onToggleDashboard || onEditText ? (
+        <div className="card-actions">
+          {onToggleDashboard ? (
+            <button type="button" className={onDashboard ? "text-button danger" : "edit-pill"} onClick={() => onToggleDashboard(item)}>
+              {onDashboard ? "Remove" : "Add to dashboard"}
+            </button>
+          ) : null}
+          {onEditText ? (
+            <button type="button" className="edit-pill" onClick={() => onEditText(item)}>Edit text</button>
+          ) : null}
+        </div>
+      ) : null}
       {onRemove && item.source === "studio" ? (
         <button className="text-button danger" type="button" onClick={() => onRemove(item.id)}>
           Remove

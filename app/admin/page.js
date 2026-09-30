@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { githubSessionOn, signInOnGitHub, signOutOnGitHub } from "../../lib/githubAuth";
 import { asset } from "../../lib/paths";
 import { timeAgo } from "../../lib/format";
-import { MediaDesk } from "../../components/media-desk";
+import Link from "next/link";
 import { ProfileEditor } from "../../components/profile-editor";
 import { useStudio } from "../../components/studio";
 
@@ -100,7 +100,7 @@ export default function AdminPage() {
         <form className="panel login-card" onSubmit={signIn}>
           <p className="eyebrow">Private</p>
           <h1>Manage the studio</h1>
-          <p className="about-copy">Sign in to edit the bio, choose the banner and profile photo, and pick which TikTok, Instagram, and Pinterest images appear on the dashboard.</p>
+          <p className="about-copy">Sign in to edit the bio and to choose which TikTok videos and Pinterest photos stay on the dashboard.</p>
           <label className="field">
             <span>Studio password</span>
             <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoFocus required />
@@ -113,11 +113,11 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="page desk-page">
+    <div className="page narrow">
       <header className="page-intro">
         <p className="eyebrow">Signed in</p>
         <h1>Studio desk</h1>
-        <p>Change the words, the banner, the profile photo, and which images from TikTok, Instagram, and Pinterest show on the dashboard.</p>
+        <p>Edit the words here. On the dashboard, open TikTok, Instagram, or Pinterest and choose what stays on the page.</p>
       </header>
       <section className="panel desk-grid">
         <article>
@@ -137,7 +137,7 @@ export default function AdminPage() {
           <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit bio and about</button>
         </article>
       </section>
-      <MediaDesk />
+      <Link className="primary" href="/">Choose posts on the dashboard</Link>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="text-button" type="button" onClick={signOut}>Sign out</button>
       <ProfileEditor open={editing} onClose={() => { setEditing(false); refreshProfile(); }} />

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CREATOR, NAV } from "../lib/catalog";
-import { asset, placedSrc } from "../lib/paths";
+import { asset } from "../lib/paths";
 import { timeAgo } from "../lib/format";
 import { Icon } from "./icons";
 import { useStudio } from "./studio";
@@ -12,8 +12,8 @@ import { useStudio } from "./studio";
 export function AppShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { stats, inquiries, posts, statsStatus, refreshStats, settings, profile } = useStudio();
-  const avatar = placedSrc(profile?.avatarImage) || asset("/media/avatar-ig.jpg");
+  const { stats, inquiries, posts, statsStatus, refreshStats, settings } = useStudio();
+  const avatar = asset("/media/avatar-ig.jpg");
   const [bellOpen, setBellOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
 

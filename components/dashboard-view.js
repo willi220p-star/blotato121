@@ -5,16 +5,19 @@ import Link from "next/link";
 import { CREATOR } from "../lib/catalog";
 import { socialFeed } from "../lib/feed";
 import { formatCompact } from "../lib/format";
-import { asset, placedSrc } from "../lib/paths";
+import { asset } from "../lib/paths";
 import { ProfileEditor } from "./profile-editor";
 import { ContentCard, CountLink, downloadMediaKit, Filters, Insight, matchesFilter, mediaSrc, Rail } from "./pieces";
 import { useStudio } from "./studio";
 
 export function DashboardView() {
-  const { stats, posts, profile, signedIn } = useStudio();
+  const { stats, posts, profile, signedIn, saveProfile } = useStudio();
   const [filter, setFilter] = useState("all");
   const [monthCursor, setMonthCursor] = useState(() => new Date());
   const [editing, setEditing] = useState(false);
+  const [captionItem, setCaptionItem] = useState(null);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const feed = useMemo(() => {
     const social = socialFeed(stats);
@@ -24,14 +27,51 @@ export function DashboardView() {
     return [...studio, ...social.tiktok, ...social.instagram, ...social.pinterest];
   }, [posts, stats]);
 
-  const chosen = profile?.selectedIds?.length
-    ? profile.selectedIds
-        .map((id) => feed.find((item) => String(item.id) === String(id)))
-        .filter(Boolean)
-    : feed;
-  const visible = chosen.filter((item) => matchesFilter(item, filter)).slice(0, 8);
-  const heroImage = placedSrc(profile?.heroImage) || asset("/media/avatar-tt.jpg");
-  const avatarImage = placedSrc(profile?.avatarImage) || asset("/media/avatar-ig.jpg");
+  const selected = profile?.selectedIds || [];
+  const captions = profile?.captions || {};
+  const present = (item) => {
+    const custom = captions[String(item.id)];
+    return custom ? { ...item, title: custom, originalTitle: item.title } : item;
+  };
+  const curated = selected
+    .map((id) => feed.find((item) => String(item.id) === String(id)))
+    .filter(Boolean)
+    .map(present);
+  const platformFeed = feed.filter((item) => matchesFilter(item, filter)).map(present);
+  const visible = filter === "all" ? (curated.length ? curated : feed.slice(0, 8).map(present)) : platformFeed;
+  const heroImage = asset("/media/avatar-tt.jpg");
+  const avatarImage = asset("/media/avatar-ig.jpg");
+  const heading = filter === "tiktok" ? "TikTok videos" : filter === "instagram" ? "Instagram photos" : filter === "pinterest" ? "Pinterest photos" : "On the dashboard";
+
+  async function toggleDashboard(item) {
+    const id = String(item.id);
+    const has = selected.map(String).includes(id);
+    const next = has ? selected.filter((entry) => String(entry) !== id) : [...selected, id].slice(0, 24);
+    await saveProfile({ selectedIds: next });
+  }
+
+  function openCaption(item) {
+    const raw = feed.find((entry) => String(entry.id) === String(item.id)) || item;
+    setCaptionItem(raw);
+    setDraft(captions[String(raw.id)] || raw.title || "");
+  }
+
+  async function saveCaption(event) {
+    event.preventDefault();
+    if (!captionItem) return;
+    setSaving(true);
+    try {
+      const id = String(captionItem.id);
+      const next = { ...captions };
+      const text = draft.trim();
+      if (!text || text === (captionItem.title || "")) delete next[id];
+      else next[id] = text;
+      await saveProfile({ captions: next });
+      setCaptionItem(null);
+    } finally {
+      setSaving(false);
+    }
+  }
   const social = socialFeed(stats);
   const ranked = [...social.instagram, ...social.tiktok].sort(
     (a, b) => (b.views || b.likes || 0) - (a.views || a.likes || 0)
@@ -92,18 +132,24 @@ export function DashboardView() {
 
         <section className="panel">
           <header className="section-head">
-            <h2>Recent content</h2>
-            <Link href="/content">View all →</Link>
+            <div>
+              <h2>{heading}</h2>
+              <p>
+                {filter === "all"
+                  ? "New TikTok videos, Instagram posts, and Pinterest photos show up under each name. Add the ones that should stay here."
+                  : "Everything public from this account is here, including new uploads. Add one to the dashboard, remove it, or edit the text."}
+              </p>
+            </div>
+            {signedIn ? <span className="fine">Signed in</span> : <Link className="edit-pill" href="/admin">Sign in to choose</Link>}
           </header>
           <Filters value={filter} onChange={setFilter} />
           {visible.length === 0 ? (
             <div className="empty">
-              <p>Nothing on {filter} yet.</p>
-              <Link href="/create">Add a photo or video</Link>
+              <p>Nothing on {filter} yet. New uploads appear here after the next refresh.</p>
             </div>
           ) : (
             <>
-              {visible.length > 3 ? (
+              {filter === "all" && visible.length > 3 ? (
                 <div className="drift" aria-hidden="true">
                   <div className="drift-track">
                     {[...visible, ...visible].map((item, index) => (
@@ -113,11 +159,36 @@ export function DashboardView() {
                 </div>
               ) : null}
               <div className="card-grid">
-                {visible.map((item, index) => <ContentCard key={item.id} item={item} delay={index} />)}
+                {visible.map((item, index) => (
+                  <ContentCard
+                    key={item.id}
+                    item={item}
+                    delay={index}
+                    onDashboard={selected.includes(String(item.id))}
+                    onToggleDashboard={signedIn ? toggleDashboard : undefined}
+                    onEditText={signedIn ? openCaption : undefined}
+                  />
+                ))}
               </div>
             </>
           )}
         </section>
+        {captionItem ? (
+          <div className="modal-scrim" role="presentation" onClick={() => setCaptionItem(null)}>
+            <form className="caption-editor" role="dialog" aria-modal="true" aria-labelledby="caption-title" onClick={(event) => event.stopPropagation()} onSubmit={saveCaption}>
+              <p className="eyebrow">On the card</p>
+              <h2 id="caption-title">Edit the text</h2>
+              <label className="field">
+                <span>What people read <em>{draft.length}/180</em></span>
+                <textarea rows={4} maxLength={180} value={draft} autoFocus onChange={(event) => setDraft(event.target.value)} />
+              </label>
+              <div className="form-actions">
+                <button className="ghost-button" type="button" onClick={() => setCaptionItem(null)}>Cancel</button>
+                <button className="primary" type="submit" disabled={saving}>{saving ? "Saving…" : "Save text"}</button>
+              </div>
+            </form>
+          </div>
+        ) : null}
 
         <div className="split">
           <Calendar posts={posts} cursor={monthCursor} onCursor={setMonthCursor} />
