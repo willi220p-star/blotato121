@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { CREATOR } from "../lib/catalog";
 import { formatCompact, formatExact, timeAgo } from "../lib/format";
+import { isDirectVideo } from "../lib/links";
 import { asset } from "../lib/paths";
 import { Icon, InstagramMark, PinterestMark, TikTokMark } from "./icons";
 import { useState } from "react";
@@ -47,13 +48,24 @@ export function CountLink({ href, platform, label, value, live, checkedAt, block
   );
 }
 
+const PROXIED_HOSTS = ["cdninstagram.com", "fbcdn.net", "pinimg.com", "tiktokcdn.com", "tiktokcdn-us.com"];
+
+function canProxy(url) {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    return PROXIED_HOSTS.some((suffix) => host === suffix || host.endsWith(`.${suffix}`));
+  } catch {
+    return false;
+  }
+}
+
 export function mediaSrc(item) {
-  if (item?.imageUrl && process.env.NEXT_PUBLIC_STATIC !== "1") {
+  if (item?.imageUrl && process.env.NEXT_PUBLIC_STATIC !== "1" && canProxy(item.imageUrl)) {
     return asset(`/api/image?url=${encodeURIComponent(item.imageUrl)}`);
   }
   if (item?.imageUrl) return item.imageUrl;
   if (!item?.src) return "";
-  if (item.src.startsWith("blob:") || item.src.startsWith("data:")) return item.src;
+  if (item.src.startsWith("blob:") || item.src.startsWith("data:") || item.src.startsWith("http")) return item.src;
   return asset(item.src);
 }
 
@@ -64,11 +76,15 @@ export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onD
   const sourceLabel = item.source === "studio" ? "Studio" : item.source === "tiktok" ? "TikTok" : item.source === "instagram" ? "Instagram" : "Pinterest";
   return (
     <article className="content-card" style={{ animationDelay: `${delay * 0.35}s` }}>
-      <a className="thumb" href={item.externalUrl || src} target={item.externalUrl ? "_blank" : undefined} rel="noreferrer">
-        {item.kind === "video" && item.src ? (
+      <a className="thumb" href={item.externalUrl || src || undefined} target={item.externalUrl ? "_blank" : undefined} rel="noreferrer">
+        {item.kind === "video" && isDirectVideo(item.src) ? (
           <video src={item.src} muted playsInline preload="metadata" />
-        ) : (
+        ) : src ? (
           <img src={src} alt={item.title} />
+        ) : item.embedUrl ? (
+          <iframe src={item.embedUrl} title={item.title || "Video"} />
+        ) : (
+          <span className="thumb-fallback">{item.title || "Video"}</span>
         )}
         <span className={`badge ${platform}`}>
           <PlatformGlyph platform={platform} />
@@ -97,7 +113,7 @@ export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onD
         <div className="card-actions">
           {onToggleDashboard ? (
             <button type="button" className={onDashboard ? "text-button danger" : "edit-pill"} onClick={() => onToggleDashboard(item)}>
-              {onDashboard ? "Remove" : "Add to dashboard"}
+              {onDashboard ? "Remove" : "Add to showcase"}
             </button>
           ) : null}
           {onEditText ? (

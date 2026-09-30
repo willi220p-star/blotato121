@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CREATOR } from "../lib/catalog";
 import { socialFeed } from "../lib/feed";
 import { formatCompact } from "../lib/format";
+import { isDirectVideo } from "../lib/links";
 import { asset } from "../lib/paths";
 import { ProfileEditor } from "./profile-editor";
 import { ContentCard, CountLink, downloadMediaKit, Filters, Insight, matchesFilter, mediaSrc, Rail } from "./pieces";
@@ -39,14 +40,20 @@ export function DashboardView() {
     .map(present);
   const platformFeed = feed.filter((item) => matchesFilter(item, filter)).map(present);
   const visible = filter === "all" ? (curated.length ? curated : feed.slice(0, 8).map(present)) : platformFeed;
+  const showcase = curated.length ? curated : feed.slice(0, 8).map(present);
+  const showcaseIds = new Set(showcase.map((item) => String(item.id)));
+  const ribbon = showcase.length
+    ? Array.from({ length: Math.max(2, Math.ceil(8 / showcase.length)) }, () => showcase).flat()
+    : [];
   const heroImage = asset("/media/avatar-tt.jpg");
   const avatarImage = asset("/media/avatar-ig.jpg");
   const heading = filter === "tiktok" ? "TikTok videos" : filter === "instagram" ? "Instagram photos" : filter === "pinterest" ? "Pinterest photos" : "On the dashboard";
 
   async function toggleDashboard(item) {
     const id = String(item.id);
-    const has = selected.map(String).includes(id);
-    const next = has ? selected.filter((entry) => String(entry) !== id) : [...selected, id].slice(0, 24);
+    const current = selected.map(String);
+    const showing = current.length ? current : showcase.map((entry) => String(entry.id));
+    const next = showing.includes(id) ? showing.filter((entry) => entry !== id) : [...showing.filter((entry) => entry !== id), id].slice(0, 24);
     await saveProfile({ selectedIds: next });
   }
 
@@ -130,17 +137,53 @@ export function DashboardView() {
           {stats?.tiktok?.error ? <p className="fine warn">TikTok didn’t refresh this time ({stats.tiktok.error}). Showing the last known totals.</p> : null}
         </section>
 
+        <section className="panel showcase">
+          <header className="section-head">
+            <div>
+              <h2>Showcase</h2>
+              <p>This row moves right to left. Add a TikTok video, Instagram post, or Pinterest photo, or remove one from the row.</p>
+            </div>
+            {signedIn ? <span className="fine">Signed in</span> : <Link className="edit-pill" href="/admin">Sign in to edit</Link>}
+          </header>
+          {ribbon.length === 0 ? (
+            <div className="empty">
+              <p>New uploads and public posts will glide through here.</p>
+            </div>
+          ) : (
+            <div className="drift">
+              <div className="drift-track">
+                {[...ribbon, ...ribbon].map((item, index) => {
+                  const src = mediaSrc(item);
+                  return (
+                    <figure className="showcase-tile" key={`${item.id}-${index}`}>
+                      {item.kind === "video" && isDirectVideo(item.src) ? (
+                        <video src={item.src} muted playsInline preload="metadata" />
+                      ) : src ? (
+                        <img src={src} alt="" />
+                      ) : (
+                        <span className="thumb-fallback">{item.title}</span>
+                      )}
+                      {signedIn ? (
+                        <button type="button" className="showcase-remove" onClick={() => toggleDashboard(item)}>Remove</button>
+                      ) : null}
+                    </figure>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </section>
+
         <section className="panel">
           <header className="section-head">
             <div>
               <h2>{heading}</h2>
               <p>
                 {filter === "all"
-                  ? "New TikTok videos, Instagram posts, and Pinterest photos show up under each name. Add the ones that should stay here."
-                  : "Everything public from this account is here, including new uploads. Add one to the dashboard, remove it, or edit the text."}
+                  ? "Open TikTok, Instagram, or Pinterest and add the videos and photos you want in the showcase."
+                  : "These are the public posts from this account, including new uploads. Add one to the showcase, remove it, or edit the text."}
               </p>
             </div>
-            {signedIn ? <span className="fine">Signed in</span> : <Link className="edit-pill" href="/admin">Sign in to choose</Link>}
           </header>
           <Filters value={filter} onChange={setFilter} />
           {visible.length === 0 ? (
@@ -148,29 +191,18 @@ export function DashboardView() {
               <p>Nothing on {filter} yet. New uploads appear here after the next refresh.</p>
             </div>
           ) : (
-            <>
-              {filter === "all" && visible.length > 3 ? (
-                <div className="drift" aria-hidden="true">
-                  <div className="drift-track">
-                    {[...visible, ...visible].map((item, index) => (
-                      <img key={`${item.id}-${index}`} src={mediaSrc(item)} alt="" />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-              <div className="card-grid">
-                {visible.map((item, index) => (
-                  <ContentCard
-                    key={item.id}
-                    item={item}
-                    delay={index}
-                    onDashboard={selected.includes(String(item.id))}
-                    onToggleDashboard={signedIn ? toggleDashboard : undefined}
-                    onEditText={signedIn ? openCaption : undefined}
-                  />
-                ))}
-              </div>
-            </>
+            <div className="card-grid">
+              {visible.map((item, index) => (
+                <ContentCard
+                  key={item.id}
+                  item={item}
+                  delay={index}
+                  onDashboard={showcaseIds.has(String(item.id))}
+                  onToggleDashboard={signedIn ? toggleDashboard : undefined}
+                  onEditText={signedIn ? openCaption : undefined}
+                />
+              ))}
+            </div>
           )}
         </section>
         {captionItem ? (
