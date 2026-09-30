@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { CREATOR } from "../../lib/catalog";
 import { ProfileEditor } from "../../components/profile-editor";
@@ -19,9 +18,7 @@ export default function AboutPage() {
         <p>{profile?.tagline}</p>
         {signedIn ? (
           <button className="edit-pill" type="button" onClick={() => setOpen(true)}>Edit about</button>
-        ) : (
-          <Link className="edit-pill" href="/admin">Sign in to edit</Link>
-        )}
+        ) : null}
       </header>
       <section className="panel">
         <h2>Bio</h2>

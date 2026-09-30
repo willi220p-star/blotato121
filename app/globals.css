@@ -150,6 +150,28 @@ button { cursor: pointer; }
 .ghost-button { box-shadow: var(--shadow); }
 .upload-button:disabled, .primary:disabled { opacity: 0.6; }
 .top-avatar { width: 40px; height: 40px; min-width: 40px; border-radius: 50%; object-fit: cover; object-position: center 36%; box-shadow: var(--shadow); }
+.avatar-button { border: 0; padding: 0; background: transparent; border-radius: 50%; }
+.me-wrap { position: relative; }
+.me-card { width: min(260px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 6px; }
+.me-card img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: center 30%; }
+.me-card span, .me-card a { color: var(--muted); font-size: 13px; }
+.now-chip { display: inline-flex; align-items: center; gap: 6px; margin: 6px 0 0; color: #1c8f5a; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
+.now-chip span { width: 7px; height: 7px; border-radius: 50%; background: #1c8f5a; box-shadow: 0 0 0 4px rgba(28, 143, 90, 0.15); }
+.ideas ul { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; color: #3c343c; }
+.ideas li { line-height: 1.45; }
+.frame { position: relative; display: block; width: 100%; height: 100%; overflow: hidden; background: #f3e8ee; }
+.frame.loading { background: linear-gradient(100deg, #f3e8ee 20%, #fff 45%, #f3e8ee 70%); background-size: 220% 100%; animation: shimmer 1.3s ease-in-out infinite; }
+.frame img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.04); transition: opacity 0.45s ease, transform 0.6s ease; }
+.frame.ready img { opacity: 1; transform: none; }
+.frame.error img, .frame.empty img { display: none; }
+.frame .thumb-fallback { position: absolute; inset: 0; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.hero .frame { position: absolute; inset: 0; }
+.hero .frame img { transform: none; }
+.hero .frame.ready img { animation: ken 18s ease-in-out infinite alternate; }
+.spot .frame { height: 120px; border-radius: 14px; }
+.masonry-item .frame { border-radius: 18px; min-height: 140px; }
+.showcase-tile .frame { height: clamp(144px, 36vw, 196px); border-radius: 18px; }
 .dot {
   position: absolute; top: 8px; right: 8px;
   width: 8px; height: 8px; border-radius: 50%; background: var(--rose);
@@ -710,7 +732,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; }
   .hero-copy { padding: 16px; }
   .hero-note { display: none; }
   .spotlight { grid-template-columns: 1fr; }
-  .spot img, .spot video { height: 200px; }
+  .spot .frame, .spot img, .spot video { height: 200px; }
   .insight-grid, .insight-grid.two { grid-template-columns: 1fr 1fr; }
   .calendar { gap: 4px; }
   .day { height: 34px; }

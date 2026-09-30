@@ -1,14 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { CREATOR } from "../lib/catalog";
 import { socialFeed } from "../lib/feed";
 import { formatCompact } from "../lib/format";
 import { isDirectVideo } from "../lib/links";
 import { asset } from "../lib/paths";
 import { ProfileEditor } from "./profile-editor";
-import { ContentCard, CountLink, downloadMediaKit, Filters, Insight, matchesFilter, mediaSrc, Rail } from "./pieces";
+import { ContentCard, CountLink, downloadMediaKit, Filters, Frame, Insight, matchesFilter, mediaSrc, Rail } from "./pieces";
 import { useStudio } from "./studio";
 
 export function DashboardView() {
@@ -89,7 +88,7 @@ export function DashboardView() {
     <div className="workspace">
       <div className="main-col">
         <section className="hero">
-          <img src={heroImage} alt="Isha Dhakal" />
+          <Frame src={heroImage} alt="Isha Dhakal" />
           <div className="hero-copy">
             <p className="script-name">Isha Dhakal</p>
             <p className="hero-sub">{profile?.tagline || `Content creator · ${CREATOR.location}`}</p>
@@ -102,12 +101,11 @@ export function DashboardView() {
           <div className="profile-copy">
             <h1>Isha Dhakal <span aria-hidden="true">♡</span></h1>
             <p className="meta-line">Content creator · {profile?.pronouns || CREATOR.pronouns} · {profile?.location || CREATOR.location}</p>
+            <p className="now-chip"><span />In Australia right now</p>
             <p className="bio">{profile?.bio}</p>
             {signedIn ? (
               <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit bio</button>
-            ) : (
-              <Link className="edit-pill" href="/admin">Edit bio</Link>
-            )}
+            ) : null}
           </div>
           <div className="counts">
             <CountLink href={CREATOR.tiktok} platform="tiktok" label="Followers" value={stats?.tiktok?.followers} live={stats?.tiktok?.live} />
@@ -141,9 +139,9 @@ export function DashboardView() {
           <header className="section-head">
             <div>
               <h2>Showcase</h2>
-              <p>This row moves right to left. Add a TikTok video, Instagram post, or Pinterest photo, or remove one from the row.</p>
+              <p>{signedIn ? "This row moves right to left. Add a TikTok video, Instagram post, or Pinterest photo, or remove one from the row." : "A slow row of Isha’s videos and photos, moving right to left."}</p>
             </div>
-            {signedIn ? <span className="fine">Signed in</span> : <Link className="edit-pill" href="/admin">Sign in to edit</Link>}
+            {signedIn ? <span className="fine">Signed in</span> : null}
           </header>
           {ribbon.length === 0 ? (
             <div className="empty">
@@ -159,7 +157,7 @@ export function DashboardView() {
                       {item.kind === "video" && isDirectVideo(item.src) ? (
                         <video src={item.src} muted playsInline preload="metadata" />
                       ) : src ? (
-                        <img src={src} alt="" />
+                        <Frame src={src} alt="" />
                       ) : (
                         <span className="thumb-fallback">{item.title}</span>
                       )}
@@ -179,9 +177,11 @@ export function DashboardView() {
             <div>
               <h2>{heading}</h2>
               <p>
-                {filter === "all"
-                  ? "Open TikTok, Instagram, or Pinterest and add the videos and photos you want in the showcase."
-                  : "These are the public posts from this account, including new uploads. Add one to the showcase, remove it, or edit the text."}
+                {signedIn
+                  ? filter === "all"
+                    ? "Open TikTok, Instagram, or Pinterest and add the videos and photos you want in the showcase."
+                    : "These are the public posts from this account, including new uploads. Add one to the showcase, remove it, or edit the text."
+                  : "Look through TikTok, Instagram, and Pinterest. New public posts show up here."}
               </p>
             </div>
           </header>
@@ -222,6 +222,18 @@ export function DashboardView() {
           </div>
         ) : null}
 
+        {signedIn ? (
+          <section className="panel ideas">
+            <h2>Ideas you can put on this page</h2>
+            <ul>
+              <li>A weekly “day in Australia” clip, posted the same day each week so people know when to look.</li>
+              <li>One pinned intro on TikTok: who you are, that you’re in Australia, and the email for brand work.</li>
+              <li>Turn three Pinterest photos into a “save this look” set and add only those to the showcase.</li>
+              <li>Reply to collaboration notes within a day. Brands remember the creator who answers.</li>
+            </ul>
+          </section>
+        ) : null}
+
         <div className="split">
           <Calendar posts={posts} cursor={monthCursor} onCursor={setMonthCursor} />
           <section className="panel">
@@ -232,7 +244,7 @@ export function DashboardView() {
             <div className="spotlight">
               {spotlight.map((item) => (
                 <a key={item.id} href={item.externalUrl || mediaSrc(item)} className="spot" target={item.externalUrl ? "_blank" : undefined} rel="noreferrer">
-                  <img src={mediaSrc(item)} alt="" />
+                  <Frame src={mediaSrc(item)} alt="" />
                   <span>
                     {item.views != null
                       ? `${formatCompact(item.views)} views`

@@ -6,7 +6,7 @@ import { formatCompact, formatExact, timeAgo } from "../lib/format";
 import { isDirectVideo } from "../lib/links";
 import { asset } from "../lib/paths";
 import { Icon, InstagramMark, PinterestMark, TikTokMark } from "./icons";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProfileEditor } from "./profile-editor";
 import { useStudio } from "./studio";
 
@@ -69,6 +69,40 @@ export function mediaSrc(item) {
   return asset(item.src);
 }
 
+export function Frame({ src, alt }) {
+  const imgRef = useRef(null);
+  const [state, setState] = useState(src ? "loading" : "empty");
+
+  useEffect(() => {
+    if (!src) {
+      setState("empty");
+      return undefined;
+    }
+    const img = imgRef.current;
+    if (img?.complete && img.naturalWidth > 0) setState("ready");
+    else if (img?.complete && img.naturalWidth === 0) setState("error");
+    else setState("loading");
+    return undefined;
+  }, [src]);
+
+  return (
+    <span className={`frame ${state}`}>
+      {src ? (
+        <img
+          ref={imgRef}
+          src={src}
+          alt={alt || ""}
+          loading="eager"
+          decoding="async"
+          onLoad={() => setState("ready")}
+          onError={() => setState("error")}
+        />
+      ) : null}
+      {state === "error" || state === "empty" ? <span className="thumb-fallback">{alt || "Photo"}</span> : null}
+    </span>
+  );
+}
+
 export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onDashboard, delay = 0 }) {
   const scheduled = item.status === "scheduled";
   const src = mediaSrc(item);
@@ -80,7 +114,7 @@ export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onD
         {item.kind === "video" && isDirectVideo(item.src) ? (
           <video src={item.src} muted playsInline preload="metadata" />
         ) : src ? (
-          <img src={src} alt={item.title} />
+          <Frame src={src} alt={item.title} />
         ) : item.embedUrl ? (
           <iframe src={item.embedUrl} title={item.title || "Video"} />
         ) : (
@@ -185,9 +219,7 @@ export function Rail() {
           <h2>About me</h2>
           {signedIn ? (
             <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit about</button>
-          ) : (
-            <Link className="edit-pill" href="/admin">Edit about</Link>
-          )}
+          ) : null}
         </header>
         <ul className="about-list">
           {points.map((point) => <li key={point}>{point}</li>)}
@@ -214,7 +246,7 @@ export function downloadMediaKit(stats) {
   const lines = [
     "ISHA DHAKAL — CREATOR MEDIA KIT",
     "",
-    "Content creator based in Nepal.",
+    "Content creator in Australia.",
     "Lifestyle, photo stories, and everyday moments.",
     "Open for collaborations, UGC, and product videos.",
     "",

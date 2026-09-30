@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { CREATOR } from "../lib/catalog";
 import { enrichLink, parseMediaLink } from "../lib/links";
 import { publishLinkPost, publishPost } from "../lib/localStudio";
 import { Rail } from "./pieces";
@@ -16,7 +17,7 @@ const PLATFORMS = [
 export function CreateView() {
   const params = useSearchParams();
   const router = useRouter();
-  const { refreshPosts, setNotice, profile, saveProfile } = useStudio();
+  const { refreshPosts, setNotice, profile, saveProfile, signedIn } = useStudio();
   const initialKind = params.get("kind") === "video" ? "video" : "photo";
   const [kind, setKind] = useState(initialKind);
   const [file, setFile] = useState(null);
@@ -110,6 +111,19 @@ export function CreateView() {
     () => "This publishes inside your creator studio so you can see the post on the dashboard. It does not upload to TikTok, Instagram, or Pinterest.",
     []
   );
+
+  if (!signedIn) {
+    return (
+      <div className="page narrow">
+        <header className="page-intro">
+          <p className="eyebrow">Studio</p>
+          <h1>Isha updates this page</h1>
+          <p>Visitors can look through the videos and photos and write to her. Adding, removing, and uploading stay with the studio password.</p>
+        </header>
+        <a className="primary" href={`mailto:${CREATOR.email}`}>Contact Isha</a>
+      </div>
+    );
+  }
 
   return (
     <div className="workspace">

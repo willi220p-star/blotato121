@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { socialFeed } from "../lib/feed";
-import { ContentCard, mediaSrc } from "./pieces";
+import { ContentCard, Frame, mediaSrc } from "./pieces";
 import { useStudio } from "./studio";
 
 export function LibraryView() {
-  const { posts, stats } = useStudio();
+  const { posts, stats, signedIn } = useStudio();
   const social = socialFeed(stats);
   const photos = [
     ...posts.filter((post) => post.kind === "photo"),
@@ -25,12 +25,12 @@ export function LibraryView() {
       <section>
         <header className="section-head bare">
           <h2>Videos</h2>
-          <Link href="/create?kind=video">Upload a video</Link>
+          {signedIn ? <Link href="/create?kind=video">Upload a video</Link> : null}
         </header>
         {videos.length === 0 ? (
           <div className="empty panel">
             <p>TikTok videos will appear here as soon as the profile feed refreshes.</p>
-            <Link href="/create?kind=video">Upload video</Link>
+            {signedIn ? <Link href="/create?kind=video">Upload video</Link> : null}
           </div>
         ) : (
           <div className="card-grid">
@@ -41,12 +41,12 @@ export function LibraryView() {
       <section>
         <header className="section-head bare">
           <h2>Photos</h2>
-          <Link href="/create?kind=photo">Upload a photo</Link>
+          {signedIn ? <Link href="/create?kind=photo">Upload a photo</Link> : null}
         </header>
         <div className="masonry">
           {photos.map((item) => (
             <a key={item.id} href={item.externalUrl || item.src} className="masonry-item" target={item.externalUrl ? "_blank" : undefined} rel="noreferrer">
-              <img src={mediaSrc(item)} alt={item.title} />
+              <Frame src={mediaSrc(item)} alt={item.title} />
               <span>{item.title}</span>
             </a>
           ))}

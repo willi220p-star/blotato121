@@ -132,7 +132,7 @@ export function ProfileEditor({ open, onClose }) {
               <img src={asset("/media/avatar-ig.jpg")} alt="" />
               <div>
                 <strong>Isha Dhakal</strong>
-                <span>Content creator · {form.pronouns || "she/her"} · {form.location || "Nepal"}</span>
+                <span>Content creator · {form.pronouns || "she/her"} · {form.location || "Australia"}</span>
                 <p>{form.bio || "Your bio appears here."}</p>
               </div>
             </article>

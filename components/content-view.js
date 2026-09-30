@@ -8,7 +8,7 @@ import { ContentCard, matchesFilter } from "./pieces";
 import { useStudio } from "./studio";
 
 export function ContentView() {
-  const { posts, stats, refreshPosts, setNotice } = useStudio();
+  const { posts, stats, refreshPosts, setNotice, signedIn } = useStudio();
   const [tab, setTab] = useState("all");
 
   const items = useMemo(() => {
@@ -59,7 +59,7 @@ export function ContentView() {
         </div>
       ) : (
         <div className="card-grid roomy">
-          {visible.map((item) => <ContentCard key={item.id} item={item} onRemove={remove} />)}
+          {visible.map((item) => <ContentCard key={item.id} item={item} onRemove={signedIn ? remove : undefined} />)}
         </div>
       )}
     </div>

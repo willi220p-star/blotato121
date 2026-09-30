@@ -12,14 +12,16 @@ import { useStudio } from "./studio";
 export function AppShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { stats, inquiries, posts, statsStatus, refreshStats, settings } = useStudio();
+  const { stats, inquiries, posts, statsStatus, refreshStats, settings, signedIn } = useStudio();
   const avatar = asset("/media/avatar-ig.jpg");
   const [bellOpen, setBellOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const [meOpen, setMeOpen] = useState(false);
 
   useEffect(() => {
     setNavOpen(false);
     setBellOpen(false);
+    setMeOpen(false);
   }, [pathname]);
 
   const updated = stats?.fetchedAt ? timeAgo(stats.fetchedAt) : "waiting";
@@ -103,11 +105,26 @@ export function AppShell({ children }) {
                 </div>
               ) : null}
             </div>
-            <button className="upload-button" type="button" onClick={() => router.push("/create")}>
-              <Icon name="upload" size={16} />
-              Upload
-            </button>
-            <img className="top-avatar" src={avatar} alt="Isha Dhakal" />
+            {signedIn ? (
+              <button className="upload-button" type="button" onClick={() => router.push("/create")}>
+                <Icon name="upload" size={16} />
+                Upload
+              </button>
+            ) : null}
+            <div className="me-wrap">
+              <button className="avatar-button" type="button" aria-expanded={meOpen} aria-label="About Isha Dhakal" onClick={() => setMeOpen((open) => !open)}>
+                <img className="top-avatar" src={avatar} alt="" />
+              </button>
+              {meOpen ? (
+                <div className="popover me-card" role="dialog" aria-label="Isha Dhakal">
+                  <img src={avatar} alt="Isha Dhakal" />
+                  <strong>Isha Dhakal</strong>
+                  <span>Content creator · in Australia right now</span>
+                  <a href={`mailto:${CREATOR.email}`}>Contact {CREATOR.email}</a>
+                  <Link href="/about">Read about her</Link>
+                </div>
+              ) : null}
+            </div>
           </div>
         </header>
         {children}
