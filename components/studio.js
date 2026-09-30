@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { githubSessionOn, readGitHubProfile, writeGitHubProfile } from "../lib/githubAuth";
 import { loadInquiries, loadPosts } from "../lib/localStudio";
 import { asset } from "../lib/paths";
@@ -23,6 +23,8 @@ export function StudioProvider({ children }) {
   const [settings, setSettings] = useState({ exactCounts: true, inboxAlerts: true });
   const [profile, setProfile] = useState(null);
   const [signedIn, setSignedIn] = useState(false);
+  const profileRef = useRef(null);
+  const saveChain = useRef(Promise.resolve());
 
   const refreshStats = useCallback(async (fresh = false) => {
     setStatsStatus((current) => (current === "ready" ? "refreshing" : "loading"));
@@ -46,26 +48,38 @@ export function StudioProvider({ children }) {
 
   const refreshProfile = useCallback(async () => {
     const remote = (await readJson(asset("/api/profile"))) || (await readJson(asset("/profile.json")));
-    setProfile(readGitHubProfile() || remote);
+    const next = readGitHubProfile() || remote;
+    profileRef.current = next;
+    setProfile(next);
   }, []);
 
-  const saveProfile = useCallback(async (next) => {
-    const response = await fetch(asset("/api/profile"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(next),
-    });
-    const type = response.headers.get("content-type") || "";
-    if (response.ok && type.includes("application/json")) {
-      const saved = await response.json();
+  const saveProfile = useCallback((next) => {
+    const job = saveChain.current.then(async () => {
+      const merged = { ...(profileRef.current || {}), ...next };
+      profileRef.current = merged;
+      setProfile(merged);
+      const response = await fetch(asset("/api/profile"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(merged),
+      });
+      const type = response.headers.get("content-type") || "";
+      if (response.ok && type.includes("application/json")) {
+        const saved = await response.json();
+        profileRef.current = saved;
+        setProfile(saved);
+        writeGitHubProfile(saved);
+        setNotice("Profile saved.");
+        return saved;
+      }
+      const saved = writeGitHubProfile(merged);
+      profileRef.current = saved;
       setProfile(saved);
-      setNotice("Profile saved.");
+      setNotice("Saved in this browser.");
       return saved;
-    }
-    const saved = writeGitHubProfile(next);
-    setProfile(saved);
-    setNotice("Saved in this browser on the GitHub page.");
-    return saved;
+    });
+    saveChain.current = job.catch(() => {});
+    return job;
   }, []);
 
   const refreshPosts = useCallback(async () => {
@@ -87,10 +101,12 @@ export function StudioProvider({ children }) {
     refreshPosts();
     refreshInquiries();
     refreshProfile();
-    if (githubSessionOn()) setSignedIn(true);
+    const localSession = githubSessionOn();
+    if (localSession) setSignedIn(true);
     readJson(asset("/api/session"))
       .then((data) => {
-        if (data) setSignedIn(Boolean(data.signedIn));
+        if (data?.signedIn) setSignedIn(true);
+        else if (!localSession) setSignedIn(false);
       })
       .catch(() => {});
     const timer = setInterval(() => refreshStats(false), 60_000);
@@ -117,11 +133,12 @@ export function StudioProvider({ children }) {
       signedIn,
       setSignedIn,
       saveProfile,
+      refreshProfile,
       refreshStats,
       refreshPosts,
       refreshInquiries,
     }),
-    [stats, statsStatus, posts, inquiries, notice, settings, profile, signedIn, saveProfile, refreshStats, refreshPosts, refreshInquiries]
+    [stats, statsStatus, posts, inquiries, notice, settings, profile, signedIn, saveProfile, refreshProfile, refreshStats, refreshPosts, refreshInquiries]
   );
 
   return (

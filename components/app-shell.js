@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CREATOR, NAV } from "../lib/catalog";
-import { asset } from "../lib/paths";
+import { asset, placedSrc } from "../lib/paths";
 import { timeAgo } from "../lib/format";
 import { Icon } from "./icons";
 import { useStudio } from "./studio";
@@ -12,7 +12,8 @@ import { useStudio } from "./studio";
 export function AppShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { stats, inquiries, posts, statsStatus, refreshStats, settings } = useStudio();
+  const { stats, inquiries, posts, statsStatus, refreshStats, settings, profile } = useStudio();
+  const avatar = placedSrc(profile?.avatarImage) || asset("/media/avatar-ig.jpg");
   const [bellOpen, setBellOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
 
@@ -60,7 +61,7 @@ export function AppShell({ children }) {
           </svg>
           <p className="hand-note">Good things<br />take time</p>
           <div className="me-chip">
-            <img src={asset("/media/avatar-ig.jpg")} alt="" />
+            <img src={avatar} alt="" />
             <div>
               <strong>{CREATOR.name}</strong>
               <span>Creator</span>
@@ -106,7 +107,7 @@ export function AppShell({ children }) {
               <Icon name="upload" size={16} />
               Upload
             </button>
-            <img className="top-avatar" src={asset("/media/avatar-ig.jpg")} alt="Isha Dhakal" />
+            <img className="top-avatar" src={avatar} alt="Isha Dhakal" />
           </div>
         </header>
         {children}

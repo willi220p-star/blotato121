@@ -3,9 +3,8 @@ import path from "path";
 import { loadLiveStats } from "../lib/fetchStats.js";
 
 const root = process.cwd();
-const mediaDir = path.join(root, "public", "media", "ig");
 
-async function saveImage(url, filename) {
+async function saveImage(url, folder, filename) {
   const response = await fetch(url, {
     headers: {
       Referer: "https://www.instagram.com/",
@@ -17,23 +16,29 @@ async function saveImage(url, filename) {
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const bytes = Buffer.from(await response.arrayBuffer());
-  await writeFile(path.join(mediaDir, filename), bytes);
+  const dir = path.join(root, "public", "media", folder);
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, filename), bytes);
+}
+
+async function keepLocal(posts, folder) {
+  for (const post of posts || []) {
+    if (!post.imageUrl || !post.id) continue;
+    const filename = `${String(post.id).replace(/[^a-zA-Z0-9_-]/g, "")}.jpg`;
+    try {
+      await saveImage(post.imageUrl, folder, filename);
+      post.src = `/media/${folder}/${filename}`;
+      post.imageUrl = "";
+    } catch (error) {
+      console.warn("Kept remote image for", post.id, error.message);
+    }
+  }
 }
 
 const stats = await loadLiveStats();
-await mkdir(mediaDir, { recursive: true });
-
-for (const post of stats.instagram?.recent || []) {
-  if (!post.imageUrl || !post.id) continue;
-  const filename = `${post.id}.jpg`;
-  try {
-    await saveImage(post.imageUrl, filename);
-    post.src = `/media/ig/${filename}`;
-    post.imageUrl = "";
-  } catch (error) {
-    console.warn("Kept remote image for", post.id, error.message);
-  }
-}
+await keepLocal(stats.instagram?.recent, "ig");
+await keepLocal(stats.tiktok?.recent, "tiktok");
+await keepLocal(stats.pinterest?.recent, "pins");
 
 const statsPath = path.join(root, "public", "stats.json");
 await writeFile(statsPath, JSON.stringify(stats));
@@ -43,6 +48,8 @@ console.log(
   stats.tiktok?.followers,
   stats.instagram?.followers,
   stats.pinterest?.followers,
-  "posts",
-  stats.instagram?.recent?.length || 0
+  "photos",
+  stats.tiktok?.recent?.length || 0,
+  stats.instagram?.recent?.length || 0,
+  stats.pinterest?.recent?.length || 0
 );

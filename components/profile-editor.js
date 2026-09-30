@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { asset } from "../lib/paths";
+import { asset, placedSrc } from "../lib/paths";
 import { useStudio } from "./studio";
 
 const EMPTY = {
@@ -57,7 +57,7 @@ export function ProfileEditor({ open, onClose }) {
     setBusy(true);
     setError("");
     try {
-      await saveProfile({ ...form, aboutPoints: points });
+      await saveProfile({ ...form, aboutPoints: points, heroImage: profile?.heroImage || "", avatarImage: profile?.avatarImage || "", selectedIds: profile?.selectedIds || [] });
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save");
@@ -129,7 +129,7 @@ export function ProfileEditor({ open, onClose }) {
           <aside className="editor-preview" aria-label="Live preview">
             <p className="eyebrow">Preview</p>
             <article className="preview-card">
-              <img src={asset("/media/avatar-ig.jpg")} alt="" />
+              <img src={placedSrc(profile?.avatarImage) || asset("/media/avatar-ig.jpg")} alt="" />
               <div>
                 <strong>Isha Dhakal</strong>
                 <span>Content creator · {form.pronouns || "she/her"} · {form.location || "Nepal"}</span>

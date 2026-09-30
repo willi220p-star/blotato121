@@ -61,7 +61,7 @@ export function ContentCard({ item, onRemove, delay = 0 }) {
   const scheduled = item.status === "scheduled";
   const src = mediaSrc(item);
   const platform = item.platform || item.platforms?.[0] || "pinterest";
-  const sourceLabel = item.source === "studio" ? "Studio" : item.source === "instagram" ? "Instagram" : "Pinterest";
+  const sourceLabel = item.source === "studio" ? "Studio" : item.source === "tiktok" ? "TikTok" : item.source === "instagram" ? "Instagram" : "Pinterest";
   return (
     <article className="content-card" style={{ animationDelay: `${delay * 0.35}s` }}>
       <a className="thumb" href={item.externalUrl || src} target={item.externalUrl ? "_blank" : undefined} rel="noreferrer">
@@ -86,9 +86,11 @@ export function ContentCard({ item, onRemove, delay = 0 }) {
             ? timeAgo(item.createdAt)
             : item.takenAt
               ? postedWhen(item.takenAt)
-              : item.source === "instagram"
-                ? "Instagram"
-                : "Public pin"}
+              : item.source === "tiktok"
+                ? "TikTok"
+                : item.source === "instagram"
+                  ? "Instagram"
+                  : "Pinterest"}
       </p>
       </div>
       {onRemove && item.source === "studio" ? (

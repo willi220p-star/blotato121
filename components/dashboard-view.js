@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CREATOR } from "../lib/catalog";
 import { socialFeed } from "../lib/feed";
 import { formatCompact } from "../lib/format";
-import { asset } from "../lib/paths";
+import { asset, placedSrc } from "../lib/paths";
 import { ProfileEditor } from "./profile-editor";
 import { ContentCard, CountLink, downloadMediaKit, Filters, Insight, matchesFilter, mediaSrc, Rail } from "./pieces";
 import { useStudio } from "./studio";
@@ -24,7 +24,14 @@ export function DashboardView() {
     return [...studio, ...social.tiktok, ...social.instagram, ...social.pinterest];
   }, [posts, stats]);
 
-  const visible = feed.filter((item) => matchesFilter(item, filter)).slice(0, 8);
+  const chosen = profile?.selectedIds?.length
+    ? profile.selectedIds
+        .map((id) => feed.find((item) => String(item.id) === String(id)))
+        .filter(Boolean)
+    : feed;
+  const visible = chosen.filter((item) => matchesFilter(item, filter)).slice(0, 8);
+  const heroImage = placedSrc(profile?.heroImage) || asset("/media/avatar-tt.jpg");
+  const avatarImage = placedSrc(profile?.avatarImage) || asset("/media/avatar-ig.jpg");
   const social = socialFeed(stats);
   const ranked = [...social.instagram, ...social.tiktok].sort(
     (a, b) => (b.views || b.likes || 0) - (a.views || a.likes || 0)
@@ -35,7 +42,7 @@ export function DashboardView() {
     <div className="workspace">
       <div className="main-col">
         <section className="hero">
-          <img src={asset("/media/avatar-tt.jpg")} alt="Isha by the water at dusk" />
+          <img src={heroImage} alt="Isha Dhakal" />
           <div className="hero-copy">
             <p className="script-name">Isha Dhakal</p>
             <p className="hero-sub">{profile?.tagline || `Content creator · ${CREATOR.location}`}</p>
@@ -44,7 +51,7 @@ export function DashboardView() {
         </section>
 
         <section className="profile-card">
-          <img className="avatar" src={asset("/media/avatar-ig.jpg")} alt="" />
+          <img className="avatar" src={avatarImage} alt="" />
           <div className="profile-copy">
             <h1>Isha Dhakal <span aria-hidden="true">♡</span></h1>
             <p className="meta-line">Content creator · {profile?.pronouns || CREATOR.pronouns} · {profile?.location || CREATOR.location}</p>
@@ -96,13 +103,15 @@ export function DashboardView() {
             </div>
           ) : (
             <>
-              <div className="drift" aria-hidden="true">
-                <div className="drift-track">
-                  {[...visible, ...visible].map((item, index) => (
-                    <img key={`${item.id}-${index}`} src={mediaSrc(item)} alt="" />
-                  ))}
+              {visible.length > 3 ? (
+                <div className="drift" aria-hidden="true">
+                  <div className="drift-track">
+                    {[...visible, ...visible].map((item, index) => (
+                      <img key={`${item.id}-${index}`} src={mediaSrc(item)} alt="" />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <div className="card-grid">
                 {visible.map((item, index) => <ContentCard key={item.id} item={item} delay={index} />)}
               </div>

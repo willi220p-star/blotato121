@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { githubSessionOn, signInOnGitHub, signOutOnGitHub } from "../../lib/githubAuth";
 import { asset } from "../../lib/paths";
 import { timeAgo } from "../../lib/format";
+import { MediaDesk } from "../../components/media-desk";
 import { ProfileEditor } from "../../components/profile-editor";
 import { useStudio } from "../../components/studio";
 
@@ -26,7 +27,8 @@ export default function AdminPage() {
         return response.json();
       })
       .then((data) => {
-        if (data) setSignedIn(Boolean(data.signedIn));
+        if (data?.signedIn) setSignedIn(true);
+        else if (!local) setSignedIn(false);
         setReady(true);
       })
       .catch(() => setReady(true));
@@ -34,25 +36,25 @@ export default function AdminPage() {
 
   async function signIn(event) {
     event.preventDefault();
+    const typed = password.trim();
     setBusy(true);
     setError("");
     try {
-      const response = await fetch(asset("/api/session"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-      const type = response.headers.get("content-type") || "";
-      if (type.includes("application/json")) {
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Could not sign in");
-        setSignedIn(true);
-        setStudioSignedIn(true);
-        setPassword("");
-        return;
+      const [response, localOk] = await Promise.all([
+        fetch(asset("/api/session"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: typed }),
+        }).catch(() => null),
+        signInOnGitHub(typed),
+      ]);
+      const type = response?.headers.get("content-type") || "";
+      const serverOk = Boolean(response && type.includes("application/json") && response.ok);
+      if (!serverOk && localOk === false) {
+        signOutOnGitHub();
       }
-      const ok = await signInOnGitHub(password);
-      if (!ok) throw new Error("That password doesn’t match.");
+      if (!serverOk && !localOk) throw new Error("That password doesn’t match.");
+      if (serverOk && !localOk) signOutOnGitHub();
       setSignedIn(true);
       setStudioSignedIn(true);
       setPassword("");
@@ -98,7 +100,7 @@ export default function AdminPage() {
         <form className="panel login-card" onSubmit={signIn}>
           <p className="eyebrow">Private</p>
           <h1>Manage the studio</h1>
-          <p className="about-copy">Sign in to edit the bio, the About page, and to pull the latest public counts.</p>
+          <p className="about-copy">Sign in to edit the bio, choose the banner and profile photo, and pick which TikTok, Instagram, and Pinterest images appear on the dashboard.</p>
           <label className="field">
             <span>Studio password</span>
             <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoFocus required />
@@ -111,11 +113,11 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="page narrow">
+    <div className="page desk-page">
       <header className="page-intro">
         <p className="eyebrow">Signed in</p>
         <h1>Studio desk</h1>
-        <p>Edit the public page here. Counts and new posts refresh on a timer, and you can pull them now.</p>
+        <p>Change the words, the banner, the profile photo, and which images from TikTok, Instagram, and Pinterest show on the dashboard.</p>
       </header>
       <section className="panel desk-grid">
         <article>
@@ -135,6 +137,7 @@ export default function AdminPage() {
           <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit bio and about</button>
         </article>
       </section>
+      <MediaDesk />
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="text-button" type="button" onClick={signOut}>Sign out</button>
       <ProfileEditor open={editing} onClose={() => { setEditing(false); refreshProfile(); }} />
