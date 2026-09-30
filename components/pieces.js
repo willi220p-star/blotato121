@@ -92,6 +92,7 @@ export function Frame({ src, alt }) {
           ref={imgRef}
           src={src}
           alt={alt || ""}
+          draggable={false}
           loading="eager"
           decoding="async"
           onLoad={() => setState("ready")}
@@ -103,7 +104,7 @@ export function Frame({ src, alt }) {
   );
 }
 
-export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onDashboard, delay = 0 }) {
+export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onDashboard, onArrange, delay = 0 }) {
   const scheduled = item.status === "scheduled";
   const src = mediaSrc(item);
   const platform = item.platform || item.platforms?.[0] || "pinterest";
@@ -143,8 +144,11 @@ export function ContentCard({ item, onRemove, onToggleDashboard, onEditText, onD
                   : "Pinterest"}
       </p>
       </div>
-      {onToggleDashboard || onEditText ? (
+      {onToggleDashboard || onEditText || onArrange ? (
         <div className="card-actions">
+          {onArrange ? (
+            <button type="button" className="drag-grip" onPointerDown={(event) => onArrange(event, String(item.id))}>Drag</button>
+          ) : null}
           {onToggleDashboard ? (
             <button type="button" className={onDashboard ? "text-button danger" : "edit-pill"} onClick={() => onToggleDashboard(item)}>
               {onDashboard ? "Remove" : "Add to showcase"}

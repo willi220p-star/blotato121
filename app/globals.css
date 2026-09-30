@@ -389,10 +389,32 @@ button { cursor: pointer; }
     radial-gradient(420px 120px at 0% 0%, rgba(248, 231, 239, 0.9), transparent 70%),
     var(--card);
 }
+.arrange-board {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 6px 2px 12px;
+  scroll-snap-type: x mandatory;
+}
 .showcase-tile {
   position: relative;
   flex: none;
   width: clamp(108px, 28vw, 148px);
+  scroll-snap-align: start;
+}
+.arrange-board .showcase-tile { cursor: grab; touch-action: none; user-select: none; }
+.arrange-board img, .arrange-board video { -webkit-user-drag: none; pointer-events: none; }
+.showcase-tile.dragging {
+  cursor: grabbing;
+  transform: scale(1.05) rotate(-1.5deg);
+  outline: 3px solid #e23b78;
+  border-radius: 22px;
+  z-index: 2;
+  box-shadow: 0 16px 30px rgba(226, 59, 120, 0.28);
+}
+.showcase-tile.over {
+  outline: 3px dashed #ff8a3d;
+  border-radius: 22px;
 }
 .showcase-tile img,
 .showcase-tile video,
@@ -586,14 +608,31 @@ fieldset.field { border: 0; margin: 0; padding: 0; }
 .hero-note { white-space: pre-line; }
 .edit-pill {
   border: 0;
-  background: #f8e7ef;
-  color: #6d304c;
+  background: linear-gradient(135deg, #ffe1f2, #efe4ff);
+  color: #9a2460;
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
-.edit-pill:hover { background: #f3d5e4; }
+.edit-pill:hover { background: linear-gradient(135deg, #ffd0ea, #e4d4ff); }
+.drag-grip {
+  border: 0;
+  border-radius: 999px;
+  min-height: 40px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #ff7aa8, #c9a6ff);
+  color: white;
+  font-weight: 700;
+  cursor: grab;
+  touch-action: none;
+}
+.text-button.danger {
+  background: linear-gradient(135deg, #ffe8ef, #ffd8c8);
+  border-radius: 999px;
+  color: #a1264a;
+  font-weight: 700;
+}
 .modal-scrim {
   position: fixed; inset: 0; z-index: 30;
   background: rgba(28, 16, 24, 0.42);
@@ -707,13 +746,13 @@ fieldset.field { border: 0; margin: 0; padding: 0; }
 .card-actions .edit-pill, .card-actions .text-button { min-height: 40px; padding: 8px 12px; }
 .caption-editor {
   width: min(460px, 100%);
-  background: #fffdfd;
+  background: linear-gradient(180deg, #fff, #fff1f8 60%, #f4f0ff);
   border-radius: 28px;
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 30px 90px rgba(40, 16, 28, 0.24);
+  box-shadow: 0 30px 90px rgba(180, 40, 90, 0.22);
 }
 .caption-editor h2 { margin: 0; letter-spacing: -0.04em; }
 .mail-card span, .bio, .about-copy, .card-copy h3 { overflow-wrap: anywhere; }

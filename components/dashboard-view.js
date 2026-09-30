@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CREATOR } from "../lib/catalog";
 import { socialFeed } from "../lib/feed";
 import { formatCompact } from "../lib/format";
@@ -18,6 +18,10 @@ export function DashboardView() {
   const [captionItem, setCaptionItem] = useState(null);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
+  const [dragId, setDragId] = useState(null);
+  const [overId, setOverId] = useState(null);
+  const dragRef = useRef({ id: null, over: null });
+  const orderRef = useRef([]);
 
   const feed = useMemo(() => {
     const social = socialFeed(stats);
@@ -44,9 +48,54 @@ export function DashboardView() {
   const ribbon = showcase.length
     ? Array.from({ length: Math.max(2, Math.ceil(8 / showcase.length)) }, () => showcase).flat()
     : [];
+  orderRef.current = (selected.length ? selected : showcase.map((item) => item.id)).map(String);
   const heroImage = asset("/media/avatar-tt.jpg");
   const avatarImage = asset("/media/avatar-ig.jpg");
   const heading = filter === "tiktok" ? "TikTok videos" : filter === "instagram" ? "Instagram photos" : filter === "pinterest" ? "Pinterest photos" : "On the dashboard";
+
+  function beginDrag(event, id) {
+    if (event.button != null && event.button !== 0) return;
+    dragRef.current = { id: String(id), over: null };
+    setDragId(String(id));
+    setOverId(null);
+  }
+
+  useEffect(() => {
+    if (!dragId) return undefined;
+    function move(event) {
+      const el = document.elementFromPoint(event.clientX, event.clientY);
+      const tile = el?.closest?.("[data-showcase-id]");
+      const over = tile?.getAttribute("data-showcase-id") || null;
+      dragRef.current.over = over;
+      setOverId(over);
+    }
+    let done = false;
+    async function up() {
+      if (done) return;
+      done = true;
+      const { id, over } = dragRef.current;
+      dragRef.current = { id: null, over: null };
+      setDragId(null);
+      setOverId(null);
+      if (!id || !over || id === over) return;
+      const showing = orderRef.current.filter((entry, index, list) => list.indexOf(entry) === index);
+      const next = showing.filter((entry) => entry !== id);
+      const index = next.indexOf(over);
+      if (index < 0) next.push(id);
+      else next.splice(index, 0, id);
+      await saveProfile({ selectedIds: next.slice(0, 24) });
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("mouseup", up);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("mouseup", up);
+    };
+  }, [dragId, saveProfile]);
 
   async function toggleDashboard(item) {
     const id = String(item.id);
@@ -142,13 +191,41 @@ export function DashboardView() {
           <header className="section-head">
             <div>
               <h2>Showcase</h2>
-              <p>{signedIn ? "This row moves right to left. Add a TikTok video, Instagram post, or Pinterest photo, or remove one from the row." : "A slow row of Isha’s videos and photos, moving right to left."}</p>
+              <p>{signedIn ? "Drag a video or photo to change its place. Drag one up from the list below to add it." : "A slow row of Isha’s videos and photos, moving right to left."}</p>
             </div>
             {signedIn ? <span className="fine">Signed in</span> : null}
           </header>
           {ribbon.length === 0 ? (
             <div className="empty">
               <p>New uploads and public posts will glide through here.</p>
+            </div>
+          ) : signedIn ? (
+            <div className="arrange-board" data-arrange-board="true">
+              {showcase.map((item) => {
+                const src = mediaSrc(item);
+                const id = String(item.id);
+                return (
+                  <figure
+                    className={`showcase-tile ${dragId === id ? "dragging" : ""} ${overId === id && dragId !== id ? "over" : ""}`}
+                    key={id}
+                    data-showcase-id={id}
+                    onPointerDown={(event) => {
+                      if (event.target.closest("button")) return;
+                      event.preventDefault();
+                      beginDrag(event, id);
+                    }}
+                  >
+                    {item.kind === "video" && isDirectVideo(item.src) ? (
+                      <video src={item.src} muted playsInline preload="metadata" />
+                    ) : src ? (
+                      <Frame src={src} alt="" />
+                    ) : (
+                      <span className="thumb-fallback">{item.title}</span>
+                    )}
+                    <button type="button" className="showcase-remove" onClick={() => toggleDashboard(item)}>Remove</button>
+                  </figure>
+                );
+              })}
             </div>
           ) : (
             <div className="drift">
@@ -164,9 +241,6 @@ export function DashboardView() {
                       ) : (
                         <span className="thumb-fallback">{item.title}</span>
                       )}
-                      {signedIn ? (
-                        <button type="button" className="showcase-remove" onClick={() => toggleDashboard(item)}>Remove</button>
-                      ) : null}
                     </figure>
                   );
                 })}
@@ -203,6 +277,7 @@ export function DashboardView() {
                   onDashboard={showcaseIds.has(String(item.id))}
                   onToggleDashboard={signedIn ? toggleDashboard : undefined}
                   onEditText={signedIn ? openCaption : undefined}
+                  onArrange={signedIn ? beginDrag : undefined}
                 />
               ))}
             </div>
