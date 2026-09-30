@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { githubSessionOn, signInOnGitHub, signOutOnGitHub } from "../../lib/githubAuth";
 import { asset } from "../../lib/paths";
 import { timeAgo } from "../../lib/format";
 import { ProfileEditor } from "../../components/profile-editor";
 import { useStudio } from "../../components/studio";
 
 export default function AdminPage() {
-  const { stats, profile, refreshStats, refreshProfile } = useStudio();
+  const { stats, profile, refreshStats, refreshProfile, setSignedIn: setStudioSignedIn } = useStudio();
   const [signedIn, setSignedIn] = useState(false);
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
@@ -16,10 +17,16 @@ export default function AdminPage() {
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
+    const local = githubSessionOn();
+    if (local) setSignedIn(true);
     fetch(asset("/api/session"), { cache: "no-store" })
-      .then((response) => response.json())
+      .then(async (response) => {
+        const type = response.headers.get("content-type") || "";
+        if (!type.includes("application/json")) return null;
+        return response.json();
+      })
       .then((data) => {
-        setSignedIn(Boolean(data.signedIn));
+        if (data) setSignedIn(Boolean(data.signedIn));
         setReady(true);
       })
       .catch(() => setReady(true));
@@ -35,9 +42,19 @@ export default function AdminPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Could not sign in");
+      const type = response.headers.get("content-type") || "";
+      if (type.includes("application/json")) {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not sign in");
+        setSignedIn(true);
+        setStudioSignedIn(true);
+        setPassword("");
+        return;
+      }
+      const ok = await signInOnGitHub(password);
+      if (!ok) throw new Error("That password doesn’t match.");
       setSignedIn(true);
+      setStudioSignedIn(true);
       setPassword("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not sign in");
@@ -47,8 +64,10 @@ export default function AdminPage() {
   }
 
   async function signOut() {
-    await fetch(asset("/api/session"), { method: "DELETE" });
+    await fetch(asset("/api/session"), { method: "DELETE" }).catch(() => {});
+    signOutOnGitHub();
     setSignedIn(false);
+    setStudioSignedIn(false);
   }
 
   async function updateNow() {
@@ -56,6 +75,11 @@ export default function AdminPage() {
     setError("");
     try {
       const response = await fetch(asset("/api/sync"), { method: "POST" });
+      const type = response.headers.get("content-type") || "";
+      if (!type.includes("application/json")) {
+        setError("This GitHub page already has the latest published counts. A new publish refreshes them.");
+        return;
+      }
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not update");
       await refreshStats(false);

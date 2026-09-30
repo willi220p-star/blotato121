@@ -8,6 +8,7 @@ cloned
 *.log
 
 public/stats.json
+public/profile.json
 public/media/ig
 data/studio-password.txt
 data/sessions.json

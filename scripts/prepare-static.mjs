@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "fs/promises";
+import { copyFile, mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { loadLiveStats } from "../lib/fetchStats.js";
 
@@ -37,6 +37,7 @@ for (const post of stats.instagram?.recent || []) {
 
 const statsPath = path.join(root, "public", "stats.json");
 await writeFile(statsPath, JSON.stringify(stats));
+await copyFile(path.join(root, "data", "profile.json"), path.join(root, "public", "profile.json")).catch(() => {});
 console.log(
   "Wrote stats",
   stats.tiktok?.followers,

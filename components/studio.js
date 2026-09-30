@@ -1,8 +1,16 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { githubSessionOn, readGitHubProfile, writeGitHubProfile } from "../lib/githubAuth";
 import { loadInquiries, loadPosts } from "../lib/localStudio";
 import { asset } from "../lib/paths";
+
+async function readJson(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  const type = response.headers.get("content-type") || "";
+  if (!response.ok || !type.includes("application/json")) return null;
+  return response.json();
+}
 
 const StudioContext = createContext(null);
 
@@ -37,9 +45,8 @@ export function StudioProvider({ children }) {
   }, []);
 
   const refreshProfile = useCallback(async () => {
-    const response = await fetch(asset("/api/profile"), { cache: "no-store" });
-    if (!response.ok) return;
-    setProfile(await response.json());
+    const remote = (await readJson(asset("/api/profile"))) || (await readJson(asset("/profile.json")));
+    setProfile(readGitHubProfile() || remote);
   }, []);
 
   const saveProfile = useCallback(async (next) => {
@@ -48,10 +55,16 @@ export function StudioProvider({ children }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(next),
     });
-    if (!response.ok) throw new Error("Could not save the profile");
-    const saved = await response.json();
+    const type = response.headers.get("content-type") || "";
+    if (response.ok && type.includes("application/json")) {
+      const saved = await response.json();
+      setProfile(saved);
+      setNotice("Profile saved.");
+      return saved;
+    }
+    const saved = writeGitHubProfile(next);
     setProfile(saved);
-    setNotice("Profile saved.");
+    setNotice("Saved in this browser on the GitHub page.");
     return saved;
   }, []);
 
@@ -74,9 +87,11 @@ export function StudioProvider({ children }) {
     refreshPosts();
     refreshInquiries();
     refreshProfile();
-    fetch(asset("/api/session"), { cache: "no-store" })
-      .then((response) => response.json())
-      .then((data) => setSignedIn(Boolean(data.signedIn)))
+    if (githubSessionOn()) setSignedIn(true);
+    readJson(asset("/api/session"))
+      .then((data) => {
+        if (data) setSignedIn(Boolean(data.signedIn));
+      })
       .catch(() => {});
     const timer = setInterval(() => refreshStats(false), 60_000);
     return () => clearInterval(timer);
