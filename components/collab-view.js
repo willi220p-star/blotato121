@@ -20,7 +20,7 @@ export function CollabView() {
         <p className="eyebrow">Work together</p>
         <h1>Collaborations</h1>
         <p>
-          Isha makes creator videos and everyday photo stories. Send the kind of collaboration you want and it goes straight to{" "}
+          Isha makes creator videos and everyday photo stories. Send opens an email already written to{" "}
           <a href={`mailto:${CREATOR.email}`}>{CREATOR.email}</a>.
         </p>
       </header>
