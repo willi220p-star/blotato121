@@ -1,0 +1,88 @@
+# dgk-apa-physio-leads
+
+Generated 2026-08-25T02:19:41.719724+00:00. 57 records (NDIS 8 · accounting 2 · legal 10 · physio 57).
+
+## Records
+- **physio** Advance Physio Health · Philip William Eyog — 0455 094 316 (APA Find a Physio NT)
+- **physio** Alice Springs Hospital · Anna Lennie — 0457 198 011 (APA Find a Physio NT)
+- **physio** ALICE SPRINGS HOSPITSL · Muhammad Rizwan — 0459 678 975 (APA Find a Physio NT)
+- **physio** Arnhem Allied Health · Laura Saldanha — 08 8919 4727 (APA Find a Physio NT)
+- **physio** Arnhem physiotherapy services · Charity Selleck — charity@arnhemphsio.com (APA Find a Physio NT)
+- **physio** Ashlee Dodd Physiotherapy · Ashlee Dodd — 0430 021 878 (APA Find a Physio NT)
+- **physio** Bush Steps Pty Ltd · Lucy Mayo — 0432 938 834 (APA Find a Physio NT)
+- **physio** Casuarina Plaza, TEHS · Saqlain Abbas — 08 8944 8658 (APA Find a Physio NT)
+- **physio** Central Australia Health Service · Sara Kirwan — 08 8951 9513 (APA Find a Physio NT)
+- **physio** Central Australian Aboriginal Congress · Blue Brashaw — 0484 619 411 (APA Find a Physio NT)
+- **physio** Community Based Rehab · Jevan Mills — 0428 391 273 (APA Find a Physio NT)
+- **physio** Community Based Rehabilitation Team · Paul Blackman — 0422 451 598 (APA Find a Physio NT)
+- **physio** Core Womens Physio · Paige Shreeve — 0493 701 101 (APA Find a Physio NT)
+- **physio** Corporeal Health · Bryce Kefford — 08 9622 5940 (APA Find a Physio NT)
+- **physio** Custom Made Physio · Sam Klippan — 08 8914 6414 (APA Find a Physio NT)
+- **physio** Darwin Health Group · Tyla Cloughessy — 08 8941 4695 (APA Find a Physio NT)
+- **physio** Elite Physio NT · Nicholas Kontzionis — 08 8941 8555 (APA Find a Physio NT)
+- **physio** Elite Physiotherapy and Sports Injury Clinic · Lee Corey — 08 8941 8555 (APA Find a Physio NT)
+- **physio** Elite Physiotherapy NT · Siobhan Mooren — 07 5471 2123 (APA Find a Physio NT)
+- **physio** Everybodies Journey Physiotherapy & Gym · Charl Neuhoff — 0404 762 986 (APA Find a Physio NT)
+- **physio** Inner Balance Health · Maira Khallil — 08 1089 8483 (APA Find a Physio NT)
+- **physio** Katherine Physio - NT · Arshdeep Kahlon — 0430 375 430 (APA Find a Physio NT)
+- **physio** Lauren Kaethner · Lauren Kaethner — 08 8941 6677 (APA Find a Physio NT)
+- **physio** LIFE SPRING PHYSIOTHERAPY · Vandana Thavare — 0488 166 001 (APA Find a Physio NT)
+- **physio** Little Leap Physio · Sarah Whitchelo — 0493 152 672 (APA Find a Physio NT)
+- **physio** Lorikeet Physio · Tereza Doskarova — 0439 871 007 (APA Find a Physio NT)
+- **physio** Mala'la Health Service Aboriginal Corporation · Hamish Peberdy — 0437 293 652 (APA Find a Physio NT)
+- **physio** Maximise Physiotherapy · Luke Radosavljevic — 08 8932 8800 (APA Find a Physio NT)
+- **physio** Maximise Physiotherapy · Michael Cassells — 08 3089 3288 (APA Find a Physio NT)
+- **physio** Maximise Physiotherapy Clinic · Amina Shakoor — 08 8932 8800 (APA Find a Physio NT)
+- **physio** Maximise Physiotherapy Clinic · Michael Ninneman — https://maximisephysio.com/northernterritory (APA Find a Physio NT)
+- **physio** Milestone Movements · Laura Saldanha — 0483 033 738 (APA Find a Physio NT)
+- **physio** Movement For Life Physiotherapy · Ebony Triplett — 08 8945 3799 (APA Find a Physio NT)
+- **physio** Movement Matters Therapy · Jacqualyn Bresnahan — 0423 318 730 (APA Find a Physio NT)
+- **physio** NT Health · Darcy Hennessy — 07 8614 8171 (APA Find a Physio NT)
+- **physio** Outreach Physiotherapy · Tegan Griffiths — reception@outreachphysiotherapy.com (APA Find a Physio NT)
+- **physio** Physio Evolution Darwin · Dorianne Sherry — 08 8941 0614 (APA Find a Physio NT)
+- **physio** Physio on Wickham · Jaye Whatley — 0433 318 651 (APA Find a Physio NT)
+- **physio** Red Centre Health Focus · Samir Zarrouki — 0497 009 022 (APA Find a Physio NT)
+- **physio** Richard Nuttall Physiotherapy · Richard Nuttall — 08 8927 2795 (APA Find a Physio NT)
+- **physio** Royal Darwin Hospital · Lee Corey — 08 8922 8338 (APA Find a Physio NT)
+- **physio** Sangita Dotel · Sangita Dotel — 08 8952 1088 (APA Find a Physio NT)
+- **physio** SMC Physio · Stacey McKenzie — 0416 518 300 (APA Find a Physio NT)
+- **physio** Southern Care cross · Vene Binu — 08 8946 1812 (APA Find a Physio NT)
+- **physio** Tangibile Physiotherapy · Rosalie Baker — 08 8914 8880 (APA Find a Physio NT)
+- **physio** Tangibilis · Jason Vellender — 0403 966 251 (APA Find a Physio NT)
+- **physio** Tangibilis Physiotherapy · Jessica Fenwick — 0448 669 754 (APA Find a Physio NT)
+- **physio** Tangible Health · Rosalie Baker — 08 8992 9093 (APA Find a Physio NT)
+- **physio** Tangible Health · Marcus Mancer — 08 8914 8880 (APA Find a Physio NT)
+- **physio** Tangible Health · Samantha Duggan — 0438 765 512 (APA Find a Physio NT)
+- **physio** Tennant Creek Hospital · Natalie Davidson — 0436 946 268 (APA Find a Physio NT)
+- **physio** Territory Hands · Nina Pretty — 08 8981 6555 (APA Find a Physio NT)
+- **physio** Territory Sports Medicine · Bridie Duggan — bridie@tsm.com.au (APA Find a Physio NT)
+- **physio** Territory Sportsmedicine · Richard Pendle — 08 8941 6677 (APA Find a Physio NT)
+- **physio** Territory Womens Clinic · Bronte Ellis — 0429 348 660 (APA Find a Physio NT)
+- **physio** Wagait Beach Physio Pty Ltd · Nicolette Gould — 0468 311 142 (APA Find a Physio NT)
+- **physio** Wamut Physio · Shaun Bell — no contact (APA Find a Physio NT)
+
+## Sources
+- `ok` robots: https://carevo.com.au/robots.txt — HTTP 200
+- `ok` list: https://carevo.com.au/providers/ndis/nt/darwin-city — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/better-care-provider — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/brave-connections — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/bright-care-disabilities-pty-ltd — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/darwin-head-office — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/heart-to-hold-foundation-nt — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/help-for-all-pty-ltd — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/hercules-complete-lifting-solutions — HTTP 200
+- `ok` profile: https://carevo.com.au/providers/ndis/nt/darwin-city/horizon-community-services-2 — HTTP 200
+- `ok` robots: https://lawsocietynt.asn.au/robots.txt — HTTP 200
+- `ok` list: https://lawsocietynt.asn.au/index.php/nt-law-firms-by-area-of-law/ — HTTP 200
+- `ok` pdf: https://lawsocietynt.asn.au/wp-content/uploads/2026/07/FRL-DRW-Business-and-commercial.pdf — HTTP 200; 10 firms
+- `ok` robots: https://au.zipleaf.com/robots.txt — HTTP 200
+- `ok` profile: https://au.zipleaf.com/Companies/HHAccountant — HTTP 200
+- `ok` profile: https://au.zipleaf.com/Companies/Oracle-Insolvency_28639 — HTTP 200
+- `ok` robots: https://choose.physio/robots.txt — HTTP 404
+- `ok` robots: https://content.choose.physio/robots.txt — HTTP 200
+- `ok` api: https://content.choose.physio/fapsearch_rest_api — Darwin: 48 listings
+- `ok` api: https://content.choose.physio/fapsearch_rest_api — Katherine: 3 listings
+- `ok` api: https://content.choose.physio/fapsearch_rest_api — Alice Springs: 12 listings
+- `ok` api: https://content.choose.physio/fapsearch_rest_api — Tennant Creek: 1 listings
+- `ok` api: https://content.choose.physio/fapsearch_rest_api — Nhulunbuy: 5 listings
+- `ok` list: https://choose.physio/find-a-physio — 61 unique NT practices; 69 detail fetches
