@@ -53,6 +53,19 @@ class DarwinAccountingMvpTest(unittest.TestCase):
         nexia = next(row for row in best if row["company_name"].startswith("Nexia"))
         self.assertEqual(nexia["website"], "https://nexiaemnt.com.au/")
         self.assertTrue(nexia["phone"])
+        nested = """
+        <div class="space-y-6">
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap"><h3>Wren Christou</h3></div>
+            <p>Fannie Bay, Darwin NT</p>
+            <a href="https://www.wrenchristou.com.au/">Firm website</a>
+            <a href="tel:0889689047">call</a>
+          </div>
+        </div>
+        """
+        wren = parse_best_accountants(nested, "https://bestaccountantsaustralia.com.au/best/darwin/")
+        self.assertEqual(wren[0]["website"], "https://www.wrenchristou.com.au/")
+        self.assertTrue(wren[0]["phone"])
         pink = parse_pink_pages(PINK_HTML, "https://pinkpages.com.au/services/ACCOUNTANTS-608/loc/darwin-nt-region-NT")
         pink_names = {row["company_name"] for row in pink}
         self.assertIn("BDO", pink_names)

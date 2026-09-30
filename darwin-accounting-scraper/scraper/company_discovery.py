@@ -64,31 +64,41 @@ def parse_best_accountants(content: str, page_url: str) -> list[dict]:
         name = " ".join(heading.xpath(".//text()")).strip()
         if not name or len(name) < 3:
             continue
-        chunks = []
-        sibling = heading.getnext()
-        while sibling is not None and sibling.tag not in {"h2", "h3"}:
-            chunks.append(sibling)
-            sibling = sibling.getnext()
-        if not chunks:
-            parent = heading.getparent()
-            chunks = [parent] if parent is not None else []
-        texts = []
-        for node in chunks:
-            texts.extend(node.xpath(".//text()"))
+        card = None
+        parent = heading
+        for _ in range(8):
+            if parent is None:
+                break
+            hrefs = parent.xpath(".//a[@href]/@href")
+            external = [
+                href
+                for href in hrefs
+                if looks_like_website(href) and "bestaccountants" not in href and "tpb.gov.au" not in href
+            ]
+            tels = [href for href in hrefs if str(href).startswith("tel:")]
+            if (external or tels) and len(external) <= 2:
+                card = parent
+                break
+            parent = parent.getparent()
+        if card is None:
+            sibling = heading.getnext()
+            card = sibling if sibling is not None else heading.getparent()
+        if card is None:
+            continue
+        texts = card.xpath(".//text()")
         text = re.sub(r"\s+", " ", " ".join(texts))
         if not is_darwin_area(text + " Darwin NT"):
             if not re.search(r"darwin|palmerston|woolner|fannie bay|winnellie|stuart park|yarrawonga", text, re.I):
                 continue
         website = None
-        hrefs = []
-        for node in chunks:
-            hrefs.extend(node.xpath(".//a[@href]/@href"))
+        hrefs = card.xpath(".//a[@href]/@href")
         for href in hrefs:
             if looks_like_website(href) and "bestaccountants" not in href and "tpb.gov.au" not in href:
                 website = href
                 break
-        phone_match = PHONE_IN_TEXT.search(text)
-        original, normalized = normalize_phone(phone_match.group(0) if phone_match else "")
+        tel = next((href.split(":", 1)[1] for href in hrefs if str(href).startswith("tel:")), "")
+        phone_match = PHONE_IN_TEXT.search(tel) or PHONE_IN_TEXT.search(text)
+        original, normalized = normalize_phone(phone_match.group(0) if phone_match else tel)
         services = None
         special = re.search(r"Specialises in:\s*([^.]+)", text, re.I)
         if special:
