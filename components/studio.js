@@ -14,6 +14,7 @@ export function StudioProvider({ children }) {
   const [notice, setNotice] = useState(null);
   const [settings, setSettings] = useState({ exactCounts: true, inboxAlerts: true });
   const [profile, setProfile] = useState(null);
+  const [signedIn, setSignedIn] = useState(false);
 
   const refreshStats = useCallback(async (fresh = false) => {
     setStatsStatus((current) => (current === "ready" ? "refreshing" : "loading"));
@@ -69,11 +70,15 @@ export function StudioProvider({ children }) {
     } catch {
       /* keep defaults */
     }
-    refreshStats(true);
+    refreshStats(false);
     refreshPosts();
     refreshInquiries();
     refreshProfile();
-    const timer = setInterval(() => refreshStats(true), 60_000);
+    fetch(asset("/api/session"), { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data) => setSignedIn(Boolean(data.signedIn)))
+      .catch(() => {});
+    const timer = setInterval(() => refreshStats(false), 60_000);
     return () => clearInterval(timer);
   }, [refreshStats, refreshPosts, refreshInquiries, refreshProfile]);
 
@@ -94,12 +99,14 @@ export function StudioProvider({ children }) {
       settings,
       setSettings,
       profile,
+      signedIn,
+      setSignedIn,
       saveProfile,
       refreshStats,
       refreshPosts,
       refreshInquiries,
     }),
-    [stats, statsStatus, posts, inquiries, notice, settings, profile, saveProfile, refreshStats, refreshPosts, refreshInquiries]
+    [stats, statsStatus, posts, inquiries, notice, settings, profile, signedIn, saveProfile, refreshStats, refreshPosts, refreshInquiries]
   );
 
   return (

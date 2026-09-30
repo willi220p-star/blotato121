@@ -11,7 +11,7 @@ import { ContentCard, CountLink, downloadMediaKit, Filters, Insight, matchesFilt
 import { useStudio } from "./studio";
 
 export function DashboardView() {
-  const { stats, posts, profile } = useStudio();
+  const { stats, posts, profile, signedIn } = useStudio();
   const [filter, setFilter] = useState("all");
   const [monthCursor, setMonthCursor] = useState(() => new Date());
   const [editing, setEditing] = useState(false);
@@ -49,7 +49,11 @@ export function DashboardView() {
             <h1>Isha Dhakal <span aria-hidden="true">♡</span></h1>
             <p className="meta-line">Content creator · {profile?.pronouns || CREATOR.pronouns} · {profile?.location || CREATOR.location}</p>
             <p className="bio">{profile?.bio}</p>
-            <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit bio</button>
+            {signedIn ? (
+              <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit bio</button>
+            ) : (
+              <Link className="edit-pill" href="/admin">Edit bio</Link>
+            )}
           </div>
           <div className="counts">
             <CountLink href={CREATOR.tiktok} platform="tiktok" label="Followers" value={stats?.tiktok?.followers} live={stats?.tiktok?.live} />
@@ -91,9 +95,18 @@ export function DashboardView() {
               <Link href="/create">Add a photo or video</Link>
             </div>
           ) : (
-            <div className="card-grid">
-              {visible.map((item) => <ContentCard key={item.id} item={item} />)}
-            </div>
+            <>
+              <div className="drift" aria-hidden="true">
+                <div className="drift-track">
+                  {[...visible, ...visible].map((item, index) => (
+                    <img key={`${item.id}-${index}`} src={mediaSrc(item)} alt="" />
+                  ))}
+                </div>
+              </div>
+              <div className="card-grid">
+                {visible.map((item, index) => <ContentCard key={item.id} item={item} delay={index} />)}
+              </div>
+            </>
           )}
         </section>
 

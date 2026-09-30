@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { CREATOR } from "../../lib/catalog";
 import { ProfileEditor } from "../../components/profile-editor";
 import { useStudio } from "../../components/studio";
 
 export default function AboutPage() {
-  const { profile } = useStudio();
+  const { profile, signedIn } = useStudio();
   const [open, setOpen] = useState(false);
   const points = profile?.aboutPoints || [];
 
@@ -16,7 +17,11 @@ export default function AboutPage() {
         <p className="eyebrow">About</p>
         <h1>About Isha</h1>
         <p>{profile?.tagline}</p>
-        <button className="edit-pill" type="button" onClick={() => setOpen(true)}>Edit about</button>
+        {signedIn ? (
+          <button className="edit-pill" type="button" onClick={() => setOpen(true)}>Edit about</button>
+        ) : (
+          <Link className="edit-pill" href="/admin">Sign in to edit</Link>
+        )}
       </header>
       <section className="panel">
         <h2>Bio</h2>

@@ -57,13 +57,13 @@ export function mediaSrc(item) {
   return asset(item.src);
 }
 
-export function ContentCard({ item, onRemove }) {
+export function ContentCard({ item, onRemove, delay = 0 }) {
   const scheduled = item.status === "scheduled";
   const src = mediaSrc(item);
   const platform = item.platform || item.platforms?.[0] || "pinterest";
   const sourceLabel = item.source === "studio" ? "Studio" : item.source === "instagram" ? "Instagram" : "Pinterest";
   return (
-    <article className="content-card">
+    <article className="content-card" style={{ animationDelay: `${delay * 0.35}s` }}>
       <a className="thumb" href={item.externalUrl || src} target={item.externalUrl ? "_blank" : undefined} rel="noreferrer">
         {item.kind === "video" && item.src ? (
           <video src={item.src} muted playsInline preload="metadata" />
@@ -125,7 +125,7 @@ export function matchesFilter(item, filter) {
 }
 
 export function Rail() {
-  const { stats, profile } = useStudio();
+  const { stats, profile, signedIn } = useStudio();
   const [editing, setEditing] = useState(false);
   const points = profile?.aboutPoints || [];
   return (
@@ -153,7 +153,11 @@ export function Rail() {
       <section className="panel">
         <header className="section-head">
           <h2>About me</h2>
-          <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit about</button>
+          {signedIn ? (
+            <button className="edit-pill" type="button" onClick={() => setEditing(true)}>Edit about</button>
+          ) : (
+            <Link className="edit-pill" href="/admin">Edit about</Link>
+          )}
         </header>
         <ul className="about-list">
           {points.map((point) => <li key={point}>{point}</li>)}
