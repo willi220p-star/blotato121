@@ -179,6 +179,26 @@ therapy assistants, and related care roles. The summary lists filtered position
 titles and staff/opening counts for each company. Published links without a
 closing date may be stale and should be checked manually.
 
+## Darwin accounting firms
+
+Discover Darwin / Palmerston accounting and bookkeeping practices from public
+directories, crawl official websites, and extract published people and business
+contacts.
+
+```bash
+python3 darwin-accounting-scraper/main.py --yes
+```
+
+Writes `feeds/Darwin_accounting_firms.xlsx`,
+`feeds/darwin_accounting_companies.csv`,
+`feeds/darwin_accounting_employees.csv`,
+`feeds/darwin_accounting.db`, and
+`reports/darwin-accounting-summary.md`. Console:
+`GET /download/darwin-accounting.xlsx`.
+
+LinkedIn is not crawled. Emails are stored only when published. Yellow Pages
+returns HTTP 403 from this environment and is skipped.
+
 ## Darwin IT company and hiring database
 
 Discover Darwin / Greater Darwin IT, ICT, MSP, software, cybersecurity and
