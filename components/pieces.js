@@ -189,7 +189,7 @@ export function matchesFilter(item, filter) {
 }
 
 export function Rail() {
-  const { stats, profile, signedIn } = useStudio();
+  const { stats, profile, signedIn, setContactOpen } = useStudio();
   const [editing, setEditing] = useState(false);
   const points = profile?.aboutPoints || [];
   return (
@@ -197,22 +197,26 @@ export function Rail() {
       <section className="panel">
         <h2>Quick actions</h2>
         <div className="action-grid">
-          <Link href="/create?kind=video"><Icon name="video" /><span>Upload video</span></Link>
-          <Link href="/create?kind=photo"><Icon name="image" /><span>Upload photo</span></Link>
-          <Link href="/create?schedule=1"><Icon name="calendar" /><span>Schedule post</span></Link>
+          {signedIn ? (
+            <>
+              <Link href="/create?kind=video"><Icon name="video" /><span>Upload video</span></Link>
+              <Link href="/create?kind=photo"><Icon name="image" /><span>Upload photo</span></Link>
+              <Link href="/create?schedule=1"><Icon name="calendar" /><span>Schedule post</span></Link>
+            </>
+          ) : (
+            <button className="contact-launch" type="button" onClick={() => setContactOpen(true)}>
+              <Icon name="mail" />
+              <span>Contact</span>
+            </button>
+          )}
           <Link href="/analytics"><Icon name="chart" /><span>View analytics</span></Link>
         </div>
       </section>
       <section className="panel soft">
         <h2>Collaboration</h2>
         <p>Open for brand videos, product stories, and UGC. Send the brief straight to Isha.</p>
-        <a className="mail-card" href={`mailto:${CREATOR.email}?subject=Collaboration%20with%20Isha%20Dhakal`}>
-          <Icon name="mail" />
-          <span>
-            <strong>Contact me</strong>
-            {CREATOR.email}
-          </span>
-        </a>
+        <button className="contact-button wide" type="button" onClick={() => setContactOpen(true)}>Contact</button>
+        <p className="fine">Notes go to {CREATOR.email}.</p>
       </section>
       <section className="panel">
         <header className="section-head">

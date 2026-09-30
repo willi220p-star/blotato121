@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 import { CREATOR, NAV } from "../lib/catalog";
 import { asset } from "../lib/paths";
 import { timeAgo } from "../lib/format";
+import { ContactDialog } from "./contact-form";
 import { Icon } from "./icons";
 import { useStudio } from "./studio";
 
 export function AppShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { stats, inquiries, posts, statsStatus, refreshStats, settings, signedIn } = useStudio();
+  const { stats, inquiries, posts, statsStatus, refreshStats, settings, signedIn, setContactOpen } = useStudio();
   const avatar = asset("/media/avatar-ig.jpg");
   const [bellOpen, setBellOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
@@ -105,6 +106,7 @@ export function AppShell({ children }) {
                 </div>
               ) : null}
             </div>
+            <button className="contact-button" type="button" onClick={() => setContactOpen(true)}>Contact</button>
             {signedIn ? (
               <button className="upload-button" type="button" onClick={() => router.push("/create")}>
                 <Icon name="upload" size={16} />
@@ -120,7 +122,7 @@ export function AppShell({ children }) {
                   <img src={avatar} alt="Isha Dhakal" />
                   <strong>Isha Dhakal</strong>
                   <span>Content creator · in Australia right now</span>
-                  <a href={`mailto:${CREATOR.email}`}>Contact {CREATOR.email}</a>
+                  <button className="contact-button slim" type="button" onClick={() => { setMeOpen(false); setContactOpen(true); }}>Contact</button>
                   <Link href="/about">Read about her</Link>
                 </div>
               ) : null}
@@ -129,6 +131,7 @@ export function AppShell({ children }) {
         </header>
         {children}
       </div>
+      <ContactDialog />
     </div>
   );
 }

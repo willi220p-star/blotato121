@@ -11,7 +11,7 @@ import { ContentCard, CountLink, downloadMediaKit, Filters, Frame, Insight, matc
 import { useStudio } from "./studio";
 
 export function DashboardView() {
-  const { stats, posts, profile, signedIn, saveProfile } = useStudio();
+  const { stats, posts, profile, signedIn, saveProfile, setContactOpen } = useStudio();
   const [filter, setFilter] = useState("all");
   const [monthCursor, setMonthCursor] = useState(() => new Date());
   const [editing, setEditing] = useState(false);
@@ -112,9 +112,12 @@ export function DashboardView() {
             <CountLink href={CREATOR.instagram} platform="instagram" label="Followers" value={stats?.instagram?.followers} live={stats?.instagram?.live} checkedAt={stats?.instagram?.checkedAt} blocked={!stats?.instagram?.live} />
             <CountLink href={CREATOR.pinterest} platform="pinterest" label="Followers" value={stats?.pinterest?.followers} live={stats?.pinterest?.live} />
           </div>
-          <button className="ghost-button" type="button" onClick={() => downloadMediaKit(stats)}>
-            Download media kit
-          </button>
+          <div className="profile-actions">
+            <button className="contact-button" type="button" onClick={() => setContactOpen(true)}>Contact</button>
+            <button className="ghost-button" type="button" onClick={() => downloadMediaKit(stats)}>
+              Download media kit
+            </button>
+          </div>
           <ProfileEditor open={editing} onClose={() => setEditing(false)} />
         </section>
 

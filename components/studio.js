@@ -23,6 +23,7 @@ export function StudioProvider({ children }) {
   const [settings, setSettings] = useState({ exactCounts: true, inboxAlerts: true });
   const [profile, setProfile] = useState(null);
   const [signedIn, setSignedIn] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const profileRef = useRef(null);
   const saveChain = useRef(Promise.resolve());
 
@@ -132,13 +133,15 @@ export function StudioProvider({ children }) {
       profile,
       signedIn,
       setSignedIn,
+      contactOpen,
+      setContactOpen,
       saveProfile,
       refreshProfile,
       refreshStats,
       refreshPosts,
       refreshInquiries,
     }),
-    [stats, statsStatus, posts, inquiries, notice, settings, profile, signedIn, saveProfile, refreshProfile, refreshStats, refreshPosts, refreshInquiries]
+    [stats, statsStatus, posts, inquiries, notice, settings, profile, signedIn, contactOpen, saveProfile, refreshProfile, refreshStats, refreshPosts, refreshInquiries]
   );
 
   return (

@@ -1,57 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CREATOR } from "../lib/catalog";
 import { formatWhen } from "../lib/format";
-import { saveInquiry } from "../lib/localStudio";
+import { ContactForm } from "./contact-form";
 import { useStudio } from "./studio";
 
-const TYPES = ["Paid collaboration", "UGC video", "Product review", "Event or feature", "Something else"];
-
 export function CollabView() {
-  const { inquiries, refreshInquiries, setNotice, stats } = useStudio();
-  const [form, setForm] = useState({ name: "", email: "", brand: "", type: TYPES[0], message: "" });
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [draft, setDraft] = useState("");
+  const { inquiries, stats } = useStudio();
+  const [sent, setSent] = useState(false);
 
-  function update(key, value) {
-    setForm((current) => ({ ...current, [key]: value }));
-  }
-
-  async function onSubmit(event) {
-    event.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      if (form.name.trim().length < 2) throw new Error("Add your name.");
-      if (form.message.trim().length < 8) throw new Error("Tell Isha a little about the collaboration.");
-      if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-        throw new Error("That email doesn’t look complete.");
-      }
-      saveInquiry({
-        id: crypto.randomUUID(),
-        name: form.name.trim(),
-        email: form.email.trim(),
-        brand: form.brand.trim(),
-        type: form.type,
-        message: form.message.trim(),
-        createdAt: new Date().toISOString(),
-      });
-      await refreshInquiries();
-      const subject = encodeURIComponent(`${form.type} — ${form.brand || form.name}`);
-      const body = encodeURIComponent(
-        `Hi Isha,\n\n${form.message}\n\n— ${form.name}${form.brand ? `, ${form.brand}` : ""}${form.email ? `\n${form.email}` : ""}`
-      );
-      setDraft(`mailto:${CREATOR.email}?subject=${subject}&body=${body}`);
-      setNotice("Saved in the collaboration inbox.");
-      setForm({ name: "", email: "", brand: "", type: TYPES[0], message: "" });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save the note");
-    } finally {
-      setBusy(false);
-    }
-  }
+  useEffect(() => {
+    setSent(new URLSearchParams(window.location.search).get("sent") === "1");
+  }, []);
 
   return (
     <div className="page collab-page">
@@ -59,40 +20,16 @@ export function CollabView() {
         <p className="eyebrow">Work together</p>
         <h1>Collaborations</h1>
         <p>
-          Isha makes creator videos and everyday photo stories. Brands, friends, and fellow creators can reach her at{" "}
+          Isha makes creator videos and everyday photo stories. Send the kind of collaboration you want and it goes straight to{" "}
           <a href={`mailto:${CREATOR.email}`}>{CREATOR.email}</a>.
         </p>
       </header>
+      {sent ? <p className="sent-banner" role="status">Your note is on its way to Isha.</p> : null}
       <div className="split align-start">
-        <form className="panel composer" onSubmit={onSubmit}>
+        <section className="panel composer">
           <h2>Send a note</h2>
-          <label className="field">
-            <span>Your name</span>
-            <input value={form.name} onChange={(event) => update("name", event.target.value)} required />
-          </label>
-          <label className="field">
-            <span>Email for a reply</span>
-            <input type="email" value={form.email} onChange={(event) => update("email", event.target.value)} placeholder="you@brand.com" />
-          </label>
-          <label className="field">
-            <span>Brand or project</span>
-            <input value={form.brand} onChange={(event) => update("brand", event.target.value)} />
-          </label>
-          <label className="field">
-            <span>What kind of collaboration</span>
-            <select value={form.type} onChange={(event) => update("type", event.target.value)}>
-              {TYPES.map((type) => <option key={type}>{type}</option>)}
-            </select>
-          </label>
-          <label className="field">
-            <span>The brief</span>
-            <textarea rows={5} value={form.message} onChange={(event) => update("message", event.target.value)} required placeholder="Timing, platforms, and what you have in mind." />
-          </label>
-          {error ? <p className="form-error" role="alert">{error}</p> : null}
-          <button className="primary" type="submit" disabled={busy}>{busy ? "Saving…" : "Contact Isha"}</button>
-          {draft ? <a className="ghost-button" href={draft}>Open email draft</a> : null}
-          <p className="fine">The note stays in this inbox. Open the draft when you want it sent to {CREATOR.email}.</p>
-        </form>
+          <ContactForm />
+        </section>
         <section className="panel">
           <h2>Inbox</h2>
           {inquiries.length === 0 ? <p className="about-copy">No collaboration notes yet. New ones land here and in Isha’s email.</p> : null}
