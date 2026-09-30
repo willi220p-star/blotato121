@@ -7,6 +7,7 @@
     "dev": "next dev",
     "prebuild": "node --experimental-default-type=module scripts/prepare-static.mjs",
     "build": "next build",
+    "build:pages": "node --experimental-default-type=module scripts/prepare-static.mjs && node scripts/build-pages.mjs",
     "start": "next start"
   },
   "dependencies": {
