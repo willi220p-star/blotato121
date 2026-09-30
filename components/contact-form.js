@@ -41,31 +41,40 @@ export function ContactForm() {
       setError("Add the email Isha should reply to.");
       return;
     }
-    if (form.message.trim().length < 8) {
+    if (!form.message.trim()) {
       setError("Tell Isha what kind of collaboration you want.");
       return;
     }
     const href = mailLink(form);
-    saveInquiry({
-      id: crypto.randomUUID(),
-      name: form.name.trim(),
-      email: form.email.trim(),
-      brand: form.brand.trim(),
-      type: form.type,
-      message: form.message.trim(),
-      createdAt: new Date().toISOString(),
-    });
-    refreshInquiries();
+    try {
+      saveInquiry({
+        id: crypto.randomUUID(),
+        name: form.name.trim(),
+        email: form.email.trim(),
+        brand: form.brand.trim(),
+        type: form.type,
+        message: form.message.trim(),
+        createdAt: new Date().toISOString(),
+      });
+      refreshInquiries();
+    } catch {
+      /* The email can still open if this browser blocks saved notes. */
+    }
     setReadyLink(href);
-    window.location.href = href;
+    const link = document.createElement("a");
+    link.href = href;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 
   if (readyLink) {
     return (
       <div className="contact-form sent-note" role="status">
         <h3>The note is ready for Isha</h3>
-        <p>Your email app should be open, already addressed to {CREATOR.email}. Tap Send there and it goes straight to her.</p>
-        <a className="contact-button" href={readyLink}>Open the email again</a>
+        <p>The note is addressed to {CREATOR.email}. If Mail opened, tap Send there. If it did not, use the button below. The page will stay here.</p>
+        <a className="contact-button" href={readyLink}>Send with email</a>
       </div>
     );
   }
@@ -96,7 +105,7 @@ export function ContactForm() {
       </label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="contact-button" type="submit">Send to Isha</button>
-      <p className="fine">Send opens your email with this note addressed to {CREATOR.email}.</p>
+      <p className="fine">Send stays on this page and opens Mail with the note addressed to {CREATOR.email}.</p>
     </form>
   );
 }
