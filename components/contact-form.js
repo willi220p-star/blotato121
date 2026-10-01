@@ -90,7 +90,7 @@ export function ContactForm() {
       </label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="contact-button" type="submit">Send to Isha</button>
-      <p className="fine">This delivers the note to {CREATOR.email}. A thank-you is then emailed to the address above. The first time, open the Activate Form email in that iCloud inbox and click it once.</p>
+      <p className="fine">After you click Activate Form in {CREATOR.email}, every note arrives there and the sender gets “Thank you for writing to Isha Dhakal.”</p>
     </form>
   );
 }
@@ -105,7 +105,7 @@ export function ContactDialog() {
           <div>
             <p className="eyebrow">Collaboration</p>
             <h2 id="contact-title">Contact Isha</h2>
-            <p>Your note is delivered to {CREATOR.email}. The sender then gets an automatic thank-you at the email they typed.</p>
+            <p>The note goes to {CREATOR.email}. Then a thank-you email goes to the person who wrote in. The first time, open {CREATOR.email}, find Activate Form, and click it once. Until that click, the thank-you cannot leave.</p>
           </div>
           <button className="icon-button" type="button" aria-label="Close contact form" onClick={() => setContactOpen(false)}>×</button>
         </header>
