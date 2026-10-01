@@ -825,6 +825,8 @@ fieldset.field { border: 0; margin: 0; padding: 0; }
   box-shadow: 0 30px 80px rgba(180, 40, 90, 0.22);
 }
 .contact-form { display: flex; flex-direction: column; gap: 12px; padding: 0 14px 8px; }
+.contact-form.is-sent { display: none; }
+.mail-frame { width: 0; height: 0; border: 0; position: absolute; left: 0; bottom: 0; }
 .honey { position: absolute; left: -9999px; height: 0; width: 0; opacity: 0; }
 .sent-note h3 { margin: 0; }
 .sent-note p { margin: 0; color: #4c3d55; line-height: 1.45; }

@@ -20,11 +20,11 @@ export function CollabView() {
         <p className="eyebrow">Work together</p>
         <h1>Collaborations</h1>
         <p>
-          Isha makes creator videos and everyday photo stories. Send opens an email already written to{" "}
+          Isha makes creator videos and everyday photo stories. Your note goes to{" "}
           <a href={`mailto:${CREATOR.email}`}>{CREATOR.email}</a>.
         </p>
       </header>
-      {sent ? <p className="sent-banner" role="status">Your note is on its way to Isha.</p> : null}
+      {sent ? <p className="sent-banner" role="status">Thank you. Isha has your note, and a thank-you email is on its way to you.</p> : null}
       <div className="split align-start">
         <section className="panel composer">
           <h2>Send a note</h2>

@@ -1,51 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { CREATOR } from "../lib/catalog";
 import { saveInquiry } from "../lib/localStudio";
+import { asset } from "../lib/paths";
 import { useStudio } from "./studio";
 
 const TYPES = ["Paid collaboration", "UGC video", "Product review", "Event or feature", "Something else"];
-
-function mailLink(form) {
-  const subject = `${form.type} for Isha Dhakal${form.brand.trim() ? ` — ${form.brand.trim()}` : ""}`;
-  const body = [
-    `Name: ${form.name.trim()}`,
-    `Email: ${form.email.trim()}`,
-    `Brand: ${form.brand.trim() || "—"}`,
-    `Collaboration: ${form.type}`,
-    "",
-    form.message.trim(),
-  ].join("\n");
-  return `mailto:${CREATOR.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
+const THANK_YOU = "Thank you for writing to Isha Dhakal. She has your collaboration note and will reply to this email.";
 
 export function ContactForm() {
   const { refreshInquiries } = useStudio();
   const [form, setForm] = useState({ name: "", email: "", brand: "", type: TYPES[0], message: "" });
   const [error, setError] = useState("");
-  const [readyLink, setReadyLink] = useState("");
+  const frameName = `isha-mail-${useId().replace(/:/g, "")}`;
+  const [sent, setSent] = useState(false);
+  const [nextUrl, setNextUrl] = useState("");
+
+  useEffect(() => {
+    const origin = window.location.origin;
+    if (origin.startsWith("https://")) {
+      setNextUrl(`${origin}${asset("/collaboration/")}?sent=1`);
+    }
+  }, []);
 
   function update(key, value) {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
   function onSubmit(event) {
-    event.preventDefault();
     setError("");
     if (form.name.trim().length < 2) {
+      event.preventDefault();
       setError("Add your name.");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      setError("Add the email Isha should reply to.");
+      event.preventDefault();
+      setError("Add the email where Isha should reply, and where your thank-you should arrive.");
       return;
     }
     if (!form.message.trim()) {
+      event.preventDefault();
       setError("Tell Isha what kind of collaboration you want.");
       return;
     }
-    const href = mailLink(form);
     try {
       saveInquiry({
         id: crypto.randomUUID(),
@@ -58,29 +57,19 @@ export function ContactForm() {
       });
       refreshInquiries();
     } catch {
-      /* The email can still open if this browser blocks saved notes. */
+      /* The form can still send if this browser blocks saved notes. */
     }
-    setReadyLink(href);
-    const link = document.createElement("a");
-    link.href = href;
-    link.rel = "noopener";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  }
-
-  if (readyLink) {
-    return (
-      <div className="contact-form sent-note" role="status">
-        <h3>The note is ready for Isha</h3>
-        <p>The note is addressed to {CREATOR.email}. If Mail opened, tap Send there. If it did not, use the button below. The page will stay here.</p>
-        <a className="contact-button" href={readyLink}>Send with email</a>
-      </div>
-    );
+    window.setTimeout(() => setSent(true), 0);
   }
 
   return (
-    <form className="contact-form" onSubmit={onSubmit}>
+    <>
+    <form className={sent ? "contact-form is-sent" : "contact-form"} action={`https://formsubmit.co/${CREATOR.email}`} method="POST" target={frameName} onSubmit={onSubmit}>
+      <input type="hidden" name="_subject" value={`${form.type} for Isha Dhakal${form.brand.trim() ? ` — ${form.brand.trim()}` : ""}`} />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_autoresponse" value={THANK_YOU} />
+      {nextUrl ? <input type="hidden" name="_next" value={nextUrl} /> : null}
+      <input type="text" name="_honey" className="honey" tabIndex={-1} autoComplete="off" />
       <label className="field">
         <span>Your name</span>
         <input name="name" value={form.name} onChange={(event) => update("name", event.target.value)} autoComplete="name" required />
@@ -105,8 +94,16 @@ export function ContactForm() {
       </label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="contact-button" type="submit">Send to Isha</button>
-      <p className="fine">Send stays on this page and opens Mail with the note addressed to {CREATOR.email}.</p>
+      <p className="fine">Send gives your note to {CREATOR.email} and emails a thank-you to you.</p>
     </form>
+    <iframe className="mail-frame" name={frameName} title="Sending your note" />
+    {sent ? (
+      <div className="contact-form sent-note" role="status">
+        <h3>Thank you</h3>
+        <p>Your note is on its way to Isha. A thank-you email is on its way to {form.email.trim()}.</p>
+      </div>
+    ) : null}
+    </>
   );
 }
 
@@ -120,7 +117,7 @@ export function ContactDialog() {
           <div>
             <p className="eyebrow">Collaboration</p>
             <h2 id="contact-title">Contact Isha</h2>
-            <p>Write your details and the kind of work you want. Send opens the note addressed to her email.</p>
+            <p>Write your details and the kind of work you want. Isha gets the note, and a thank-you email comes back to you.</p>
           </div>
           <button className="icon-button" type="button" aria-label="Close contact form" onClick={() => setContactOpen(false)}>×</button>
         </header>
