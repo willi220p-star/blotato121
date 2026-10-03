@@ -6,6 +6,7 @@ import { asset } from "../../lib/paths";
 import { timeAgo } from "../../lib/format";
 import Link from "next/link";
 import { ProfileEditor } from "../../components/profile-editor";
+import { CREATOR } from "../../lib/catalog";
 import { useStudio } from "../../components/studio";
 
 export default function AdminPage() {
@@ -130,6 +131,10 @@ export default function AdminPage() {
           </ul>
           {stats?.instagram?.error ? <p className="fine warn">{stats.instagram.error}</p> : null}
           <button className="primary" type="button" onClick={updateNow} disabled={busy}>{busy ? "Updating…" : "Update accounts now"}</button>
+        </article>
+        <article>
+          <h2>Collaboration mail</h2>
+          <p className="about-copy">Visitor notes are delivered to {CREATOR.email}. Each person also gets “Thank you for sending collaboration to Isha.” Open that inbox and click Activate Form once, including Junk, so those thank-you emails can leave.</p>
         </article>
         <article>
           <h2>Page copy</h2>

@@ -7,10 +7,9 @@ import { asset } from "../lib/paths";
 import { useStudio } from "./studio";
 
 const TYPES = ["Paid collaboration", "UGC video", "Product review", "Event or feature", "Something else"];
-const THANK_YOU = "Thank you for writing to Isha Dhakal. She has your collaboration note and will reply to this email.";
 
 export function ContactForm() {
-  const { refreshInquiries } = useStudio();
+  const { refreshInquiries, signedIn } = useStudio();
   const [form, setForm] = useState({ name: "", email: "", brand: "", type: TYPES[0], message: "" });
   const [error, setError] = useState("");
   const [nextUrl, setNextUrl] = useState("");
@@ -23,6 +22,7 @@ export function ContactForm() {
   }, []);
 
   function update(key, value) {
+    setError("");
     setForm((current) => ({ ...current, [key]: value }));
   }
 
@@ -59,11 +59,17 @@ export function ContactForm() {
     }
   }
 
+  const named = form.name.trim();
+  const thankYou = named
+    ? `Thank you, ${named}, for sending collaboration to Isha. She has your note and will reply to this email.`
+    : "Thank you for sending collaboration to Isha. She has your note and will reply to this email.";
+
   return (
     <form className="contact-form" action={`https://formsubmit.co/${CREATOR.email}`} method="POST" onSubmit={onSubmit}>
       <input type="hidden" name="_subject" value={`${form.type} for Isha Dhakal${form.brand.trim() ? ` — ${form.brand.trim()}` : ""}`} />
       <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_autoresponse" value={THANK_YOU} />
+      <input type="hidden" name="_autoresponse" value={thankYou} />
+      <input type="hidden" name="_replyto" value={form.email.trim()} />
       {nextUrl ? <input type="hidden" name="_next" value={nextUrl} /> : null}
       <input type="text" name="_honey" className="honey" tabIndex={-1} autoComplete="off" />
       <label className="field">
@@ -90,7 +96,8 @@ export function ContactForm() {
       </label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="contact-button" type="submit">Send to Isha</button>
-      <p className="fine">After you click Activate Form in {CREATOR.email}, every note arrives there and the sender gets “Thank you for writing to Isha Dhakal.”</p>
+      <p className="fine">Isha receives this at {CREATOR.email}. You receive a thank-you email that says “Thank you for sending collaboration to Isha.” The first send asks her to confirm that inbox. After that confirmation, the thank-you arrives at the address you typed.</p>
+      {signedIn ? <p className="fine">You are signed in. Open {CREATOR.email} and click Activate Form once, including Junk. That click is what lets the thank-you email leave.</p> : null}
     </form>
   );
 }
@@ -105,7 +112,7 @@ export function ContactDialog() {
           <div>
             <p className="eyebrow">Collaboration</p>
             <h2 id="contact-title">Contact Isha</h2>
-            <p>The note goes to {CREATOR.email}. Then a thank-you email goes to the person who wrote in. The first time, open {CREATOR.email}, find Activate Form, and click it once. Until that click, the thank-you cannot leave.</p>
+            <p>The note goes to {CREATOR.email}. A thank-you email then goes to the address they type: “Thank you for sending collaboration to Isha.”</p>
           </div>
           <button className="icon-button" type="button" aria-label="Close contact form" onClick={() => setContactOpen(false)}>×</button>
         </header>
