@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { CREATOR } from "../lib/catalog";
 import { saveInquiry } from "../lib/localStudio";
+import { ThankYouNote } from "./thank-you-note";
 import { useStudio } from "./studio";
 
 const TYPES = ["Paid collaboration", "UGC video", "Product review", "Event or feature", "Something else"];
 // Activated FormSubmit alias for https://willi220p-star.github.io/. The note is copied to Isha with _cc.
 const FORM_ACTION = "https://formsubmit.co/ba0f3695036ef362c35aa624dc8540bd";
-const THANKS_URL = "https://willi220p-star.github.io/blotato121/thanks/";
 
-export function ContactForm() {
+export function ContactForm({ heading = false, onSent }) {
   const { refreshInquiries } = useStudio();
+  const frameName = `contact-mail-${useId().replace(/:/g, "")}`;
   const [form, setForm] = useState({ name: "", email: "", brand: "", type: TYPES[0], message: "" });
   const [error, setError] = useState("");
+  const [sent, setSent] = useState(false);
 
   function update(key, value) {
     setError("");
@@ -37,6 +39,7 @@ export function ContactForm() {
       setError("Tell Isha what kind of collaboration you want.");
       return;
     }
+    event.preventDefault();
     try {
       saveInquiry({
         id: crypto.randomUUID(),
@@ -51,6 +54,9 @@ export function ContactForm() {
     } catch {
       /* The note can still be emailed if this browser blocks saved notes. */
     }
+    deliver(event.currentTarget, frameName);
+    setSent(true);
+    onSent?.();
   }
 
   const named = form.name.trim();
@@ -60,15 +66,26 @@ export function ContactForm() {
     : "Thank you for sending collaboration to Isha. She has your note and will reply to this email.";
   const copies = [CREATOR.email, visitor].filter((address, index, list) => address && list.indexOf(address) === index);
 
+  if (sent) {
+    return (
+      <>
+        <iframe name={frameName} title="" className="mail-frame" />
+        <ThankYouNote />
+      </>
+    );
+  }
+
   return (
-    <form className="contact-form" action={FORM_ACTION} method="POST" onSubmit={onSubmit}>
+    <>
+      {heading ? <h2>Send a note</h2> : null}
+      <iframe name={frameName} title="" className="mail-frame" />
+      <form className="contact-form" action={FORM_ACTION} method="POST" target={frameName} onSubmit={onSubmit}>
       <input type="hidden" name="_subject" value="Thank you for sending collaboration to Isha" />
       <input type="hidden" name="_template" value="table" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_cc" value={copies.join(",")} />
       <input type="hidden" name="Thank you" value={thankYou} />
       <input type="hidden" name="_replyto" value={visitor} />
-      <input type="hidden" name="_next" value={THANKS_URL} />
       <input type="text" name="_honey" className="honey" tabIndex={-1} autoComplete="off" />
       <label className="field">
         <span>Your name</span>
@@ -94,26 +111,55 @@ export function ContactForm() {
       </label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="contact-button" type="submit">Send to Isha</button>
-      <p className="fine">Isha receives this at {CREATOR.email}. The same note is emailed to the address you type, with the subject “Thank you for sending collaboration to Isha.” This page then shows a thank-you link back to the studio.</p>
+      <p className="fine">Your note goes to {CREATOR.email}.</p>
     </form>
+    </>
   );
+}
+
+function deliver(form, frameName) {
+  const ghost = document.createElement("form");
+  ghost.method = "POST";
+  ghost.action = FORM_ACTION;
+  ghost.target = frameName;
+  ghost.acceptCharset = "UTF-8";
+  for (const [name, value] of new FormData(form).entries()) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = String(value);
+    ghost.appendChild(input);
+  }
+  document.body.appendChild(ghost);
+  ghost.submit();
+  ghost.remove();
 }
 
 export function ContactDialog() {
   const { contactOpen, setContactOpen } = useStudio();
+  const [sent, setSent] = useState(false);
   if (!contactOpen) return null;
+
+  function close() {
+    setSent(false);
+    setContactOpen(false);
+  }
+
   return (
-    <div className="modal-scrim" role="presentation" onClick={() => setContactOpen(false)}>
-      <div className="contact-dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title" onClick={(event) => event.stopPropagation()}>
-        <header className="editor-head">
-          <div>
-            <p className="eyebrow">Collaboration</p>
-            <h2 id="contact-title">Contact Isha</h2>
-            <p>The note goes to {CREATOR.email}. A thank-you email then goes to the address they type: “Thank you for sending collaboration to Isha.”</p>
-          </div>
-          <button className="icon-button" type="button" aria-label="Close contact form" onClick={() => setContactOpen(false)}>×</button>
-        </header>
-        <ContactForm />
+    <div className="modal-scrim" role="presentation" onClick={close}>
+      <div className="contact-dialog" role="dialog" aria-modal="true" aria-labelledby={sent ? undefined : "contact-title"} aria-label={sent ? "Thank you for submitting the form" : undefined} onClick={(event) => event.stopPropagation()}>
+        {sent ? null : (
+          <header className="editor-head">
+            <div>
+              <p className="eyebrow">Collaboration</p>
+              <h2 id="contact-title">Contact Isha</h2>
+              <p>The note goes to {CREATOR.email}.</p>
+            </div>
+            <button className="icon-button" type="button" aria-label="Close contact form" onClick={close}>×</button>
+          </header>
+        )}
+        {sent ? <button className="icon-button thanks-close" type="button" aria-label="Close contact form" onClick={close}>×</button> : null}
+        <ContactForm onSent={() => setSent(true)} />
       </div>
     </div>
   );

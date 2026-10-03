@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CREATOR } from "../lib/catalog";
 import { formatWhen } from "../lib/format";
 import { ContactForm } from "./contact-form";
+import { ThankYouNote } from "./thank-you-note";
 import { useStudio } from "./studio";
 
 export function CollabView() {
@@ -24,11 +25,10 @@ export function CollabView() {
           <a href={`mailto:${CREATOR.email}`}>{CREATOR.email}</a>.
         </p>
       </header>
-      {sent ? <p className="sent-banner" role="status">Thank you for submitting the form. A thank-you email is on its way to the address you entered.</p> : null}
+      {sent ? <ThankYouNote /> : null}
       <div className="split align-start">
         <section className="panel composer">
-          <h2>Send a note</h2>
-          <ContactForm />
+          <ContactForm heading />
         </section>
         <section className="panel">
           <h2>Inbox</h2>

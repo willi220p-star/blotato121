@@ -828,6 +828,68 @@ fieldset.field { border: 0; margin: 0; padding: 0; }
 .contact-form.is-sent { display: none; }
 .mail-frame { width: 0; height: 0; border: 0; position: absolute; left: 0; bottom: 0; }
 .honey { position: absolute; left: -9999px; height: 0; width: 0; opacity: 0; }
+.thanks-note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  padding: 36px 18px 28px;
+  animation: thanks-rise 0.55s ease both;
+}
+.thanks-mark {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #ffd4ea, #ffe4c8 58%, #e6d8ff);
+  box-shadow: 0 16px 36px rgba(226, 59, 120, 0.22);
+  animation: thanks-pop 0.7s cubic-bezier(0.2, 1.25, 0.36, 1) both;
+}
+.thanks-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid rgba(226, 59, 120, 0.35);
+  animation: thanks-ring 1.4s ease-out infinite;
+}
+.thanks-mark svg { position: relative; }
+.thanks-check {
+  fill: none;
+  stroke: #e23b78;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+  animation: thanks-draw 0.55s 0.28s ease forwards;
+}
+.thanks-note p {
+  margin: 0;
+  max-width: 22rem;
+  color: #241824;
+  font-weight: 600;
+  font-size: clamp(1.2rem, 4.8vw, 1.55rem);
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+}
+.thanks-close { position: absolute; top: 12px; right: 12px; }
+@keyframes thanks-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes thanks-pop {
+  from { opacity: 0; transform: scale(0.45); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes thanks-draw { to { stroke-dashoffset: 0; } }
+@keyframes thanks-ring {
+  from { transform: scale(0.86); opacity: 0.7; }
+  to { transform: scale(1.18); opacity: 0; }
+}
 .sent-note h3 { margin: 0; }
 .sent-note p { margin: 0; color: #4c3d55; line-height: 1.45; }
 .sent-banner {
@@ -877,4 +939,6 @@ fieldset.field { border: 0; margin: 0; padding: 0; }
 @media (prefers-reduced-motion: reduce) {
   .pulse.on, .thumb, .thumb::after, .drift-track, .hero img { animation: none; }
   .sidebar { transition: none; }
+  .thanks-note, .thanks-mark, .thanks-glow, .thanks-check { animation: none; }
+  .thanks-check { stroke-dashoffset: 0; }
 }
