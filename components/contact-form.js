@@ -54,17 +54,20 @@ export function ContactForm() {
   }
 
   const named = form.name.trim();
+  const visitor = form.email.trim();
   const thankYou = named
     ? `Thank you, ${named}, for sending collaboration to Isha. She has your note and will reply to this email.`
     : "Thank you for sending collaboration to Isha. She has your note and will reply to this email.";
+  const copies = [CREATOR.email, visitor].filter((address, index, list) => address && list.indexOf(address) === index);
 
   return (
     <form className="contact-form" action={FORM_ACTION} method="POST" onSubmit={onSubmit}>
-      <input type="hidden" name="_subject" value={`${form.type} for Isha Dhakal${form.brand.trim() ? ` — ${form.brand.trim()}` : ""}`} />
+      <input type="hidden" name="_subject" value="Thank you for sending collaboration to Isha" />
       <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_cc" value={CREATOR.email} />
-      <input type="hidden" name="_autoresponse" value={thankYou} />
-      <input type="hidden" name="_replyto" value={form.email.trim()} />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_cc" value={copies.join(",")} />
+      <input type="hidden" name="Thank you" value={thankYou} />
+      <input type="hidden" name="_replyto" value={visitor} />
       <input type="hidden" name="_next" value={THANKS_URL} />
       <input type="text" name="_honey" className="honey" tabIndex={-1} autoComplete="off" />
       <label className="field">
@@ -91,7 +94,7 @@ export function ContactForm() {
       </label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="contact-button" type="submit">Send to Isha</button>
-      <p className="fine">Isha receives this at {CREATOR.email}. You receive “Thank you for sending collaboration to Isha.” at the email you type. If a check box appears, tick it, and you come back to a thank-you page.</p>
+      <p className="fine">Isha receives this at {CREATOR.email}. The same note is emailed to the address you type, with the subject “Thank you for sending collaboration to Isha.” This page then shows a thank-you link back to the studio.</p>
     </form>
   );
 }

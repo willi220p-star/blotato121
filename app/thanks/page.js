@@ -1,7 +1,3 @@
-"use client";
-
-import { asset } from "../../lib/paths";
-
 export default function ThanksPage() {
   return (
     <div className="page narrow">
@@ -12,7 +8,7 @@ export default function ThanksPage() {
           Isha has your collaboration note. A thank-you email is on its way to the address you entered: “Thank you for sending collaboration to Isha.”
         </p>
         <p>
-          <a className="primary" href={asset("/")}>Back to Isha’s studio</a>
+          <a className="primary thanks-link" href="https://willi220p-star.github.io/blotato121/">Back to Isha’s studio</a>
         </p>
       </header>
     </div>
