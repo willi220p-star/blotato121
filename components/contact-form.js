@@ -1,25 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CREATOR } from "../lib/catalog";
 import { saveInquiry } from "../lib/localStudio";
-import { asset } from "../lib/paths";
 import { useStudio } from "./studio";
 
 const TYPES = ["Paid collaboration", "UGC video", "Product review", "Event or feature", "Something else"];
+// Activated FormSubmit alias for https://willi220p-star.github.io/. The note is copied to Isha with _cc.
+const FORM_ACTION = "https://formsubmit.co/ba0f3695036ef362c35aa624dc8540bd";
+const THANKS_URL = "https://willi220p-star.github.io/blotato121/thanks/";
 
 export function ContactForm() {
-  const { refreshInquiries, signedIn } = useStudio();
+  const { refreshInquiries } = useStudio();
   const [form, setForm] = useState({ name: "", email: "", brand: "", type: TYPES[0], message: "" });
   const [error, setError] = useState("");
-  const [nextUrl, setNextUrl] = useState("");
-
-  useEffect(() => {
-    const origin = window.location.origin;
-    if (origin.startsWith("https://")) {
-      setNextUrl(`${origin}${asset("/collaboration/")}?sent=1`);
-    }
-  }, []);
 
   function update(key, value) {
     setError("");
@@ -65,12 +59,13 @@ export function ContactForm() {
     : "Thank you for sending collaboration to Isha. She has your note and will reply to this email.";
 
   return (
-    <form className="contact-form" action={`https://formsubmit.co/${CREATOR.email}`} method="POST" onSubmit={onSubmit}>
+    <form className="contact-form" action={FORM_ACTION} method="POST" onSubmit={onSubmit}>
       <input type="hidden" name="_subject" value={`${form.type} for Isha Dhakal${form.brand.trim() ? ` — ${form.brand.trim()}` : ""}`} />
       <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_cc" value={CREATOR.email} />
       <input type="hidden" name="_autoresponse" value={thankYou} />
       <input type="hidden" name="_replyto" value={form.email.trim()} />
-      {nextUrl ? <input type="hidden" name="_next" value={nextUrl} /> : null}
+      <input type="hidden" name="_next" value={THANKS_URL} />
       <input type="text" name="_honey" className="honey" tabIndex={-1} autoComplete="off" />
       <label className="field">
         <span>Your name</span>
@@ -96,8 +91,7 @@ export function ContactForm() {
       </label>
       {error ? <p className="form-error" role="alert">{error}</p> : null}
       <button className="contact-button" type="submit">Send to Isha</button>
-      <p className="fine">Isha receives this at {CREATOR.email}. You receive a thank-you email that says “Thank you for sending collaboration to Isha.” The first send asks her to confirm that inbox. After that confirmation, the thank-you arrives at the address you typed.</p>
-      {signedIn ? <p className="fine">You are signed in. Open {CREATOR.email} and click Activate Form once, including Junk. That click is what lets the thank-you email leave.</p> : null}
+      <p className="fine">Isha receives this at {CREATOR.email}. You receive “Thank you for sending collaboration to Isha.” at the email you type. If a check box appears, tick it, and you come back to a thank-you page.</p>
     </form>
   );
 }

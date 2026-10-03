@@ -134,7 +134,7 @@ export default function AdminPage() {
         </article>
         <article>
           <h2>Collaboration mail</h2>
-          <p className="about-copy">Visitor notes are delivered to {CREATOR.email}. Each person also gets “Thank you for sending collaboration to Isha.” Open that inbox and click Activate Form once, including Junk, so those thank-you emails can leave.</p>
+          <p className="about-copy">Visitor notes are emailed to {CREATOR.email}. Each person also gets “Thank you for sending collaboration to Isha.” at the address they type, then the site shows a thank-you page with a link back here.</p>
         </article>
         <article>
           <h2>Page copy</h2>

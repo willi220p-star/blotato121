@@ -7,7 +7,7 @@ import { ContactForm } from "./contact-form";
 import { useStudio } from "./studio";
 
 export function CollabView() {
-  const { inquiries, stats, signedIn } = useStudio();
+  const { inquiries, stats } = useStudio();
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
@@ -24,8 +24,7 @@ export function CollabView() {
           <a href={`mailto:${CREATOR.email}`}>{CREATOR.email}</a>.
         </p>
       </header>
-      {sent ? <p className="sent-banner" role="status">Thank you for sending collaboration to Isha. A thank-you email is on its way to the address you entered.</p> : null}
-      {signedIn ? <p className="fine">Signed in: open {CREATOR.email} and click Activate Form once, including Junk. After that, every visitor note arrives there and their thank-you email leaves.</p> : null}
+      {sent ? <p className="sent-banner" role="status">Thank you for submitting the form. A thank-you email is on its way to the address you entered.</p> : null}
       <div className="split align-start">
         <section className="panel composer">
           <h2>Send a note</h2>
