@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.DS_Store
+public/uploads/*
+!public/uploads/.gitkeep
+cloned
+*.log
+
+public/stats.json
+public/profile.json
+public/media/ig
+public/media/tiktok
+public/media/pins
+data/studio-password.txt
+data/sessions.json
